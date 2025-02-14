@@ -1,0 +1,163 @@
+/* Common text styles */
+.signin, .signup {
+    font-family: 'Poppins';
+    color: #000;
+    font-size: 55px;
+    font-weight: 500;
+}
+
+.headline {
+    font-family: 'Protest Strike';
+    color: #097B70;
+}
+
+.welcome {
+    font-family: 'Zen Kaku Gothic Antique';
+    font-weight: 700;
+    color: #242424;
+}
+
+.signinto, .signupto {
+    font-family: 'Poppins';
+    color: #797878;
+}
+
+.LMS {
+    color: #188B80;
+}
+
+/* Navigation links */
+.authLink {
+    color: #188B80;
+    font-size: 17px;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.authLink:hover {
+    color: black;
+}
+
+/* Form styles */
+.formContainer {
+    position: relative;
+    z-index: 3;
+}
+
+.formInput {
+    transition: border-color 0.3s ease;
+}
+
+.formInput:focus {
+    border-color: #188B80;
+    box-shadow: 0 0 0 0.2rem rgba(24, 139, 128, 0.25);
+}
+
+/* Button styles */
+.submitButton {
+    transition: all 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: #188B80;
+    border-color: #188B80;
+    color: white;
+}
+
+/* Social login buttons */
+.googlebtn {
+    background-color: #f1f0f0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border: none;
+    font-family: 'Poppins';
+    font-size: 15px;
+}
+
+.googlebtn:hover {
+    background-color: #A9DAD6;
+    color: #000;
+}
+
+.googlebtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Background elements */
+.bottomRightBall {
+    position: absolute;
+    bottom: 250px;
+    right: 100px;
+    width: 150px;
+    height: 170px;
+    background-color: #6ecdd4;
+    border-radius: 50%;
+    filter: blur(50px);
+    z-index: -2;
+}
+
+.middleBall {
+    position: absolute;
+    bottom: 50%;
+    right: 45%;
+    width: 150px;
+    height: 170px;
+    background-color: #6ecdd4;
+    border-radius: 50%;
+    filter: blur(50px);
+    z-index: 3;
+}
+
+.bottomLeftBall {
+    position: absolute;
+    bottom: 250px;
+    left: 300px;
+    width: 150px;
+    height: 170px;
+    background-color: #3168BAA6;
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: -2;
+}
+
+.topRightBall {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    width: 150px;
+    height: 170px;
+    background-color: #3168BAA6;
+    border-radius: 50%;
+    filter: blur(50px);
+    z-index: 2;
+}
+
+.topLeftBall {
+    position: absolute;
+    top: 100px;
+    left: 60px;
+    width: 150px;
+    height: 170px;
+    background-color: #6ecdd4;
+    border-radius: 50%;
+    filter: blur(30px);
+    z-index: 2;
+}
+
+/* Add these styles to the existing file */
+
+.socialBtn {
+    background-color: #f1f0f0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border: none;
+}
+
+.socialBtn:hover {
+    background-color: #A9DAD6;
+    color: #000;
+}
+
+.socialBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+} 
