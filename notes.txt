@@ -1,0 +1,21 @@
+library i use
+
+npm install --save-dev @babel/plugin-proposal-private-property-in-object 
+
+# For form handling
+npm install formik yup
+
+# For state management
+npm install @reduxjs/toolkit react-redux
+
+# For HTTP requests
+npm install axios
+
+# For UI components
+npm install @mui/material @emotion/react @emotion/styled
+
+# For social login
+npm install axios react-google-login react-facebook-login --force
+
+# For toast notifications
+npm install react-toastify
