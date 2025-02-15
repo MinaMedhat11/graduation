@@ -10,6 +10,7 @@ export default function SignUp() {
     email: '',
     phone: '',
     password: '',
+    confirmPassword: '',
     gender: '',
     country_id: '',
     region_id: '',
@@ -303,6 +304,12 @@ export default function SignUp() {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.confirmPassword !== formData.password) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     if (!formData.gender) {
@@ -636,6 +643,21 @@ export default function SignUp() {
                     onChange={handleInputChange}
                   />
                   {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                </div>
+
+                <div className="mb-3">
+                  <label className="my-2" htmlFor="confirmPassword">
+                    Confirm Your Password
+                  </label>
+                  <input 
+                    placeholder="Confirm Password" 
+                    type="password" 
+                    id="confirmPassword" 
+                    className={`form-control m-auto rounded-3 pt w-100 ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                  />
+                  {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
                 </div>
 
                 {renderGenderSelect()}
