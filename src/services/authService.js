@@ -24,7 +24,7 @@ export const authService = {
   // Login user
   login: async (credentials) => {
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('login', {
         email: credentials.email,
         password: credentials.password
       });
@@ -50,11 +50,12 @@ export const authService = {
   // Register user
   register: async (userData) => {
     try {
-      const response = await api.post('/auth/register', {
+      const response = await api.post('register', {
         name: userData.name,
         email: userData.email,
         phone: userData.phone,
         password: userData.password,
+        password_confirmation: userData.confirmPassword,
         gender: userData.gender,
         region_id: userData.region_id,
         age: userData.age

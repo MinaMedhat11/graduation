@@ -10,9 +10,11 @@ export const AuthProvider = ({ children }) => {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
+    
+
+    
     checkAuthStatus();
   }, []);
-
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -24,12 +26,11 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    } finally {
+
+       } finally {
       setLoading(false);
     }
-  };
+};
 
   const login = async (credentials) => {
     try {
@@ -45,6 +46,7 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+  
 
   const register = async (userData) => {
     try {
