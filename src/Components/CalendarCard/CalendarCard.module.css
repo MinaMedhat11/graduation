@@ -1,0 +1,92 @@
+.calendarCard {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-xl);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.viewAllButton {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-pill);
+  font-weight: var(--font-weight-medium);
+}
+
+.eventsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.eventItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+}
+
+.eventItemWithBorder {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  margin-right: var(--spacing-md);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm);
+}
+
+.month {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.day {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.eventDetails {
+  flex: 1;
+}
+
+.eventTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-primary);
+}
+
+.eventTime {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.clockIcon {
+  margin-right: var(--spacing-sm);
+  color: var(--primary-color);
+} 

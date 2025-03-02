@@ -1,0 +1,79 @@
+.welcomeSection {
+  margin-bottom: var(--spacing-xl);
+}
+
+.welcomeTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.welcomeSubtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
+}
+
+.statsSection {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.coursesSection {
+  margin-bottom: var(--spacing-xl);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.viewAllButton {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-pill);
+  font-weight: var(--font-weight-medium);
+}
+
+.progressWidget {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-lg);
+}
+
+.progressTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.progressBar {
+  height: 8px;
+  width: 100%;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-pill);
+  overflow: hidden;
+  margin-bottom: var(--spacing-md);
+}
+
+.progress {
+  height: 100%;
+  background-color: var(--success-color);
+  border-radius: var(--border-radius-pill);
+}
+
+.progressText {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+} 

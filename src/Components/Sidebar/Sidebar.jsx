@@ -1,39 +1,84 @@
 import React from 'react';
-import style from './Sidebar.module.css';
+import { Link, useLocation } from 'react-router-dom';
+import styles from './Sidebar.module.css';
+import logoImage from '../../Images/pngwing.com.png';
 
 export default function Sidebar() {
+    const location = useLocation();
+    
+    const isActive = (path) => {
+        return location.pathname === path || location.pathname === `/${path}`;
+    };
+    
     return (
-        <nav className="navbar navbar-expand-sm navbar-light bg-light">
-            <div className="container">
-                <a className="navbar-brand" href="#">Navbar</a>
-                <button
-                    className="navbar-toggler d-lg-none"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapsibleNavId"
-                    aria-controls="collapsibleNavId"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="collapsibleNavId">
-                   
-                    <form className="d-flex my-2 my-lg-0 mx-auto w-50">
-                    <div className="input-group">
-    <span className="input-group-text">
-        <i className="fa-solid fa-magnifying-glass"></i>
-    </span>
-    <input
-        className="form-control"
-        type="text"
-        placeholder="Search"
-    />
-</div>
-                      
-                    </form>
+        <div className={styles.sidebarContainer}>
+            <div className={styles.sidebar}>
+                {/* Logo */}
+                <div className={styles.logoContainer}>
+                    <Link to="/dashboard">
+                        <img src={logoImage} alt="LMS Logo" className={styles.logoImage} />
+                    </Link>
+                </div>
+                
+                {/* Navigation Links */}
+                <nav className={styles.navigation}>
+                    <ul className={styles.navList}>
+                        <li className={styles.navItem}>
+                            <Link 
+                                to="/dashboard" 
+                                className={`${styles.navLink} ${isActive('dashboard') || isActive('') ? styles.active : ''}`}
+                            >
+                                <i className={`fa-regular fa-clock ${styles.navIcon}`}></i>
+                                <span>Dashboard</span>
+                            </Link>
+                        </li>
+                        <li className={styles.navItem}>
+                            <Link 
+                                to="/courses" 
+                                className={`${styles.navLink} ${isActive('courses') ? styles.active : ''}`}
+                            >
+                                <i className={`fa-solid fa-graduation-cap ${styles.navIcon}`}></i>
+                                <span>Courses</span>
+                            </Link>
+                        </li>
+                        <li className={styles.navItem}>
+                            <Link 
+                                to="/assignments" 
+                                className={`${styles.navLink} ${isActive('assignments') ? styles.active : ''}`}
+                            >
+                                <i className={`fa-regular fa-file-lines ${styles.navIcon}`}></i>
+                                <span>Assignment</span>
+                            </Link>
+                        </li>
+                        <li className={styles.navItem}>
+                            <Link 
+                                to="/payments" 
+                                className={`${styles.navLink} ${isActive('payments') ? styles.active : ''}`}
+                            >
+                                <i className={`fa-regular fa-credit-card ${styles.navIcon}`}></i>
+                                <span>Payments</span>
+                            </Link>
+                        </li>
+                        <li className={styles.navItem}>
+                            <Link 
+                                to="/lectures" 
+                                className={`${styles.navLink} ${isActive('lectures') ? styles.active : ''}`}
+                            >
+                                <i className={`fa-regular fa-calendar ${styles.navIcon}`}></i>
+                                <span>Lectures</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
+                
+                {/* Logout at Bottom */}
+                <div className={styles.logoutContainer}>
+                    <Link to="/logout" className={styles.navLink}>
+                        <i className={`fa-solid fa-arrow-right-from-bracket ${styles.navIcon}`}></i>
+                        <span>Logout</span>
+                    </Link>
                 </div>
             </div>
-        </nav>
+        </div>
     );
 }

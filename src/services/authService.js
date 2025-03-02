@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://127.0.0.1:8000/api';
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -11,7 +10,7 @@ const api = axios.create({
   }
 });
 
-// Add interceptor to handle token
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {

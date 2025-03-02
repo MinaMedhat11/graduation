@@ -1,0 +1,538 @@
+.assignmentsContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+}
+
+.assignmentsContent {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem;
+}
+
+/* Courses Section */
+.coursesSection {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.courseHeader {
+  background-color: #3CB0A5;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.courseHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.courseNavigation {
+  padding: 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  color: #3CB0A5;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.courseSelector {
+  padding: 1rem;
+  border-top: 1px solid #eee;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Drop Section */
+.dropSection {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dropZone {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.dropIcon {
+  font-size: 3rem;
+  color: #3CB0A5;
+  margin-bottom: 1rem;
+}
+
+.dropZone h3 {
+  margin: 0 0 0.5rem;
+  color: #333;
+}
+
+.dropZone p {
+  margin: 0 0 1.5rem;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.addButton {
+  background-color: #3CB0A5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.addButton:hover {
+  background-color: #2a9d93;
+}
+
+/* Assignment Section */
+.assignmentSection {
+  grid-column: 1 / -1;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  padding: 1rem;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sectionTitle i {
+  color: #3CB0A5;
+}
+
+.sectionTitle h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Assignment Tabs */
+.assignmentTabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.tabsHeader {
+  display: flex;
+  gap: 1rem;
+}
+
+.tab, .tabActive {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab:hover {
+  color: #3CB0A5;
+}
+
+.tabActive {
+  color: #3CB0A5;
+  font-weight: 500;
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #3CB0A5;
+}
+
+/* Quiz Tab Styles */
+.quizTab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quizIcon {
+  font-size: 1.2rem;
+}
+
+/* Assignment/Quiz Toggle */
+.tabToggle {
+  display: flex;
+  background-color: #f5f5f5;
+  border-radius: 50px;
+  padding: 0.25rem;
+  margin: 1rem 0;
+}
+
+.toggleOption {
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  border-radius: 50px;
+  transition: all 0.3s;
+}
+
+.toggleOptionActive {
+  background-color: #3CB0A5;
+  color: white;
+}
+
+/* Assignment/Quiz Navigation */
+.assignmentNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.navButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navButtons button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #eee;
+  background-color: white;
+  color: #3CB0A5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.navButtons button:hover {
+  background-color: #3CB0A5;
+  color: white;
+}
+
+/* Table Styles for Quiz */
+.quizTable th, .quizTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.quizTable th {
+  font-weight: 500;
+  color: #333;
+}
+
+.quizTable td {
+  color: #555;
+}
+
+.quizTitle {
+  font-weight: 500;
+}
+
+.quizDegree {
+  font-weight: 500;
+}
+
+/* Table Styles */
+.tableContainer {
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.assignmentsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assignmentsTable th {
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #333;
+  font-weight: 500;
+}
+
+.assignmentsTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+.assignmentCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.assignmentIcon {
+  color: #3CB0A5;
+  font-size: 1.2rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.statusProgress {
+  background-color: #FFD700;
+  color: #333;
+}
+
+.statusPending {
+  background-color: #FF6B6B;
+  color: white;
+}
+
+.statusDone {
+  background-color: #3CB0A5;
+  color: white;
+}
+
+.pageHeader {
+  margin-bottom: var(--spacing-xl);
+}
+
+.pageTitle {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-dark);
+  margin-bottom: var(--spacing-xs);
+}
+
+.pageSubtitle {
+  color: var(--text-light);
+  font-size: var(--font-size-md);
+}
+
+.filterTabs {
+  display: flex;
+  margin-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filterTab {
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-right: var(--spacing-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-medium);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.filterTab:hover {
+  color: var(--primary-color);
+}
+
+.activeTab {
+  color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary-color);
+  border-radius: 3px 3px 0 0;
+}
+
+.assignmentsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.assignmentCard {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.assignmentCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.assignmentHeader {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.assignmentTitle {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.assignmentStatus {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.assignmentContent {
+  padding: var(--spacing-md);
+}
+
+.assignmentDescription {
+  color: var(--text-medium);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.assignmentMeta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-light);
+  font-size: var(--font-size-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.assignmentCourse {
+  display: flex;
+  align-items: center;
+}
+
+.courseIcon {
+  margin-right: var(--spacing-xs);
+}
+
+.assignmentDueDate {
+  display: flex;
+  align-items: center;
+}
+
+.dueDateIcon {
+  margin-right: var(--spacing-xs);
+}
+
+.assignmentActions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.viewButton, .submitButton {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.viewButton {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.viewButton:hover {
+  background-color: #D2E6E420;
+}
+
+.submitButton {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.submitButton:hover {
+  background-color: #2a9d93;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: #D2E6E480;
+  margin-bottom: var(--spacing-md);
+}
+
+.emptyTitle {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-dark);
+}
+
+.emptyText {
+  color: var(--text-light);
+  margin-bottom: var(--spacing-lg);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .assignmentsContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .tableContainer {
+    overflow-x: auto;
+  }
+  
+  .assignmentsTable {
+    min-width: 600px;
+  }
+} 
