@@ -2,8 +2,10 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import logoImage from '../../Images/pngwing.com.png';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar() {
+    const {logout} = useAuth();
     const location = useLocation();
     
     const isActive = (path) => {
@@ -73,10 +75,10 @@ export default function Sidebar() {
                 
                 {/* Logout at Bottom */}
                 <div className={styles.logoutContainer}>
-                    <Link to="/logout" className={styles.navLink}>
+                    <button onClick={logout} className={styles.navLink}>
                         <i className={`fa-solid fa-arrow-right-from-bracket ${styles.navIcon}`}></i>
                         <span>Logout</span>
-                    </Link>
+                    </button>
                 </div>
             </div>
         </div>

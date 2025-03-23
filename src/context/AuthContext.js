@@ -66,6 +66,7 @@ export const AuthProvider = ({ children }) => {
       if (success) {
         setUser(null);
         setMessage(message);
+        
       }
       return { success, message };
     } catch (error) {

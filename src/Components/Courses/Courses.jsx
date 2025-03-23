@@ -1,91 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import styles from './Courses.module.css';
 
 export default function Courses() {
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Sample data for my courses
-  const myCourses = [
-    {
-      id: 1,
-      title: 'Back-End Course',
-      subtitle: "Beginner's Guide To Becoming A Professional Backend Developer",
-      image: '/images/backend.jpg',
-      rating: 4.6,
-      lessons: 10,
-      duration: '19h 30m',
-      students: 32,
-      price: 29.0,
-      free: true
-    },
-    {
-      id: 2,
-      title: 'Network Course',
-      subtitle: "Beginner's Guide To Becoming A Professional Backend Developer",
-      image: '/images/networking.jpg',
-      rating: 4.6,
-      lessons: 10,
-      duration: '19h 30m',
-      students: 32,
-      price: 35.0,
-      free: true
-    },
-    {
-      id: 3,
-      title: 'AI Course',
-      subtitle: "Beginner's Guide To Becoming A Professional Backend Developer",
-      image: '/images/ai.jpg',
-      rating: 4.6,
-      lessons: 10,
-      duration: '19h 30m',
-      students: 32,
-      price: 35.0,
-      free: true
-    }
-  ];
-  
-  // Sample data for all courses
-  const allCourses = [
-    {
-      id: 4,
-      title: 'data science Course',
-      subtitle: "Beginner's Guide To Becoming A Professional Backend Developer",
-      image: '/images/datascience.jpg',
-      rating: 4.6,
-      lessons: 10,
-      duration: '19h 30m',
-      students: 32,
-      price: 29.0,
-      free: false
-    },
-    {
-      id: 5,
-      title: 'Flutter Course',
-      subtitle: "Beginner's Guide To Becoming A Professional Backend Developer",
-      image: '/images/flutter.jpg',
-      rating: 4.6,
-      lessons: 10,
-      duration: '19h 30m',
-      students: 32,
-      price: 29.0,
-      free: false
-    },
-    {
-      id: 6,
-      title: 'Cyber Security Course',
-      subtitle: "Beginner's Guide To Becoming A Professional Backend Developer",
-      image: '/images/cybersecurity.jpg',
-      rating: 4.6,
-      lessons: 10,
-      duration: '19h 30m',
-      students: 32,
-      price: 29.0,
-      free: false
-    }
-  ];
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/courses/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setCourses(response.data.data);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -97,10 +38,10 @@ export default function Courses() {
       <div className={styles.sidebarWrapper}>
         <Sidebar />
       </div>
-      
+
       <div className={styles.mainContent}>
         <Header />
-        
+
         <div className={styles.coursesContent}>
           {/* Search Bar */}
           <div className={styles.searchContainer}>
@@ -118,112 +59,78 @@ export default function Courses() {
               <i className="fa-solid fa-filter"></i>
             </button>
           </div>
-          
-          {/* My Courses Section */}
+
+          {/* Courses Section */}
           <section className={styles.coursesSection}>
-            <h2 className={styles.sectionTitle}>My Courses</h2>
-            
+            <h2 className={styles.sectionTitle}>Available Courses</h2>
+
             <div className={styles.coursesGrid}>
-              {myCourses.map(course => (
+              {courses.map((course) => (
                 <div key={course.id} className={styles.courseCard}>
                   <div className={styles.courseImage}>
-                    <img src={course.image} alt={course.title} />
+                    <img src={course.course_image} alt={course.name} />
                   </div>
-                  
+
                   <div className={styles.courseContent}>
                     <div className={styles.courseRating}>
                       {[...Array(5)].map((_, i) => (
-                        <i key={i} className="fa-solid fa-star"></i>
+                        <i
+                          key={i}
+                          className={
+                            i < Math.floor(course.rating)
+                              ? 'fa-solid fa-star'
+                              : 'fa-regular fa-star'
+                          }
+                        ></i>
                       ))}
                       <span>({course.rating})</span>
                     </div>
-                    
-                    <h3 className={styles.courseTitle}>{course.title}</h3>
-                    <p className={styles.courseSubtitle}>{course.subtitle}</p>
-                    
+
+                    <h3 className={styles.courseTitle}>{course.name}</h3>
+                    <p className={styles.courseSubtitle}>{course.description}</p>
+
                     <div className={styles.courseDetails}>
                       <div className={styles.detailItem}>
                         <i className="fa-solid fa-book"></i>
-                        <span>Lesson {course.lessons}</span>
+                        <span>Lessons {course.lessons_number}</span>
                       </div>
                       <div className={styles.detailItem}>
                         <i className="fa-regular fa-clock"></i>
-                        <span>{course.duration}</span>
+                        <span>{course.course_hours} Hours</span>
                       </div>
                       <div className={styles.detailItem}>
                         <i className="fa-solid fa-user"></i>
-                        <span>Students {course.students}</span>
+                        <span>Students: {course.students || 0}</span>
                       </div>
                     </div>
-                    
+
                     <div className={styles.courseFooter}>
                       <div className={styles.coursePrice}>
-                        {course.free ? (
+                        {course.discount > 0 ? (
                           <>
-                            <span className={styles.originalPrice}>${course.price.toFixed(0)}</span>
-                            <span className={styles.freeLabel}>Free</span>
+                            <span className={styles.originalPrice}>
+                              ${course.price.toFixed(0)}
+                            </span>
+                            <span className={styles.discountedPrice}>
+                              ${(
+                                course.price -
+                                (course.price * course.discount) / 100
+                              ).toFixed(0)}
+                            </span>
                           </>
                         ) : (
-                          <span className={styles.priceLabel}>${course.price.toFixed(0)}</span>
+                          <span className={styles.priceLabel}>
+                            ${course.price.toFixed(0)}
+                          </span>
                         )}
                       </div>
-                      <Link to={`/course/${course.id}`} className={styles.viewMoreButton}>View More</Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-          
-          {/* All Courses Section */}
-          <section className={styles.coursesSection}>
-            <h2 className={styles.sectionTitle}>All Courses</h2>
-            
-            <div className={styles.coursesGrid}>
-              {allCourses.map(course => (
-                <div key={course.id} className={styles.courseCard}>
-                  <div className={styles.courseImage}>
-                    <img src={course.image} alt={course.title} />
-                  </div>
-                  
-                  <div className={styles.courseContent}>
-                    <div className={styles.courseRating}>
-                      {[...Array(5)].map((_, i) => (
-                        <i key={i} className="fa-solid fa-star"></i>
-                      ))}
-                      <span>({course.rating})</span>
-                    </div>
-                    
-                    <h3 className={styles.courseTitle}>{course.title}</h3>
-                    <p className={styles.courseSubtitle}>{course.subtitle}</p>
-                    
-                    <div className={styles.courseDetails}>
-                      <div className={styles.detailItem}>
-                        <i className="fa-solid fa-book"></i>
-                        <span>Lesson {course.lessons}</span>
-                      </div>
-                      <div className={styles.detailItem}>
-                        <i className="fa-regular fa-clock"></i>
-                        <span>{course.duration}</span>
-                      </div>
-                      <div className={styles.detailItem}>
-                        <i className="fa-solid fa-user"></i>
-                        <span>Students {course.students}</span>
-                      </div>
-                    </div>
-                    
-                    <div className={styles.courseFooter}>
-                      <div className={styles.coursePrice}>
-                        {course.free ? (
-                          <>
-                            <span className={styles.originalPrice}>${course.price.toFixed(0)}</span>
-                            <span className={styles.freeLabel}>Free</span>
-                          </>
-                        ) : (
-                          <span className={styles.priceLabel}>${course.price.toFixed(0)}</span>
-                        )}
-                      </div>
-                      <Link to={`/course/${course.id}`} className={styles.viewMoreButton}>View More</Link>
+
+                      <Link
+                        to={`/course/${course.id}`}
+                        className={styles.viewMoreButton}
+                      >
+                        View More
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -234,4 +141,4 @@ export default function Courses() {
       </div>
     </div>
   );
-} 
+}

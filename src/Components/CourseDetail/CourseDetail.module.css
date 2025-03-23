@@ -211,21 +211,7 @@
   object-fit: cover;
 }
 
-.courseLabel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(138, 116, 185, 0.85);
-  color: white;
-  padding: 2rem;
-  text-align: center;
-}
+
 
 .bestCourses {
   background-color: #fff;
