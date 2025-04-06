@@ -147,7 +147,7 @@
 .formLabel:nth-child(1)::after,
 .formLabel:nth-child(2)::after,
 .formLabel:nth-child(3)::after {
-  content: " *";
+  content: " ";
   color: #333;
 }
 
@@ -990,3 +990,23 @@
     grid-template-columns: 1fr;
   }
 } 
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkboxLabel {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
