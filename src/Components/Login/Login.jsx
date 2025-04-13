@@ -8,7 +8,8 @@ export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    guard: 'web' // default to 'web' which is student
   });
   const [errors, setErrors] = useState({});
   const { login, error: authError, message } = useAuth();
@@ -38,7 +39,6 @@ export default function Login() {
       ...prevData,
       [id]: value
     }));
-    // Clear error when user starts typing
     if (errors[id]) {
       setErrors(prev => ({
         ...prev,
@@ -47,9 +47,16 @@ export default function Login() {
     }
   };
 
+  const handleGuardChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      guard: e.target.value
+    }));
+  };
+
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -66,7 +73,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       setIsLoading(true);
       try {
@@ -135,7 +142,7 @@ export default function Login() {
                     <h2 className={`${styles.signin} pb-4`}>Sign In</h2>
                   </div>
                   <div className="col-md-5">
-                    <h6 style={{fontSize:"15px"}}>No Account?</h6>
+                    <h6 style={{ fontSize: "15px" }}>No Account?</h6>
                     <Link className={`${styles.authLink} text-decoration-none`} to="/signup">
                       Sign Up
                     </Link>
@@ -146,10 +153,10 @@ export default function Login() {
                   <label className="my-2" htmlFor="email">
                     Enter your username or email address
                   </label>
-                  <input 
-                    placeholder="User name or email" 
-                    type="email" 
-                    id="email" 
+                  <input
+                    placeholder="User name or email"
+                    type="email"
+                    id="email"
                     className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.email ? 'is-invalid' : ''}`}
                     value={formData.email}
                     onChange={handleInputChange}
@@ -161,10 +168,10 @@ export default function Login() {
                   <label className="my-2" htmlFor="password">
                     Enter Your Password
                   </label>
-                  <input 
-                    placeholder="Password" 
-                    type="password" 
-                    id="password" 
+                  <input
+                    placeholder="Password"
+                    type="password"
+                    id="password"
                     className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.password ? 'is-invalid' : ''}`}
                     value={formData.password}
                     onChange={handleInputChange}
@@ -172,14 +179,60 @@ export default function Login() {
                   {errors.password && <div className="invalid-feedback">{errors.password}</div>}
                 </div>
 
-                <h6 className={`text-end pt-2 ${styles.authLink}`}
-                  style={{ cursor: 'pointer' }}
-                >
+                <div className="mb-3">
+                  <label className="my-2 d-block">Login as:</label>
+                  <div className="d-flex justify-content-between">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="guard"
+                        id="student"
+                        value="web"
+                        checked={formData.guard === 'web'}
+                        onChange={handleGuardChange}
+                      />
+                      <label className="form-check-label" htmlFor="student">
+                        Student
+                      </label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="guard"
+                        id="instructor"
+                        value="instructor"
+                        checked={formData.guard === 'instructor'}
+                        onChange={handleGuardChange}
+                      />
+                      <label className="form-check-label" htmlFor="instructor">
+                        Instructor
+                      </label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="guard"
+                        id="admin"
+                        value="admin"
+                        checked={formData.guard === 'admin'}
+                        onChange={handleGuardChange}
+                      />
+                      <label className="form-check-label" htmlFor="admin">
+                        Admin
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <h6 className={`text-end pt-2 ${styles.authLink}`} style={{ cursor: 'pointer' }}>
                   Forgot Password?
                 </h6>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className={`btn btn-outline-success w-100 mt-4 m-auto ${styles.submitButton}`}
                 >
                   Sign In

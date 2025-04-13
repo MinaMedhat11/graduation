@@ -58,7 +58,9 @@ export const authService = {
         password_confirmation: userData.confirmPassword,
         gender: userData.gender,
         region_id: userData.region_id,
-        age: userData.age
+        age: userData.age,
+        date_of_birth:userData.date_of_birth
+
       });
       
       return {
@@ -78,7 +80,7 @@ export const authService = {
   logout: async () => {
     try {
       const response = await api.post('/user-logout');
-      if (response.data.status) {
+      if (true) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
@@ -88,7 +90,6 @@ export const authService = {
       };
     } catch (error) {
       console.error('Logout error:', error);
-      // Still remove items even if API call fails
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       throw {

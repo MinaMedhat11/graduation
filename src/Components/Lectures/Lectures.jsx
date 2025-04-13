@@ -133,7 +133,7 @@ export default function Lectures() {
                       className={styles.instructorImage}
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=4B5EAA&color=fff';
+                      /*  e.target.src = 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=4B5EAA&color=fff';*/
                       }}
                     />
                     Dr. Sarah Johnson
@@ -166,7 +166,7 @@ export default function Lectures() {
                     className={styles.courseImage}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/80x60?text=Networks';
+                      /* e.target.src = 'https://via.placeholder.com/80x60?text=Networks';*/ 
                     }}
                   />
                   <div className={styles.courseDetails}>
@@ -181,7 +181,7 @@ export default function Lectures() {
                     className={styles.courseImage}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/80x60?text=Data';
+               /*       e.target.src = 'https://via.placeholder.com/80x60?text=Data';*/
                     }}
                   />
                   <div className={styles.courseDetails}>

@@ -14,7 +14,8 @@ export default function SignUp() {
     gender: '',
     country_id: '',
     region_id: '',
-    age: ''
+    age: '',
+    date_of_birth: ''
   });
   const [errors, setErrors] = useState({});
   const { register, error: authError, message } = useAuth();
@@ -250,7 +251,7 @@ export default function SignUp() {
 
   const wrapperStyle = {
     position: 'relative',
-    minHeight: '100vh', 
+    minHeight: '100vh',
     overflow: 'hidden',
     zIndex: '0',
   };
@@ -283,7 +284,7 @@ export default function SignUp() {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
@@ -330,7 +331,7 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       try {
         const { success, message } = await register(formData);
@@ -407,284 +408,296 @@ export default function SignUp() {
   );
 
   // Add country selection
-  const renderCountrySelect = () => (
-    <div className="mb-3">
-      <label className="my-2" htmlFor="country_id">
-        Select Country
-      </label>
-      <select
-        id="country_id"
-        className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.country_id ? 'is-invalid' : ''}`}
-        value={formData.country_id}
-        onChange={handleInputChange}
-      >
-        <option value="">Select a country</option>
-        {countries.map(country => (
-          <option key={country.id} value={country.id}>
-            {country.name}
-          </option>
-        ))}
-      </select>
-      {errors.country_id && <div className="invalid-feedback">{errors.country_id}</div>}
-    </div>
-  );
+const renderCountrySelect = () => (
+  <div className="mb-3">
+    <label className="my-2" htmlFor="country_id">
+      Select Country
+    </label>
+    <select
+      id="country_id"
+      className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.country_id ? 'is-invalid' : ''}`}
+      value={formData.country_id}
+      onChange={handleInputChange}
+    >
+      <option value="">Select a country</option>
+      {countries.map(country => (
+        <option key={country.id} value={country.id}>
+          {country.name}
+        </option>
+      ))}
+    </select>
+    {errors.country_id && <div className="invalid-feedback">{errors.country_id}</div>}
+  </div>
+);
 
-  // Add region selection
-  const renderRegionSelect = () => (
-    <div className="mb-3">
-      <label className="my-2" htmlFor="region_id">
-        Select Region
-      </label>
-      <select
-        id="region_id"
-        className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.region_id ? 'is-invalid' : ''}`}
-        value={formData.region_id}
-        onChange={handleInputChange}
-      >
-        <option value="">Select a region</option>
-        {regions.map(region => (
-          <option key={region.id} value={region.id}>
-            {region.name}
-          </option>
-        ))}
-      </select>
-      {errors.region_id && <div className="invalid-feedback">{errors.region_id}</div>}
-    </div>
-  );
+// Add region selection
+const renderRegionSelect = () => (
+  <div className="mb-3">
+    <label className="my-2" htmlFor="region_id">
+      Select Region
+    </label>
+    <select
+      id="region_id"
+      className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.region_id ? 'is-invalid' : ''}`}
+      value={formData.region_id}
+      onChange={handleInputChange}
+    >
+      <option value="">Select a region</option>
+      {regions.map(region => (
+        <option key={region.id} value={region.id}>
+          {region.name}
+        </option>
+      ))}
+    </select>
+    {errors.region_id && <div className="invalid-feedback">{errors.region_id}</div>}
+  </div>
+);
 
-  return (
-    <>
-      <div style={wrapperStyle}>
+return (
+  <>
+    <div style={wrapperStyle}>
+      <div
+        style={{
+          position: 'absolute',
+          content: '""',
+          top: '10px',
+          left: '10px',
+          right: 0,
+          height: '500px',
+          backgroundColor: '#000',
+          opacity: '0.05',
+          clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 100%)',
+          zIndex: '1',
+        }}
+      ></div>
+
+      <div style={diagonalStyle}></div>
+
+      <div className="background-balls">
         <div
           style={{
             position: 'absolute',
-            content: '""',
-            top: '10px', 
-            left: '10px', 
-            right: 0,
-            height: '500px',
-            backgroundColor: '#000',
-            opacity: '0.05',
-            clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 100%)',
-            zIndex: '1',
+            bottom: '250px',
+            right: '100px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#6ecdd4',
+            borderRadius: '50%',
+            filter: 'blur(50px)',
+            zIndex: '-2',
           }}
         ></div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '50%',
+            right: '45%',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#6ecdd4',
+            borderRadius: '50%',
+            filter: 'blur(50px)',
+            zIndex: '3',
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '250px',
+            left: '300px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#3168BAA6   ',
+            borderRadius: '50%',
+            filter: 'blur(40px)',
+            zIndex: '-2',
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50px',
+            right: '50px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#3168BAA6',
+            borderRadius: '50%',
+            filter: 'blur(50px)',
+            zIndex: '2',
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '100px',
+            left: '60px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#6ecdd4',
+            borderRadius: '50%',
+            filter: 'blur(30px)',
+            zIndex: '2',
+          }}
+        ></div>
+      </div>
 
-        <div style={diagonalStyle}></div>
+      <div className="container d-flex align-items-center justify-content-center" style={{ position: 'relative', zIndex: '3' }}>
+        <div className="row w-100">
+          <div className="col-md-6">
+            <img
+              src={require('./../../Images/pngwing.com.png')}
+              className="w-25 pt-5"
+              alt="LMS Logo"
+            />
+            <h3 className={`${styles.signupto} pt-5`}>
+              Sign up to{' '}
+            </h3>
+            <h2 className={styles.headline}>
+              Learning Management System
+            </h2>
+          </div>
+          <div className="col-md-6">
+            <h2 className={`${styles.welcome} text-center pt-5`}>
+              Welcome back
+            </h2>
 
-         <div className="background-balls">
-          <div
-          /*bottom right */
-            style={{
-              position: 'absolute',
-              bottom: '250px',
-              right: '100px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#6ecdd4',
-              borderRadius: '50%',
-              filter: 'blur(50px)',
-              zIndex: '-2',
-            }}
-          ></div>
-          <div
-          /*bottom right */
-            style={{
-              position: 'absolute',
-              bottom: '50%',
-              right: '45%',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#6ecdd4',
-              borderRadius: '50%',
-              filter: 'blur(50px)',
-              zIndex: '3',
-            }}
-          ></div>
-          <div
-          /*bottom left */
-            style={{
-              position: 'absolute',
-              bottom: '250px',
-              left: '300px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#3168BAA6   ',
-              borderRadius: '50%',
-              filter: 'blur(40px)',
-              zIndex: '-2',
-            }}
-          ></div>
-          <div 
-          /*top right */
-            style={{
-              position: 'absolute',
-              top: '50px',
-              right: '50px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#3168BAA6',
-              borderRadius: '50%',
-              filter: 'blur(50px)',
-              zIndex: '2',
-            }}
-          ></div>
-          <div
-          /*top left */
-            style={{
-              position: 'absolute',
-              top: '100px',
-              left: '60px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#6ecdd4',
-              borderRadius: '50%',
-              filter: 'blur(30px)',
-              zIndex: '2',
-            }}
-          ></div>
-        </div>
-
-        <div className="container d-flex align-items-center justify-content-center" style={{ position: 'relative', zIndex: '3' }}>
-          <div className="row w-100">
-            <div className="col-md-6">
-              <img
-                src={require('./../../Images/pngwing.com.png')}
-                className="w-25 pt-5"
-                alt="LMS Logo"
-              />
-              <h3 className={`${styles.signupto} pt-5`}>
-                Sign up to{' '}
-              </h3>
-              <h2 className={styles.headline}>
-                Learning Management System
-              </h2>
-            </div>
-            <div className="col-md-6">
-              <h2 className={`${styles.welcome} text-center pt-5`}>
-                Welcome back
-              </h2>
-
-              <form onSubmit={handleSubmit} className="pt-5 w-75 mt-5 m-auto bg-white rounded-5 p-4">
-                <div className="row">
-                  <div className="col-md-7">
-                    <h5>Welcome to <span className={styles.LMS}>LMS</span></h5>
-                    <h2 className={`${styles.signin} pb-4`}>
-                      Sign Up
-                    </h2>
-                  </div>
-                  <div className="col-md-5">
-                    <h6 style={{fontSize:"15px"}}>Have an Account?</h6>
-                    <Link className={`${styles.authLink} text-decoration-none`} to='/login'>
-                      Sign in
-                    </Link>
-                  </div>
+            <form onSubmit={handleSubmit} className="pt-5 w-75 mt-5 m-auto bg-white rounded-5 p-4">
+              <div className="row">
+                <div className="col-md-7">
+                  <h5>Welcome to <span className={styles.LMS}>LMS</span></h5>
+                  <h2 className={`${styles.signin} pb-4`}>
+                    Sign Up
+                  </h2>
                 </div>
-
-                <div className="mb-3">
-                  <label className="my-2" htmlFor="email">
-                    Enter your username or email address
-                  </label>
-                  <input 
-                    placeholder="User name or email" 
-                    type="email" 
-                    id="email" 
-                    className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.email ? 'is-invalid' : ''}`}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                  {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                <div className="col-md-5">
+                  <h6 style={{ fontSize: "15px" }}>Have an Account?</h6>
+                  <Link className={`${styles.authLink} text-decoration-none`} to='/login'>
+                    Sign in
+                  </Link>
                 </div>
+              </div>
 
-                <div className="row">
-                    <div className="col-md-6 py-4">
-                    <label className=" my-2" htmlFor="name">
-                  Your Name
+              <div className="mb-3">
+                <label className="my-2" htmlFor="email">
+                  Enter your username or email address
                 </label>
-                <input 
-                  placeholder="Your Name" 
-                  type="text" 
-                  id="name" 
-                  className={`form-control m-auto rounded-3 pt w-100 ${errors.name ? 'is-invalid' : ''}`}
-                  value={formData.name}
+                <input
+                  placeholder="User name or email"
+                  type="email"
+                  id="email"
+                  className={`form-control m-auto rounded-3 ${styles.formInput} ${errors.email ? 'is-invalid' : ''}`}
+                  value={formData.email}
                   onChange={handleInputChange}
                 />
-                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+              </div>
 
-                    </div>
-                    <div className="col-md-6 py-4">
-                <label className=" my-2" htmlFor="phone">
-                  Contact Number
+              <div className="row">
+                <div className="col-md-6 py-4">
+                  <label className=" my-2" htmlFor="name">
+                    Your Name
+                  </label>
+                  <input
+                    placeholder="Your Name"
+                    type="text"
+                    id="name"
+                    className={`form-control m-auto rounded-3 pt w-100 ${errors.name ? 'is-invalid' : ''}`}
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
+                  {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                </div>
+
+                <div className="col-md-6 py-4">
+                  <label className=" my-2" htmlFor="phone">
+                    Contact Number
+                  </label>
+                  <input
+                    placeholder="Contact Number"
+                    type="tel"
+                    id="phone"
+                    className={`form-control m-auto rounded-3 pt w-100 ${errors.phone ? 'is-invalid' : ''}`}
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                  />
+                  {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label className="my-2" htmlFor="password">
+                  Enter Your Password
                 </label>
-                <input 
-                  placeholder="Contact Number" 
-                  type="tel" 
-                  id="phone" 
-                  className={`form-control m-auto rounded-3 pt w-100 ${errors.phone ? 'is-invalid' : ''}`}
-                  value={formData.phone}
+                <input
+                  placeholder="Password"
+                  type="password"
+                  id="password"
+                  className={`form-control m-auto rounded-3 pt w-100 ${errors.password ? 'is-invalid' : ''}`}
+                  value={formData.password}
                   onChange={handleInputChange}
                 />
-                {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
+                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+              </div>
 
-               </div>
+              <div className="mb-3">
+                <label className="my-2" htmlFor="confirmPassword">
+                  Confirm Your Password
+                </label>
+                <input
+                  placeholder="Confirm Password"
+                  type="password"
+                  id="confirmPassword"
+                  className={`form-control m-auto rounded-3 pt w-100 ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                />
+                {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 py-2">
+                  <label className="my-2" htmlFor="gender">Gender</label>
+                  {renderGenderSelect()}
                 </div>
-               
-                
-                <div className="mb-3">
-                  <label className="my-2" htmlFor="password">
-                    Enter Your Password
-                  </label>
-                  <input 
-                    placeholder="Password" 
-                    type="password" 
-                    id="password" 
-                    className={`form-control m-auto rounded-3 pt w-100 ${errors.password ? 'is-invalid' : ''}`}
-                    value={formData.password}
+
+                <div className="col-md-6 py-2">
+                  <label className="my-2" htmlFor="date_of_birth">Date of Birth</label>
+                  <input
+                    type="date"
+                    id="date_of_birth"
+                    className={`form-control m-auto rounded-3 pt w-100 ${errors.date_of_birth ? 'is-invalid' : ''}`}
+                    value={formData.date_of_birth}
                     onChange={handleInputChange}
                   />
-                  {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                  {errors.date_of_birth && <div className="invalid-feedback">{errors.date_of_birth}</div>}
                 </div>
+              </div>
 
-                <div className="mb-3">
-                  <label className="my-2" htmlFor="confirmPassword">
-                    Confirm Your Password
-                  </label>
-                  <input 
-                    placeholder="Confirm Password" 
-                    type="password" 
-                    id="confirmPassword" 
-                    className={`form-control m-auto rounded-3 pt w-100 ${errors.confirmPassword ? 'is-invalid' : ''}`}
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                  />
-                  {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
-                </div>
+              {renderAgeInput()}
+              {renderCountrySelect()}
+              {renderRegionSelect()}
 
-                {renderGenderSelect()}
-                {renderAgeInput()}
-                {renderCountrySelect()}
-                {renderRegionSelect()}
+              {/* Show general error if any */}
+              {errors.general && (
+                <div className="alert alert-danger">{errors.general}</div>
+              )}
+              {/* Show success message if any */}
+              {message && (
+                <div className="alert alert-success">{message}</div>
+              )}
 
-                {/* Show general error if any */}
-                {errors.general && (
-                  <div className="alert alert-danger">{errors.general}</div>
-                )}
-                {/* Show success message if any */}
-                {message && (
-                  <div className="alert alert-success">{message}</div>
-                )}
-
-                <button 
-                  type="submit" 
-                  className={`btn btn-outline-success w-100 mt-4 m-auto ${styles.submitButton}`}
-                >
-                  Sign Up
-                </button>
-              </form>
-            </div>
+              <button
+                type="submit"
+                className={`btn btn-outline-success w-100 mt-4 m-auto ${styles.submitButton}`}
+              >
+                Sign Up
+              </button>
+            </form>
           </div>
         </div>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
+
 }

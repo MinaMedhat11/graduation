@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
+import Loading from '../Loading/Loading'; // import loading component
 import styles from './Courses.module.css';
 
 export default function Courses() {
   const [searchTerm, setSearchTerm] = useState('');
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true); // new loading state
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -22,16 +24,21 @@ export default function Courses() {
         setCourses(response.data.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false); // hide loading spinner after fetching
       }
     };
 
     fetchCourses();
   }, []);
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className={styles.coursesContainer}>

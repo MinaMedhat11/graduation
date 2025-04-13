@@ -497,3 +497,10 @@
     width: 100%;
   }
 } 
+
+.spinner-border{
+  display: flex;
+  justify-content: center;  /* توسيط العنصر أفقياً */
+  align-items: center;      /* توسيط العنصر عمودياً */
+  height: 100vh; 
+}

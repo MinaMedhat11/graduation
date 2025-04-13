@@ -223,7 +223,7 @@ export default function Dashboard() {
                       className={styles.thumbnailImage}
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = `https://via.placeholder.com/300x150?text=${course.category.replace(' ', '+')}`;
+                       /* e.target.src = `https://via.placeholder.com/300x150?text=${course.category.replace(' ', '+')}`;*/
                       }}
                     />
                     <div className={styles.categoryBadge}>{course.category}</div>
