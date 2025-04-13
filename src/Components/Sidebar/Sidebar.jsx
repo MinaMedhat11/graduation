@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
-import logoImage from '../../Images/pngwing.com.png';
+import logoImage from '../../Images/Logo.png';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar() {

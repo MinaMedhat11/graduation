@@ -17,7 +17,7 @@ export default function SignUp() {
     age: ''
   });
   const [errors, setErrors] = useState({});
-  const { register, error: authError, message } = useAuth();
+  const { register, message } = useAuth();
 
   // list with all world countries
   const countries = [
@@ -250,7 +250,7 @@ export default function SignUp() {
 
   const wrapperStyle = {
     position: 'relative',
-    minHeight: '100vh', 
+    minHeight: '100vh',
     overflow: 'hidden',
     zIndex: '0',
   };
@@ -335,7 +335,6 @@ export default function SignUp() {
       try {
         const { success, message } = await register(formData);
         if (success) {
-          // Show success toast/alert
           console.log(message); // "Successfully registered"
           navigate('/login');
         }
@@ -459,8 +458,8 @@ export default function SignUp() {
           style={{
             position: 'absolute',
             content: '""',
-            top: '10px', 
-            left: '10px', 
+            top: '10px',
+            left: '10px',
             right: 0,
             height: '500px',
             backgroundColor: '#000',
@@ -472,98 +471,27 @@ export default function SignUp() {
 
         <div style={diagonalStyle}></div>
 
-         <div className="background-balls">
-          <div
-          /*bottom right */
-            style={{
-              position: 'absolute',
-              bottom: '250px',
-              right: '100px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#6ecdd4',
-              borderRadius: '50%',
-              filter: 'blur(50px)',
-              zIndex: '-2',
-            }}
-          ></div>
-          <div
-          /*bottom right */
-            style={{
-              position: 'absolute',
-              bottom: '50%',
-              right: '45%',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#6ecdd4',
-              borderRadius: '50%',
-              filter: 'blur(50px)',
-              zIndex: '3',
-            }}
-          ></div>
-          <div
-          /*bottom left */
-            style={{
-              position: 'absolute',
-              bottom: '250px',
-              left: '300px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#3168BAA6   ',
-              borderRadius: '50%',
-              filter: 'blur(40px)',
-              zIndex: '-2',
-            }}
-          ></div>
-          <div 
-          /*top right */
-            style={{
-              position: 'absolute',
-              top: '50px',
-              right: '50px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#3168BAA6',
-              borderRadius: '50%',
-              filter: 'blur(50px)',
-              zIndex: '2',
-            }}
-          ></div>
-          <div
-          /*top left */
-            style={{
-              position: 'absolute',
-              top: '100px',
-              left: '60px',
-              width: '150px',
-              height: '170px',
-              backgroundColor: '#6ecdd4',
-              borderRadius: '50%',
-              filter: 'blur(30px)',
-              zIndex: '2',
-            }}
-          ></div>
+        <div className="background-balls">
+          <div className={styles.bottomRightBall}></div>
+          <div className={styles.middleBall}></div>
+          <div className={styles.bottomLeftBall}></div>
+          <div className={styles.topRightBall}></div>
+          <div className={styles.topLeftBall}></div>
         </div>
 
-        <div className="container d-flex align-items-center justify-content-center" style={{ position: 'relative', zIndex: '3' }}>
+        <div className={`${styles.formContainer} container d-flex align-items-center justify-content-center`}>
           <div className="row w-100">
             <div className="col-md-6">
               <img
-                src={require('./../../Images/pngwing.com.png')}
+                src={require('../../Images/Logo.png')}
                 className="w-25 pt-5"
                 alt="LMS Logo"
               />
-              <h3 className={`${styles.signupto} pt-5`}>
-                Sign up to{' '}
-              </h3>
-              <h2 className={styles.headline}>
-                Learning Management System
-              </h2>
+              <h3 className={`${styles.signinto} pt-5`}>Create Account for</h3>
+              <h2 className={styles.headline}>Learning Management System</h2>
             </div>
             <div className="col-md-6">
-              <h2 className={`${styles.welcome} text-center pt-5`}>
-                Welcome back
-              </h2>
+              <h2 className={`${styles.welcome} text-center pt-5`}>Sign Up</h2>
 
               <form onSubmit={handleSubmit} className="pt-5 w-75 mt-5 m-auto bg-white rounded-5 p-4">
                 <div className="row">

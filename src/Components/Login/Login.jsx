@@ -11,8 +11,7 @@ export default function Login() {
     password: ''
   });
   const [errors, setErrors] = useState({});
-  const { login, error: authError, message } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   const wrapperStyle = {
     position: 'relative',
@@ -68,11 +67,10 @@ export default function Login() {
     e.preventDefault();
     
     if (validateForm()) {
-      setIsLoading(true);
       try {
-        const { success, message } = await login(formData);
+        const { success } = await login(formData);
         if (success) {
-          toast.success(message);
+          toast.success("Login successful!");
           navigate('/');
         }
       } catch (error) {
@@ -80,8 +78,6 @@ export default function Login() {
         setErrors({
           general: error.message
         });
-      } finally {
-        setIsLoading(false);
       }
     }
   };
@@ -118,7 +114,7 @@ export default function Login() {
           <div className="row w-100">
             <div className="col-md-6">
               <img
-                src={require('./../../Images/pngwing.com.png')}
+                src={require('../../Images/Logo.png')}
                 className="w-25 pt-5"
                 alt="LMS Logo"
               />

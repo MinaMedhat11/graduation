@@ -68,3 +68,27 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Project Specific Updates
+
+### Recent Changes (Layout & Styling - July 2024)
+
+- **Routing Structure Verified:** Confirmed the use of separate layouts (`Layout.jsx` for users, `AdminLayout.jsx` for admin) controlled via `src/App.js` using `react-router-dom`.
+- **Main User Layout Created:** Created `src/Components/Layout/Layout.jsx` to provide the basic structure (sidebar, top bar) for user-facing pages, based on design screenshots.
+- **MUI Theme Implemented:**
+    - Created `src/theme.js` to define a custom MUI theme (colors, typography, basic component overrides) reflecting the design screenshots.
+    - Applied the theme globally using `ThemeProvider` and `CssBaseline` in `src/App.js`.
+- **Admin Layout Styling:** Refined the styles of `src/Components/Admin/Layout/AdminLayout.jsx` (AppBar, Drawer, ListItems) to align more closely with the visual design in the screenshots.
+- **Admin Course List Styling:** Refined the styles of `src/Components/Admin/Courses/AdminCourses.jsx` (Table, Chips, Buttons, Search) to align more closely with the visual design.
+
+### Course Creation Flow
+- Implemented a multi-step course editor (`src/Components/CourseEditor/CourseEditor.jsx`) with separate forms for:
+  - Basic Information (`BasicInfoForm.jsx`)
+  - Advance Information (`AdvanceInfoForm.jsx`)
+  - Content Management (`ContentForm.jsx`)
+  - Publish Settings (`PublishForm.jsx`)
+- Components use Material UI for layout and form elements.
+
+### Course Detail View
+- Implemented the student-facing course detail page (`src/Components/CourseDetail/CourseDetail.jsx`).
+- Features include a two-column layout, video placeholder, course stats, tabbed navigation (Overview, Reviews, Content, etc.), syllabus display using Accordions, and mock data.

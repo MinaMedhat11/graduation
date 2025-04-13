@@ -1,4 +1,25 @@
-library i use
+Core Libraries:
+- react
+- react-dom
+- react-router-dom
+
+UI Library:
+- @mui/material
+- @mui/icons-material
+- @emotion/react
+- @emotion/styled
+
+State Management/Context:
+- React Context API (used in AuthProvider)
+
+HTTP Client:
+- axios (used in CourseDetail, potentially others)
+
+Notifications:
+- react-toastify
+
+Utility:
+- @mui/utils (for visuallyHidden)
 
 npm install --save-dev @babel/plugin-proposal-private-property-in-object 
 
@@ -11,11 +32,5 @@ npm install @reduxjs/toolkit react-redux
 # For HTTP requests
 npm install axios
 
-# For UI components
-npm install @mui/material @emotion/react @emotion/styled
-
 # For social login
 npm install axios react-google-login react-facebook-login --force
-
-# For toast notifications
-npm install react-toastify

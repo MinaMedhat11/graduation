@@ -1,375 +1,311 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../Sidebar/Sidebar';
-import Header from '../Header/Header';
-import styles from './Profile.module.css';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Divider from '@mui/material/Divider';
 
-export default function Profile() {
-  // بيانات المستخدم الحالية
-  const [userData, setUserData] = useState({
+// Icons
+import EditIcon from '@mui/icons-material/Edit';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import LinkIcon from '@mui/icons-material/Link';
+import SaveIcon from '@mui/icons-material/Save';
+
+// Mock Initial Data
+const initialUserData = {
     name: 'Adam Rawles',
     email: 'alexarawles@gmail.com',
     phone: '01010111049844',
     birthdate: '26/7/2000',
-    password: '**************',
-    title: '',
-    biography: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    title: 'Your tittle, proffesion or small biography', // Placeholder from image
+    biography: 'Your tittle, proffesion or small biography', // Placeholder from image
+    website: '',
     facebook: '',
     instagram: '',
     linkedin: '',
     twitter: '',
     whatsapp: '',
     youtube: '',
-    website: '',
-    notifyCourseBuy: false,
-    notifyCourseReview: false,
-    notifyLectureComment: false,
-    notifyLectureDownload: false,
+    notifyCourseBuy: true,
+    notifyCourseReview: true,
+    notifyLectureComment: true,
     notifyCommentReply: false,
-    notifyProfileViews: false,
-    notifyFileDownload: false,
-  });
+    notifyProfileViews: true,
+    notifyLectureDownload: true,
+    notifyFileDownload: true,
+    avatar: '/static/images/avatar/1.jpg' // Placeholder avatar
+};
 
-  // حالة البيانات لتعديلها
-  const [formData, setFormData] = useState({ ...userData });
-  const [error, setError] = useState('');
+export default function Profile() {
+    const [formData, setFormData] = useState(initialUserData);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  useEffect(() => {
-    // جلب بيانات المستخدم من الـ API عند تحميل المكون
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Token is missing or expired');
-          return;
-        }
-        const response = await fetch('http://127.0.0.1:8000/api/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const result = await response.json();
-        if (response.ok) {
-          setUserData(result.user);
-          setFormData(result.user); // تحديث formData بالبيانات المسترجعة
-        } else {
-          setError(result.message || 'Error fetching data');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError('Error fetching data');
-      }
+    // Add useEffect here to fetch actual user data and setFormData if needed
+    // useEffect(() => { fetchUserData().then(data => setFormData(data)) }, [])
+
+    const handleChange = (event) => {
+        const { name, value, type, checked } = event.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
-    fetchData();
-  }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        console.log('Saving profile data:', formData);
+        // Add API call logic here to update profile
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Token is missing or expired');
-      return;
-    }
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/profile/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          date_of_birth: formData.birthdate,
-          bio: formData.biography,
-          social_links: {
-            facebook: formData.facebook,
-            instagram: formData.instagram,
-            linkedin: formData.linkedin,
-            twitter: formData.twitter,
-            whatsapp: formData.whatsapp,
-            youtube: formData.youtube,
-            website: formData.website,
-          },
-        }),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        setUserData(result.user);
-        alert('Profile updated successfully!');
-      } else {
-        setError(result.message || 'Error updating profile');
-      }
-      // عرض النتيجة في الـ console
-      console.log('API Response:', result);
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setError('Error updating profile');
+    const togglePasswordVisibility = (field) => {
+        switch (field) {
+            case 'current': setShowCurrentPassword(!showCurrentPassword); break;
+            case 'new': setShowNewPassword(!showNewPassword); break;
+            case 'confirm': setShowConfirmPassword(!showConfirmPassword); break;
+            default: break;
     }
   };
 
   return (
-    <div className={styles.profileContainer}>
-      <div className={styles.sidebarWrapper}>
-        <Sidebar />
-      </div>
-      <div className={styles.mainContent}>
-        <Header />
-        <div className={styles.profileContent}>
-          {/* Edit Profile Header */}
-          <div className={styles.editProfileHeader}>
-            <div className={styles.editIcon}>
-              <i className="fa-solid fa-pen"></i>
-            </div>
-            <h2 className={styles.editTitle}>Edit profile</h2>
-          </div>
+        <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 900, margin: 'auto' }}>
+             <Typography variant="h5" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 2, fontWeight: 'bold' }}>
+                 <EditIcon sx={{ mr: 1 }} /> Edit profile
+             </Typography>
 
-          {/* Profile Card */}
-          <div className={styles.profileCard}>
-            {/* User Info Header */}
-            <div className={styles.userInfoHeader}>
-              <div className={styles.userAvatar}>
-                <img
-                  src="/images/profile.jpg"
-                  alt="User Profile"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://ui-avatars.com/api/?name=Adam+Rawles&background=3CB0A5&color=fff';
-                  }}
-                />
-              </div>
-              <div className={styles.userDetails}>
-                <h3 className={styles.userName}>{userData.name}</h3>
-                <p className={styles.userEmail}>{userData.email}</p>
-              </div>
-            </div>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: '12px' }}>
+                 {/* User Header */}
+                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                     <Avatar alt={formData.name} src={formData.avatar} sx={{ width: 60, height: 60, mr: 2 }} />
+                     <Box>
+                         <Typography variant="h6">{formData.name}</Typography>
+                         <Typography variant="body2" color="text.secondary">{formData.email}</Typography>
+                     </Box>
+                 </Box>
 
-            {/* Profile Form */}
-            <form className={styles.profileForm} onSubmit={handleSubmit}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Name *</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-regular fa-user"></i>
-                    </span>
-                    <input
-                      type="text"
+                 <Grid container spacing={3}>
+                     {/* Basic Info */}
+                     <Grid item xs={12} md={6}>
+                         <TextField
+                            required
+                            fullWidth
+                            label="Name"
                       name="name"
                       value={formData.name}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="Adam Raw"
+                            onChange={handleChange}
+                            size="small"
+                            InputProps={{ startAdornment: <InputAdornment position="start"><PersonOutlineIcon /></InputAdornment> }}
+                         />
+                     </Grid>
+                     <Grid item xs={12} md={6}>
+                         <TextField
                       required
-                    />
-                  </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Phone Number *</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-solid fa-phone"></i>
-                    </span>
-                    <input
-                      type="tel"
+                             fullWidth
+                             label="Phone Number"
                       name="phone"
                       value={formData.phone}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="01010111049844"
+                             onChange={handleChange}
+                             size="small"
+                             InputProps={{ startAdornment: <InputAdornment position="start"><PhoneOutlinedIcon /></InputAdornment> }}
+                          />
+                     </Grid>
+                     <Grid item xs={12} md={6}>
+                         <TextField
                       required
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Email *</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-regular fa-envelope"></i>
-                    </span>
-                    <input
+                             fullWidth
+                             label="Email"
+                             name="email"
                       type="email"
-                      name="email"
                       value={formData.email}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="alexarawles@gmail.com"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Birthdate</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-regular fa-calendar"></i>
-                    </span>
-                    <input
-                      type="text"
+                             onChange={handleChange}
+                             size="small"
+                             InputProps={{ startAdornment: <InputAdornment position="start"><EmailOutlinedIcon /></InputAdornment> }}
+                          />
+                     </Grid>
+                     <Grid item xs={12} md={6}>
+                         <TextField
+                             fullWidth
+                             label="Birthdate"
                       name="birthdate"
                       value={formData.birthdate}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="26/7/2000"
-                    />
-                  </div>
-                </div>
-              </div>
+                             onChange={handleChange}
+                             size="small"
+                             placeholder="DD/MM/YYYY"
+                             InputProps={{ startAdornment: <InputAdornment position="start"><CakeOutlinedIcon /></InputAdornment> }}
+                          />
+                     </Grid>
 
-              {/* Biography */}
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Biography</label>
-                <div className={styles.inputWithIcon}>
-                  <span className={styles.iconWrapper}>
-                    <i className="fa-regular fa-pencil"></i>
-                  </span>
-                  <textarea
+                     {/* Change Password Placeholder - In image this is separate */}
+                     {/* <Grid item xs={12}>
+                         <TextField disabled fullWidth label="Change password" defaultValue="**************" size="small" />
+                     </Grid> */}
+
+                     {/* Title & Biography */}
+                     <Grid item xs={12}>
+                         <TextField
+                             fullWidth
+                             label="Title"
+                             name="title"
+                             value={formData.title}
+                             onChange={handleChange}
+                             size="small"
+                             placeholder="Your title, profession or small biography"
+                          />
+                     </Grid>
+                      <Grid item xs={12}>
+                         <TextField
+                             fullWidth
+                             multiline
+                             rows={3}
+                             label="Biography"
                     name="biography"
                     value={formData.biography}
-                    onChange={handleInputChange}
-                    className={styles.formInput}
-                    placeholder="Short biography about yourself"
-                  />
-                </div>
-              </div>
+                             onChange={handleChange}
+                             size="small"
+                             placeholder="Your title, profession or small biography"
+                          />
+                     </Grid>
 
-              {/* Social Media Links */}
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Facebook</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-brands fa-facebook"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="facebook"
-                      value={formData.facebook}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="facebook.com/yourprofile"
-                    />
-                  </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Instagram</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-brands fa-instagram"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="instagram"
-                      value={formData.instagram}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="instagram.com/yourprofile"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>LinkedIn</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-brands fa-linkedin"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="linkedin"
-                      value={formData.linkedin}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="linkedin.com/yourprofile"
-                    />
-                  </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Twitter</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-brands fa-twitter"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="twitter"
-                      value={formData.twitter}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="twitter.com/yourprofile"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Whatsapp</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-brands fa-whatsapp"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="whatsapp"
-                      value={formData.whatsapp}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="whatsapp.com/yourprofile"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>YouTube</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-brands fa-youtube"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="youtube"
-                      value={formData.youtube}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="youtube.com/yourprofile"
-                    />
-                  </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Website</label>
-                  <div className={styles.inputWithIcon}>
-                    <span className={styles.iconWrapper}>
-                      <i className="fa-solid fa-globe"></i>
-                    </span>
-                    <input
-                      type="text"
+                    <Grid item xs={12}><Divider sx={{ my: 1 }}><Typography variant="overline">Social Profile</Typography></Divider></Grid>
+
+                     {/* Social Profile */}
+                     <Grid item xs={12}>
+                         <TextField
+                             fullWidth
+                             label="Personal website or portfolio url..."
                       name="website"
                       value={formData.website}
-                      onChange={handleInputChange}
-                      className={styles.formInput}
-                      placeholder="yourwebsite.com"
-                    />
-                  </div>
-                </div>
-              </div>
-              <button type="submit" className={styles.saveButton}>
-                Update Profile
-              </button>
-            </form>
-          </div>
+                             onChange={handleChange}
+                             size="small"
+                             InputProps={{ startAdornment: <InputAdornment position="start"><LinkIcon /></InputAdornment> }}
+                         />
+                     </Grid>
+                     <Grid item xs={12} sm={6} md={4}>
+                         <TextField fullWidth label="Facebook Username" name="facebook" value={formData.facebook} onChange={handleChange} size="small" InputProps={{ startAdornment: <InputAdornment position="start"><FacebookIcon /></InputAdornment> }}/>
+                     </Grid>
+                     <Grid item xs={12} sm={6} md={4}>
+                         <TextField fullWidth label="Instagram Username" name="instagram" value={formData.instagram} onChange={handleChange} size="small" InputProps={{ startAdornment: <InputAdornment position="start"><InstagramIcon /></InputAdornment> }}/>
+                     </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                         <TextField fullWidth label="LinkedIn Username" name="linkedin" value={formData.linkedin} onChange={handleChange} size="small" InputProps={{ startAdornment: <InputAdornment position="start"><LinkedInIcon /></InputAdornment> }}/>
+                     </Grid>
+                     <Grid item xs={12} sm={6} md={4}>
+                         <TextField fullWidth label="Twitter Username" name="twitter" value={formData.twitter} onChange={handleChange} size="small" InputProps={{ startAdornment: <InputAdornment position="start"><TwitterIcon /></InputAdornment> }}/>
+                     </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                         <TextField fullWidth label="Whatsapp Phone Number" name="whatsapp" value={formData.whatsapp} onChange={handleChange} size="small" InputProps={{ startAdornment: <InputAdornment position="start"><WhatsAppIcon /></InputAdornment> }}/>
+                     </Grid>
+                     <Grid item xs={12} sm={6} md={4}>
+                         <TextField fullWidth label="Youtube Username" name="youtube" value={formData.youtube} onChange={handleChange} size="small" InputProps={{ startAdornment: <InputAdornment position="start"><YouTubeIcon /></InputAdornment> }}/>
+                     </Grid>
 
-          {error && <p className={styles.errorMessage}>{error}</p>}
-        </div>
-      </div>
-    </div>
+                    <Grid item xs={12}><Divider sx={{ my: 1 }}><Typography variant="overline">Notifications</Typography></Divider></Grid>
+
+                    {/* Notifications & Change Password Side-by-Side */}
+                    <Grid item container xs={12} spacing={3}>
+                        {/* Notifications Column */}
+                        <Grid item xs={12} md={6}>
+                             <Typography variant="subtitle1" gutterBottom>Notifications</Typography>
+                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                 <FormControlLabel control={<Checkbox checked={formData.notifyCourseBuy} onChange={handleChange} name="notifyCourseBuy" size="small" />} label="I want to know when buy my course." />
+                                 <FormControlLabel control={<Checkbox checked={formData.notifyCourseReview} onChange={handleChange} name="notifyCourseReview" size="small" />} label="I want to know who write a review on my course." />
+                                 <FormControlLabel control={<Checkbox checked={formData.notifyLectureComment} onChange={handleChange} name="notifyLectureComment" size="small" />} label="I want to know who commented on my lecture." />
+                                 <FormControlLabel control={<Checkbox checked={formData.notifyCommentReply} onChange={handleChange} name="notifyCommentReply" size="small" />} label="I want to know who reply on my comment" />
+                                 <FormControlLabel control={<Checkbox checked={formData.notifyProfileViews} onChange={handleChange} name="notifyProfileViews" size="small" />} label="I want to know daily how many people visited my profile." />
+                                 <FormControlLabel control={<Checkbox checked={formData.notifyLectureDownload} onChange={handleChange} name="notifyLectureDownload" size="small" />} label="I want to know who download my lecture attach file." />
+                                  <FormControlLabel control={<Checkbox checked={formData.notifyFileDownload} onChange={handleChange} name="notifyFileDownload" size="small" />} label="I want to know who download my lecture notes." />
+                            </Box>
+                        </Grid>
+
+                        {/* Change Password Column */}
+                         <Grid item xs={12} md={6}>
+                             <Typography variant="subtitle1" gutterBottom>Change password</Typography>
+                             <TextField
+                                fullWidth
+                                type={showCurrentPassword ? 'text' : 'password'}
+                                label="Current Password"
+                                name="currentPassword"
+                                value={formData.currentPassword}
+                                onChange={handleChange}
+                                size="small"
+                                sx={{ mb: 2 }}
+                                InputProps={{
+                                     startAdornment: <InputAdornment position="start"><LockOutlinedIcon /></InputAdornment>,
+                                     endAdornment: <InputAdornment position="end">
+                                         <IconButton aria-label="toggle password visibility" onClick={() => togglePasswordVisibility('current')} edge="end">
+                                             {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                                         </IconButton>
+                                     </InputAdornment>
+                                }}
+                              />
+                             <TextField
+                                fullWidth
+                                type={showNewPassword ? 'text' : 'password'}
+                                label="New Password"
+                                name="newPassword"
+                                value={formData.newPassword}
+                                onChange={handleChange}
+                                size="small"
+                                sx={{ mb: 2 }}
+                                InputProps={{
+                                     startAdornment: <InputAdornment position="start"><LockOutlinedIcon /></InputAdornment>,
+                                     endAdornment: <InputAdornment position="end">
+                                          <IconButton aria-label="toggle password visibility" onClick={() => togglePasswordVisibility('new')} edge="end">
+                                             {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                         </IconButton>
+                                     </InputAdornment>
+                                }}
+                              />
+                             <TextField
+                                fullWidth
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                label="Confirm New Password"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                size="small"
+                                InputProps={{
+                                     startAdornment: <InputAdornment position="start"><LockOutlinedIcon /></InputAdornment>,
+                                     endAdornment: <InputAdornment position="end">
+                                          <IconButton aria-label="toggle password visibility" onClick={() => togglePasswordVisibility('confirm')} edge="end">
+                                             {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                         </IconButton>
+                                     </InputAdornment>
+                                }}
+                              />
+                         </Grid>
+                     </Grid>
+                 </Grid>
+
+                 <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+                     <Button type="submit" variant="contained" startIcon={<SaveIcon />} sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' }, borderRadius: '8px' }}>
+                         Save
+                     </Button>
+                 </Box>
+             </Paper>
+         </Box>
   );
 }
