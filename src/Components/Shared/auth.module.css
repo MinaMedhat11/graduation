@@ -160,4 +160,141 @@
 .socialBtn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+.authContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+}
+
+.authWrapper {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+}
+
+.authHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logoContainer {
+  margin-bottom: 1.5rem;
+}
+
+.logo {
+  max-width: 150px;
+  height: auto;
+}
+
+.authHeader h1 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.authHeader p {
+  color: #666;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  color: #333;
+  font-weight: 500;
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #4B5EAA;
+  box-shadow: 0 0 0 2px rgba(75, 94, 170, 0.2);
+}
+
+.error {
+  border-color: #dc3545 !important;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 0.875rem;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 1rem;
+}
+
+.radioGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.submitButton {
+  background-color: #4B5EAA;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #3a4a8a;
+}
+
+.authFooter {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.authFooter p {
+  color: #666;
+}
+
+.authLink {
+  color: #4B5EAA;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.authLink:hover {
+  text-decoration: underline;
 } 

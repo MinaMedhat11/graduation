@@ -31,17 +31,33 @@ import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import SchoolIcon from '@mui/icons-material/School';
 import LaunchIcon from '@mui/icons-material/Launch';
 
-// Mock Data
-const lectureSchedule = [
-  { id: 1, date: '12/13/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 39, status: 'upcoming' },
-  { id: 2, date: '12/11/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 38, status: 'upcoming' },
-  { id: 3, date: '12/8/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 37, status: 'missed' },
-  { id: 4, date: '12/6/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 36, status: 'attended' },
-  { id: 5, date: '12/3/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 35, status: 'missed' },
-  { id: 6, date: '12/1/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 34, status: 'attended' },
+// Mock data for testing
+const mockLectures = [
+  {
+    id: 1,
+    title: 'Introduction to React',
+    date: '2024-04-15',
+    time: '10:00 AM',
+    duration: '2 hours',
+    instructor: 'John Doe',
+    status: 'upcoming',
+    course: 'Advanced Course In Networks',
+    instructorImage: '/images/instructor1.jpg'
+  },
+  {
+    id: 2,
+    title: 'Advanced React Patterns',
+    date: '2024-04-16',
+    time: '02:00 PM',
+    duration: '3 hours',
+    instructor: 'Jane Smith',
+    status: 'upcoming',
+    course: 'Advanced Course In Networks',
+    instructorImage: '/images/instructor2.jpg'
+  }
 ];
 
-const courses = ['Advanced Course In Networks', 'Advanced C++ Course', 'Flutter Basics']; // Mock course list
+const courses = ['Advanced Course In Networks', 'Advanced C++ Course', 'Flutter Basics'];
 
 // Helper to get status icon and row style
 const getStatusProps = (status) => {
@@ -58,31 +74,58 @@ const getStatusProps = (status) => {
 };
 
 export default function Lectures() {
+  const [lectures, setLectures] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lecturesPerPage] = useState(5);
+  const [currentSchedule, setCurrentSchedule] = useState('April 2024');
   const [selectedCourse, setSelectedCourse] = useState('Advanced Course In Networks');
   const [currentMonth, setCurrentMonth] = useState('12/2024'); // Example state for the month
 
+  useEffect(() => {
+    const fetchLectures = async () => {
+      try {
+        setLoading(true);
+        // Replace with actual API call
+        // const response = await axios.get('/api/lectures');
+        // setLectures(response.data);
+        setLectures(mockLectures);
+      } catch (error) {
+        console.error('Error fetching lectures:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLectures();
+  }, []);
+
   const handleCourseChange = (event) => {
     setSelectedCourse(event.target.value);
-    // Add logic to fetch/filter lectures for the selected course if needed
   };
 
-   const handlePrevMonth = () => {
-     console.log('Previous Month');
-     // Add logic to change month and fetch/filter data
-   };
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
 
-   const handleNextMonth = () => {
-       console.log('Next Month');
-       // Add logic to change month and fetch/filter data
-   };
+  const handleNextPage = () => {
+    setCurrentPage(prev => prev + 1);
+  };
 
-   const handleCheckLecture = () => {
-     console.log('Check Online Lecture');
-     // Add logic to check for live lecture
-   };
+  const handleCheckLecture = () => {
+    console.log('Check Online Lecture');
+    // Add logic to check for live lecture
+  };
 
-   // Filter lectures based on selected course (if needed, mock data is already filtered)
-   const filteredLectures = lectureSchedule.filter(l => l.course === selectedCourse);
+  const filteredLectures = lectures.filter(l => l.course === selectedCourse);
+  const currentLectures = filteredLectures.slice(
+    (currentPage - 1) * lecturesPerPage,
+    currentPage * lecturesPerPage
+  );
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className={styles.lecturesContainer}>
@@ -105,7 +148,7 @@ export default function Lectures() {
               </div>
               <div className={styles.cardContent}>
                 <div className={styles.lectureInfo}>
-                  <h4 className={styles.lectureCourse}>Advanced Course In Networks</h4>
+                  <h4 className={styles.lectureCourse}>{selectedCourse}</h4>
                   <p className={styles.lectureTime}>Today at 10:00 AM</p>
                   <p className={styles.lectureDuration}>Duration: 6 hours</p>
                   <p className={styles.lectureInstructor}>
@@ -115,7 +158,7 @@ export default function Lectures() {
                       className={styles.instructorImage}
                       onError={(e) => {
                         e.target.onerror = null;
-                      /*  e.target.src = 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=4B5EAA&color=fff';*/
+                        e.target.src = 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=4B5EAA&color=fff';
                       }}
                     />
                     Dr. Sarah Johnson
@@ -124,7 +167,10 @@ export default function Lectures() {
                 <p className={styles.cardDescription}>
                   Click to check if an online lecture is currently running
                 </p>
-                <button className={styles.checkButton}>
+                <button 
+                  className={styles.checkButton}
+                  onClick={handleCheckLecture}
+                >
                   <i className="fa-solid fa-arrow-right-to-bracket"></i>
                   Check Now
                 </button>
@@ -141,36 +187,23 @@ export default function Lectures() {
               </div>
               
               <div className={styles.coursesList}>
-                <div className={styles.courseItem}>
-                  <img 
-                    src="/images/course1.jpg" 
-                    alt="Advanced Course In Networks" 
-                    className={styles.courseImage}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      /* e.target.src = 'https://via.placeholder.com/80x60?text=Networks';*/ 
-                    }}
-                  />
-                  <div className={styles.courseDetails}>
-                    <h4 className={styles.courseName}>Advanced Course In Networks</h4>
-                    <p className={styles.courseProgress}>Progress: 60%</p>
+                {courses.map((course, index) => (
+                  <div key={index} className={styles.courseItem}>
+                    <img 
+                      src={`/images/course${index + 1}.jpg`}
+                      alt={course}
+                      className={styles.courseImage}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `https://via.placeholder.com/80x60?text=${course.split(' ')[0]}`;
+                      }}
+                    />
+                    <div className={styles.courseDetails}>
+                      <h4 className={styles.courseName}>{course}</h4>
+                      <p className={styles.courseProgress}>Progress: {Math.floor(Math.random() * 100)}%</p>
+                    </div>
                   </div>
-                </div>
-                <div className={styles.courseItem}>
-                  <img 
-                    src="/images/course2.jpg" 
-                    alt="Data Structures" 
-                    className={styles.courseImage}
-                    onError={(e) => {
-                      e.target.onerror = null;
-               /*       e.target.src = 'https://via.placeholder.com/80x60?text=Data';*/
-                    }}
-                  />
-                  <div className={styles.courseDetails}>
-                    <h4 className={styles.courseName}>Data Structures</h4>
-                    <p className={styles.courseProgress}>Progress: 45%</p>
-                  </div>
-                </div>
+                ))}
               </div>
               <button className={styles.viewAllButton}>
                 View All Courses
@@ -195,12 +228,12 @@ export default function Lectures() {
                   <i className="fa-solid fa-chevron-left"></i>
                 </button>
                 <span className={styles.pageIndicator}>
-                  {currentPage} / {Math.ceil(lectureSchedule.length / lecturesPerPage)}
+                  {currentPage} / {Math.ceil(filteredLectures.length / lecturesPerPage)}
                 </span>
                 <button 
                   className={styles.controlButton}
                   onClick={handleNextPage}
-                  disabled={currentPage === Math.ceil(lectureSchedule.length / lecturesPerPage)}
+                  disabled={currentPage === Math.ceil(filteredLectures.length / lecturesPerPage)}
                   aria-label="Next page"
                 >
                   <i className="fa-solid fa-chevron-right"></i>
@@ -220,7 +253,7 @@ export default function Lectures() {
               {currentLectures.map((lecture) => (
                 <div 
                   key={lecture.id} 
-                  className={`${styles.tableRow}`}
+                  className={`${styles.tableRow} ${styles[lecture.status]}`}
                 >
                   <div className={styles.tableCell}>
                     <div className={styles.dateTime}>
@@ -246,7 +279,7 @@ export default function Lectures() {
                       </div>
                     </div>
                   </div>
-                  <div className={styles.tableCell}>{lecture.number}</div>
+                  <div className={styles.tableCell}>{lecture.id}</div>
                   <div className={styles.tableCell}>
                     <span className={`${styles.status} ${styles[lecture.status]}`}>
                       {lecture.status.charAt(0).toUpperCase() + lecture.status.slice(1)}

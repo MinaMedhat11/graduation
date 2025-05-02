@@ -4,6 +4,105 @@ import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import Loading from '../Loading/Loading';
 import styles from './Courses.module.css';
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Checkbox,
+  IconButton,
+  Tooltip,
+  Rating,
+  Chip,
+  Typography,
+  TextField,
+  InputAdornment
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
+
+const headCells = [
+  { id: 'id', numeric: true, disablePadding: true, label: 'ID' },
+  { id: 'name', numeric: false, disablePadding: false, label: 'Course Name' },
+  { id: 'instructor', numeric: false, disablePadding: false, label: 'Instructor' },
+  { id: 'students_enrolled', numeric: true, disablePadding: false, label: 'Students' },
+  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
+  { id: 'rate', numeric: true, disablePadding: false, label: 'Rating' },
+  { id: 'price', numeric: true, disablePadding: false, label: 'Price' },
+  { id: 'end_date', numeric: false, disablePadding: false, label: 'End Date' },
+  { id: 'actions', numeric: false, disablePadding: false, label: 'Actions' }
+];
+
+function EnhancedTableHead(props) {
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            color="primary"
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{ 'aria-label': 'select all courses' }}
+          />
+        </TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            {headCell.label}
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+function EnhancedTableToolbar(props) {
+  const { numSelected, searchTerm, onSearchChange, onAddCourse } = props;
+
+  return (
+    <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Typography variant="h6" component="div">
+        Courses
+      </Typography>
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextField
+          placeholder="Search courses..."
+          value={searchTerm}
+          onChange={onSearchChange}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          size="small"
+        />
+        <IconButton onClick={onAddCourse} color="primary">
+          <AddIcon />
+        </IconButton>
+      </Box>
+    </Box>
+  );
+}
 
 export default function Courses() {
   const [order, setOrder] = useState('asc');
@@ -13,6 +112,8 @@ export default function Courses() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetching logic (kept from original component, adjust API endpoint/token handling if needed)
   useEffect(() => {
@@ -73,6 +174,71 @@ export default function Courses() {
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
+
+  const handleAddCourse = () => {
+    // Implementation for adding a course
+  };
+
+  const handleEditCourse = (id) => {
+    // Implementation for editing a course
+  };
+
+  const handleDeleteCourse = (id) => {
+    // Implementation for deleting a course
+  };
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelected = filteredCourses.map((n) => n.id);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  };
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    const newOrder = isAsc ? 'desc' : 'asc';
+    setOrder(newOrder);
+    setOrderBy(property);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const isSelected = (id) => selected.indexOf(id) !== -1;
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredCourses.length) : 0;
+
+  const visibleRows = useMemo(
+    () => filteredCourses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [filteredCourses, page, rowsPerPage]
+  );
 
   return (
     <Box sx={{ width: '100%' }}>
