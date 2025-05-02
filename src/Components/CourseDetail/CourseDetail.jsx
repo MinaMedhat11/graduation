@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
+import Loading from '../Loading/Loading';
 import styles from './CourseDetail.module.css';
+
 
 export default function CourseDetail() {
   const [activeTab, setActiveTab] = useState('content');
@@ -34,7 +36,10 @@ export default function CourseDetail() {
   };
 
   if (!courseData) {
-    return <div>Loading...</div>;
+    return  <div>
+    <Loading />
+  </div>
+  ;
   }
 
   return (

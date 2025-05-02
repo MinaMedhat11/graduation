@@ -3,14 +3,23 @@ import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import logoImage from '../../Images/Logo.png';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
     const {logout} = useAuth();
     const location = useLocation();
-    
+    const navigate = useNavigate()
+
+    const handleLogout = async () => {
+        await logout();        
+        navigate('/login');    
+      };
+
     const isActive = (path) => {
         return location.pathname === path || location.pathname === `/${path}`;
     };
+    
+
     
     return (
         <div className={styles.sidebarContainer}>
@@ -75,7 +84,7 @@ export default function Sidebar() {
                 
                 {/* Logout at Bottom */}
                 <div className={styles.logoutContainer}>
-                    <button onClick={logout} className={styles.navLink}>
+                    <button onClick={handleLogout} className={styles.navLink}>
                         <i className={`fa-solid fa-arrow-right-from-bracket ${styles.navIcon}`}></i>
                         <span>Logout</span>
                     </button>
