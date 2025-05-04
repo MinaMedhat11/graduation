@@ -26,7 +26,8 @@ export const authService = {
     try {
       const response = await api.post('login', {
         email: credentials.email,
-        password: credentials.password
+        password: credentials.password,
+        guard: credentials.guard
       });
       
       if (response.data.status && response.data.data.token) {

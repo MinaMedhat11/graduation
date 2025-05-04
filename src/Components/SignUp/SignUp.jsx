@@ -18,7 +18,7 @@ export default function SignUp() {
     date_of_birth: ''
   });
   const [errors, setErrors] = useState({});
-  const { register, message } = useAuth();
+  const { register, error: authError, message } = useAuth();
 
   // list with all world countries
   const countries = [
@@ -336,6 +336,7 @@ export default function SignUp() {
       try {
         const { success, message } = await register(formData);
         if (success) {
+          // Show success toast/alert
           console.log(message); // "Successfully registered"
           navigate('/login');
         }
@@ -453,26 +454,108 @@ const renderRegionSelect = () => (
 );
 
 return (
-  <div className={styles.authContainer}>
-    <div className={styles.authWrapper}>
-      <div className={styles.authHeader}>
-        <div className={styles.logoContainer}>
-          <img
-            src="/images/logo.png"
-            alt="LMS Logo"
-            className={styles.logo}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = 'https://via.placeholder.com/150x50?text=LMS+Logo';
-            }}
-          />
-        </div>
-        <h1>Sign Up</h1>
-        <p>Create your account to get started</p>
+  <>
+    <div style={wrapperStyle}>
+      <div
+        style={{
+          position: 'absolute',
+          content: '""',
+          top: '10px',
+          left: '10px',
+          right: 0,
+          height: '500px',
+          backgroundColor: '#000',
+          opacity: '0.05',
+          clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 100%)',
+          zIndex: '1',
+        }}
+      ></div>
+
+      <div style={diagonalStyle}></div>
+
+      <div className="background-balls">
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '250px',
+            right: '100px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#6ecdd4',
+            borderRadius: '50%',
+            filter: 'blur(50px)',
+            zIndex: '-2',
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '50%',
+            right: '45%',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#6ecdd4',
+            borderRadius: '50%',
+            filter: 'blur(50px)',
+            zIndex: '3',
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '250px',
+            left: '300px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#3168BAA6   ',
+            borderRadius: '50%',
+            filter: 'blur(40px)',
+            zIndex: '-2',
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50px',
+            right: '50px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#3168BAA6',
+            borderRadius: '50%',
+            filter: 'blur(50px)',
+            zIndex: '2',
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '100px',
+            left: '60px',
+            width: '150px',
+            height: '170px',
+            backgroundColor: '#6ecdd4',
+            borderRadius: '50%',
+            filter: 'blur(30px)',
+            zIndex: '2',
+          }}
+        ></div>
       </div>
 
       <div className="container d-flex align-items-center justify-content-center" style={{ position: 'relative', zIndex: '3' }}>
         <div className="row w-100">
+          <div className="col-md-6">
+            <img
+              //src={require('./../../../public/')}
+              className="w-25 pt-5"
+              alt="LMS Logo"
+            />
+            <h3 className={`${styles.signupto} pt-5`}>
+              Sign up to{' '}
+            </h3>
+            <h2 className={styles.headline}>
+              Learning Management System
+            </h2>
+          </div>
           <div className="col-md-6">
             <h2 className={`${styles.welcome} text-center pt-5`}>
               Welcome back
@@ -487,7 +570,7 @@ return (
                   </h2>
                 </div>
                 <div className="col-md-5">
-                  <h6 style={{fontSize:"15px"}}>Have an Account?</h6>
+                  <h6 style={{ fontSize: "15px" }}>Have an Account?</h6>
                   <Link className={`${styles.authLink} text-decoration-none`} to='/login'>
                     Sign in
                   </Link>
@@ -614,7 +697,7 @@ return (
         </div>
       </div>
     </div>
-  </div>
+  </>
 );
 
 }

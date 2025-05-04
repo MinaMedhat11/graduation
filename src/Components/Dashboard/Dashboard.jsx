@@ -1,103 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '../Sidebar/Sidebar';
-import Header from '../Header/Header';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState('Monthly');
-  
-  // Sample data for task progress
-  const taskProgress = [
-    {
-      id: 1,
-      title: 'Web Programming',
-      progress: 50,
-      completed: 5,
-      total: 10
-    },
-    {
-      id: 2,
-      title: 'Data and Structures',
-      progress: 27,
-      completed: 4,
-      total: 15
-    },
-    {
-      id: 3,
-      title: 'Artificial Intelligence',
-      progress: 10,
-      completed: 2,
-      total: 20
+  const [courses, setCourses] = useState([]);
+  const [overallPercentage, setOverallPercentage] = useState(0);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('http://127.0.0.1:8000/api/dashboard-student', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // تأكد من أن البيانات هي مصفوفة. إذا كانت كائنًا، قم بتحويلها إلى مصفوفة
+          const coursesArray = Array.isArray(data.data) ? data.data : 
+                             (data.data.courses ? data.data.courses : 
+                             (Object.values(data.data).filter(item => item && typeof item === 'object')));
+          
+          setCourses(coursesArray);
+          
+          // استخراج overall_percentage إذا كان موجودًا
+          if (data.data.overall_percentage !== undefined) {
+            setOverallPercentage(data.data.overall_percentage);
+          } else if (data.overall_percentage !== undefined) {
+            setOverallPercentage(data.overall_percentage);
+          }
+        }
+      })
+      .catch(error => console.error('Error fetching data:', error));
     }
-  ];
-  
-  // Sample data for courses
-  const courses = [
-    {
-      id: 1,
-      title: 'Dart & Flutter',
-      icon: 'fa-solid fa-mobile-screen',
-      iconBg: '#3CB0A5',
-      image: '/images/flutter-course.jpg',
-      lessons: 76,
-      assignments: 12,
-      students: 36
-    },
-    {
-      id: 2,
-      title: 'Data Science',
-      icon: 'fa-solid fa-chart-line',
-      iconBg: '#4B5EAA',
-      image: '/images/data-science.jpg',
-      lessons: 101,
-      assignments: 20,
-      students: 9
-    },
-    {
-      id: 3,
-      title: 'UI/UX',
-      icon: 'fa-solid fa-palette',
-      iconBg: '#3CB0A5',
-      image: '/images/uiux-course.jpg',
-      lessons: 22,
-      assignments: 15,
-      students: 16
-    }
-  ];
-  
-  // Sample data for continue watching
-  const continueWatching = [
-    {
-      id: 1,
-      title: 'Advanced Course In Networks That Makes You Highly Capable',
-      image: '/images/networking.jpg',
-      category: 'Network',
-      progress: 75
-    },
-    {
-      id: 2,
-      title: 'Beginner\'s Guide To Becoming A Professional Backend Developer',
-      image: '/images/backend.jpg',
-      category: 'Back-End',
-      progress: 45
-    },
-    {
-      id: 3,
-      title: 'Beginner\'s Guide To Becoming A Professional Flutter Developer',
-      image: '/images/flutter.jpg',
-      category: 'Flutter',
-      progress: 30
-    }
-  ];
+  }, []);
 
   return (
     <div className={styles.dashboardContainer}>
       <Sidebar />
-      
       <div className={styles.mainContent}>
-        <Header />
-        
         <div className={styles.dashboardContent}>
           {/* Main Dashboard Cards */}
           <div className={styles.dashboardCards}>
@@ -106,24 +51,33 @@ export default function Dashboard() {
               <h3 className={styles.cardTitle}>Assignment</h3>
               <div className={styles.taskProgressContainer}>
                 <h4 className={styles.sectionTitle}>Task Progress</h4>
-                
-                {taskProgress.map((task) => (
-                  <div key={task.id} className={styles.taskItem}>
-                    <div className={styles.taskInfo}>
-                      <span className={styles.taskTitle}>{task.title}</span>
-                      <span className={styles.taskCompletion}>{task.completed}/{task.total}</span>
-                    </div>
-                    <div className={styles.progressBarContainer}>
-                      <div 
-                        className={styles.progressBar} 
-                        style={{ width: `${task.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
+                {/* تأكد من أن courses هو مصفوفة قبل استخدام map */}
+                {Array.isArray(courses) && courses.map((course) => {
+                  // تحقق من أن البيانات المطلوبة موجودة قبل الحساب
+                  if (course && course.total_assignments_count > 0) {
+                    const progress = (course.submitted_assignments_count / course.total_assignments_count) * 100;
+                    return (
+                      <div key={course.course_id} className={styles.taskItem}>
+                        <div className={styles.taskInfo}>
+                          <span className={styles.taskTitle}>{course.course_name}</span>
+                          <span className={styles.taskCompletion}>
+                            {course.submitted_assignments_count}/{course.total_assignments_count}
+                          </span>
+                        </div>
+                        <div className={styles.progressBarContainer}>
+                          <div 
+                            className={styles.progressBar} 
+                            style={{ width: `${progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
               </div>
             </div>
-            
+
             {/* Performance Card */}
             <div className={styles.dashboardCard}>
               <h3 className={styles.cardTitle}>Performance</h3>
@@ -145,7 +99,7 @@ export default function Dashboard() {
                     </select>
                   </div>
                 </div>
-                
+
                 <div className={styles.gaugeContainer}>
                   <div className={styles.gauge}>
                     <div className={styles.gaugeBody}>
@@ -161,7 +115,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            
+
             {/* Pending Invoices Card */}
             <div className={styles.dashboardCard}>
               <h3 className={styles.cardTitle}>Pending invoices</h3>
@@ -175,79 +129,38 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          
-          {/* Courses Section */}
-          <div className={styles.coursesSection}>
-            <h3 className={styles.sectionTitle}>Courses</h3>
-            <div className={styles.coursesGrid}>
-              {courses.map((course) => (
-                <div key={course.id} className={styles.courseCard}>
-                  <div 
-                    className={styles.courseIcon} 
-                    style={{ backgroundColor: course.iconBg }}
-                  >
-                    <i className={course.icon}></i>
-                  </div>
-                  <div className={styles.courseContent}>
-                    <h4 className={styles.courseTitle}>{course.title}</h4>
-                    <div className={styles.courseStats}>
-                      <div className={styles.statItem}>
-                        <i className="fa-solid fa-book"></i>
-                        <span>{course.lessons}</span>
-                      </div>
-                      <div className={styles.statItem}>
-                        <i className="fa-solid fa-clipboard-list"></i>
-                        <span>{course.assignments}</span>
-                      </div>
-                      <div className={styles.statItem}>
-                        <i className="fa-solid fa-users"></i>
-                        <span>{course.students}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
+
           {/* Continue Watching Section */}
           <div className={styles.continueWatchingSection}>
             <h3 className={styles.sectionTitle}>Continue Watching</h3>
             <div className={styles.watchingGrid}>
-              {continueWatching.map((course) => (
-                <div key={course.id} className={styles.watchingCard}>
-                  <div className={styles.watchingThumbnail}>
-                    <img 
-                      src={course.image} 
-                      alt={course.title} 
-                      className={styles.thumbnailImage}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                       /* e.target.src = `https://via.placeholder.com/300x150?text=${course.category.replace(' ', '+')}`;*/
-                      }}
-                    />
-                    <div className={styles.categoryBadge}>{course.category}</div>
-                    <div className={styles.thumbnailOverlay}>
-                      <div className={styles.playButton}>
-                        <i className="fa-solid fa-play"></i>
+              {/* تأكد من أن courses هو مصفوفة قبل استخدام map */}
+              {Array.isArray(courses) && courses.map((course) => {
+                if (course && course.course_id) {
+                  return (
+                    <div key={course.course_id} className={styles.watchingCard}>
+                      <div className={styles.watchingThumbnail}>
+                        <img 
+                          src={course.course_image || '/placeholder-image.jpg'} 
+                          alt={course.course_name} 
+                          className={styles.thumbnailImage}
+                        />
                       </div>
+                      <div className={styles.watchingInfo}>
+                        <h4 className={styles.watchingTitle}>{course.course_name}</h4>
+                      </div>
+                      <Link to={`/course/${course.course_id}`} className={styles.linkButton}>
+                        Go to Course
+                      </Link>
                     </div>
-                  </div>
-                  <div className={styles.watchingInfo}>
-                    <h4 className={styles.watchingTitle}>{course.title}</h4>
-                    <div className={styles.watchingProgress}>
-                      <div 
-                        className={styles.progressIndicator}
-                        style={{ width: `${course.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                }
+                return null;
+              })}
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

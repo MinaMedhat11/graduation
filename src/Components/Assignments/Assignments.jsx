@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Loading from '../Loading/Loading'; // استيراد مكون Loading
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -69,108 +71,195 @@ const getStatusProps = (status) => {
 export default function Assignments() {
   const navigate = useNavigate();
   const [tabValue, setTabValue] = useState(0); // 0 for Assignment, 1 for Quiz
-  const [assignments, setAssignments] = useState([]);
+  const [courseAssignments, setCourseAssignments] = useState([]); // Store the full assignment data from API
+  const [flattenedAssignments, setFlattenedAssignments] = useState([]); // Flattened assignments for easier use
   const [quizzes, setQuizzes] = useState([]);
-  const [selectedCourse, setSelectedCourse] = useState('Advanced Course In Networks'); // Example initial course
-  const [courses] = useState(['Advanced Course In Networks', 'Advanced C++ Course', 'Flutter Basics']); // Mock course list
+  const [selectedCourse, setSelectedCourse] = useState(''); // Will be set from API data
+  const [courses, setCourses] = useState([]); // Will be populated from API data
+  const [isLoading, setIsLoading] = useState(true); // Set loading to true initially
 
-  // Fetching logic would go here, using useEffect
+  // Fetching assignments and quizzes from API
   useEffect(() => {
-    // Fetch Assignments
+    // Fetch Assignments from API
     const fetchAssignments = async () => {
-        // Replace with actual API call
-        const mockAssignments = [
-          { id: 1, title: 'Create LAN Network', course: 'Advanced Course In Networks', deadline: '12/1/2024', status: 'Progress' },
-          { id: 2, title: 'oop training', course: 'Advanced C++ Course', deadline: '11/28/2024', status: 'Progress' },
-          { id: 3, title: 'Create App', course: 'Advanced C++ Course', deadline: '12/19/2024', status: 'Pending' },
-          { id: 4, title: 'Create Local Network', course: 'Advanced Course In Networks', deadline: '12/6/2024', status: 'Pending' },
-          { id: 5, title: 'IP address training', course: 'Advanced Course In Networks', deadline: '12/4/2024', status: 'Done' },
-          { id: 6, title: 'Data Types', course: 'Advanced C++ Course', deadline: '12/1/2024', status: 'Done' },
-          { id: 7, title: 'Network Layers', course: 'Advanced Course In Networks', deadline: '11/27/2024', status: 'Done' },
-        ];
-        setAssignments(mockAssignments);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/assignment', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        // Store the raw course assignments data
+        setCourseAssignments(response.data.data);
+        
+        // Extract all unique course names
+        const extractedCourses = response.data.data.map(item => item.course_name);
+        setCourses(extractedCourses);
+        
+        // Set default selected course to the first one
+        if (extractedCourses.length > 0 && !selectedCourse) {
+          setSelectedCourse(extractedCourses[0]);
+        }
+        
+        // Flatten the assignments for easier filtering
+        const allAssignments = [];
+        response.data.data.forEach(course => {
+          course.assignments.forEach(assignment => {
+            allAssignments.push({
+              ...assignment,
+              course: course.course_name,
+              course_id: course.course_id,
+              // Add a default status since it's missing in the API
+              status: determineStatus(new Date(assignment.due_date))
+            });
+          });
+        });
+        
+        setFlattenedAssignments(allAssignments);
+        console.log("Fetched and processed assignments:", allAssignments);
+      } catch (error) {
+        console.error('Error fetching assignments:', error);
+      }
+    };
+    
+    // Determine assignment status based on due date
+    const determineStatus = (dueDate) => {
+      const now = new Date();
+      
+      // If due date is in the past, mark as 'Done' for demo purposes
+      // In a real app, you'd check if it was submitted
+      if (dueDate < now) {
+        return 'Done';
+      }
+      
+      // If due date is less than 3 days away
+      const threeDaysFromNow = new Date();
+      threeDaysFromNow.setDate(now.getDate() + 3);
+      
+      if (dueDate < threeDaysFromNow) {
+        return 'Progress';
+      }
+      
+      return 'Pending';
     };
 
-    // Fetch Quizzes
+    // Fetch Quizzes (mock data for now)
     const fetchQuizzes = async () => {
-        // Replace with actual API call
+      // في المستقبل يمكن استبدال هذا بطلب API حقيقي
+      try {
+        // محاكاة وقت استجابة الخادم
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const mockQuizzes = [
-            { id: 1, title: 'Create LAN Network', course: 'Advanced Course In Networks', date: '12/1/2024', degree: '8/10' },
-            { id: 2, title: 'IP address training', course: 'Advanced Course In Networks', date: '11/28/2024', degree: '9/10' },
-            { id: 3, title: 'IP address training', course: 'Advanced C++ Course', date: '12/19/2024', degree: '2/10' },
-            { id: 4, title: 'Create Local Network', course: 'Advanced Course In Networks', date: '12/6/2024', degree: '10/10' },
-            { id: 5, title: 'IP address training', course: 'Advanced C++ Course', date: '12/4/2024', degree: '8/10' },
-            { id: 6, title: 'Data Types', course: 'Advanced C++ Course', date: '12/1/2024', degree: '5/10' },
-            { id: 7, title: 'Network Layers', course: 'Advanced Course In Networks', date: '11/27/2024', degree: '4/10' },
+          { id: 1, title: 'Quiz - Introduction', course: 'Database Systems', date: '12/1/2024', degree: '8/10' },
+          { id: 2, title: 'Quiz - Core Concepts', course: 'Database Systems', date: '11/28/2024', degree: '9/10' },
+          { id: 3, title: 'Quiz - Advanced Topics', course: 'Web Development', date: '12/19/2024', degree: '2/10' },
         ];
         setQuizzes(mockQuizzes);
+      } catch (error) {
+        console.error('Error fetching quizzes:', error);
+      }
     };
 
-    fetchAssignments();
-    fetchQuizzes();
+    // Execute both fetch operations
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await Promise.all([fetchAssignments(), fetchQuizzes()]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  // Update selected course when courses are loaded (if needed)
+  useEffect(() => {
+    if (courses.length > 0 && !selectedCourse) {
+      setSelectedCourse(courses[0]);
+    }
+  }, [courses, selectedCourse]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
   const handleCourseChange = (event) => {
-      setSelectedCourse(event.target.value);
-      // Potentially refetch assignments/quizzes based on the new course
+    setSelectedCourse(event.target.value);
   };
 
   const handleAddAssignment = () => {
     console.log("Add Assignment/Quiz clicked");
     // Navigate to Add Assignment/Quiz page or open modal
-  }
+  };
+
+  // Format date for better display
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit' 
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString; // Return original if parsing fails
+    }
+  };
 
   // Filter data based on selected course
-  const filteredAssignments = assignments.filter(a => a.course === selectedCourse);
+  const filteredAssignments = flattenedAssignments.filter(a => a.course === selectedCourse);
   const filteredQuizzes = quizzes.filter(q => q.course === selectedCourse);
 
+  // Display loading component if data is loading
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <Box sx={{ width: '100%' }}>
-        {/* Top Section: Course Selector and Drop Zone (Simplified based on images) */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-            {/* Course Selector Card */}
-            <Grid item xs={12} md={6}>
-                 <Card sx={{ display: 'flex', alignItems: 'center', p: 2, backgroundColor: '#25cf9d', color: '#fff', borderRadius: '12px' }}>
-                    <AssignmentIcon sx={{ mr: 2, fontSize: '2.5rem' }}/>
-                     <Box sx={{ flexGrow: 1 }}>
-                        <Typography variant="h6">My Courses</Typography>
-                        {/* Simplified Select for now */}
-                         <FormControl fullWidth size="small" sx={{ mt: 1 }}>
-                            {/* <InputLabel id="course-select-label" sx={{ color: '#fff'}}>Select Course</InputLabel> */}
-                             <Select
-                                labelId="course-select-label"
-                                value={selectedCourse}
-                                onChange={handleCourseChange}
-                                sx={{ color: '#fff', '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' }, '& .MuiSvgIcon-root': { color: '#fff' } }}
-                             >
-                                 {courses.map((courseName) => (
-                                    <MenuItem key={courseName} value={courseName}>{courseName}</MenuItem>
-                                 ))}
-                             </Select>
-                         </FormControl>
-                     </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', ml: 1 }}>
-                        <IconButton size="small" sx={{ color: '#fff' }}><ArrowBackIosNewIcon fontSize="inherit"/></IconButton>
-                        <IconButton size="small" sx={{ color: '#fff' }}><ArrowForwardIosIcon fontSize="inherit"/></IconButton>
-                    </Box>
-                 </Card>
-             </Grid>
-             {/* Drop Assignment Card */}
-              <Grid item xs={12} md={6}>
-                  <Card sx={{ p: 2, textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '2px dashed #ccc', borderRadius: '12px' }}>
-                     <UploadFileIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                     <Typography variant="h6" gutterBottom>Please Drop Assignment Here</Typography>
-                     <Typography variant="body2" color="text.secondary" gutterBottom>Or Click on the "Add" Button</Typography>
-                     <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddAssignment} sx={{ mt: 1, backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}>
-                         Add
-                     </Button>
-                  </Card>
-              </Grid>
-         </Grid>
+    <Box sx={{ width: '100%'}}>
+      {/* Top Section: Course Selector and Drop Zone */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {/* Course Selector Card */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ display: 'flex', alignItems: 'center', p: 2, backgroundColor: '#25cf9d', color: '#fff', borderRadius: '12px' }}>
+            <AssignmentIcon sx={{ mr: 2, fontSize: '2.5rem' }} />
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography variant="h6">My Courses</Typography>
+              <FormControl fullWidth size="small" sx={{ mt: 1 }}>
+                <Select
+                  labelId="course-select-label"
+                  value={selectedCourse}
+                  onChange={handleCourseChange}
+                  sx={{ color: '#000', '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' }, '& .MuiSvgIcon-root': { color: '#fff' } }}
+                >
+                  {courses.map((courseName) => (
+                    <MenuItem key={courseName} value={courseName}>{courseName}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', ml: 1 }}>
+              <IconButton size="small" sx={{ color: '#fff' }}><ArrowBackIosNewIcon fontSize="inherit" /></IconButton>
+              <IconButton size="small" sx={{ color: '#fff' }}><ArrowForwardIosIcon fontSize="inherit" /></IconButton>
+            </Box>
+          </Card>
+        </Grid>
+        {/* Drop Assignment Card */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ p: 2, textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '2px dashed #ccc', borderRadius: '12px' }}>
+            <UploadFileIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+            <Typography variant="h6" gutterBottom>Please Drop Assignment Here</Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>Or Click on the "Add" Button</Typography>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddAssignment} sx={{ mt: 1, backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}>
+              Add
+            </Button>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Tab and Table Section */}
       <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: '12px' }}>
@@ -180,8 +269,8 @@ export default function Assignments() {
             <Tab label="Quiz" icon={<QuizIcon />} iconPosition="start" id="assignment-tab-1" aria-controls="assignment-tabpanel-1" />
           </Tabs>
           <Box>
-            <IconButton size="small"><ArrowBackIosNewIcon fontSize="inherit"/></IconButton>
-            <IconButton size="small"><ArrowForwardIosIcon fontSize="inherit"/></IconButton>
+            <IconButton size="small"><ArrowBackIosNewIcon fontSize="inherit" /></IconButton>
+            <IconButton size="small"><ArrowForwardIosIcon fontSize="inherit" /></IconButton>
           </Box>
         </Box>
 
@@ -207,24 +296,34 @@ export default function Assignments() {
                         {statusProps.icon}
                         {row.title}
                       </TableCell>
-                      <TableCell>{row.deadline}</TableCell>
+                      <TableCell>{formatDate(row.due_date)}</TableCell>
                       <TableCell>{row.course}</TableCell>
                       <TableCell>
-                        <Chip label={row.status} color={statusProps.color} size="small" />
+                        <Chip 
+                          label={row.status} 
+                          color={statusProps.color} 
+                          size="small" 
+                          icon={statusProps.icon ? statusProps.icon : undefined}
+                        />
                       </TableCell>
                       <TableCell>
-                        <Button variant="contained" size="small" onClick={() => navigate(`/assignment/submit/${row.id}`)} sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}>
-                          {row.status === 'Done' || row.status === 'Graded' ? 'View' : 'Submit'}
+                        <Button 
+                          variant="contained" 
+                          size="small" 
+                          onClick={() => navigate(`/assignment/submit/${row.id}`)} 
+                          sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}
+                        >
+                          {row.status === 'Done' ? 'View' : 'Submit'}
                         </Button>
                       </TableCell>
                     </TableRow>
                   );
                 })}
-                 {filteredAssignments.length === 0 && (
-                    <TableRow>
-                        <TableCell colSpan={5} align="center">No assignments found for this course.</TableCell>
-                    </TableRow>
-                 )}
+                {filteredAssignments.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center">No assignments found for this course.</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -251,11 +350,11 @@ export default function Assignments() {
                     <TableCell>{row.degree}</TableCell>
                   </TableRow>
                 ))}
-                 {filteredQuizzes.length === 0 && (
-                     <TableRow>
-                         <TableCell colSpan={4} align="center">No quizzes found for this course.</TableCell>
-                     </TableRow>
-                  )}
+                {filteredQuizzes.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">No quizzes found for this course.</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -263,4 +362,4 @@ export default function Assignments() {
       </Paper>
     </Box>
   );
-} 
+}

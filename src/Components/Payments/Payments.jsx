@@ -97,26 +97,8 @@ export default function Payments() {
   return (
     <Box sx={{ width: '100%', maxWidth: 900, margin: 'auto' }}> {/* Center content with max width */}
 
-        <Typography variant="h5" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3, fontWeight: 'bold' }}>
-             <WalletIcon sx={{ mr: 1 }} /> Payments
-        </Typography>
-
-        {/* Available Balance Card */}
-        <Card sx={{ mb: 4, borderRadius: '12px', boxShadow: 3 }}>
-            <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                     <Typography color="text.secondary" gutterBottom>
-                         Available Balance
-                     </Typography>
-                     <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
-                         {availableBalance.toFixed(2)} <Typography variant="caption" sx={{ ml: 0.5 }}>{currency}</Typography>
-                     </Typography>
-                </Box>
-                <Button variant="contained" onClick={handleWithdraw} sx={{ borderRadius: '8px' }}>
-                    Withdraw
-                </Button>
-            </CardContent>
-        </Card>
+        
+       
 
         {/* Transaction History Section */}
         <Typography variant="h6" component="h2" gutterBottom sx={{ mb: 2, fontWeight: 'bold' }}>

@@ -76,6 +76,7 @@ export default function Login() {
     if (validateForm()) {
       try {
         const { success } = await login(formData);
+      
         if (success) {
           toast.success("Login successful!");
           navigate('/');
