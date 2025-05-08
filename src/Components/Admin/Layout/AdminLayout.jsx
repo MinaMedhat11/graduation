@@ -177,13 +177,12 @@ const AdminLayout = () => {
                     transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
-                >
-                     {/* Use NavLink for Profile/Settings if they have routes */}
-                     <MenuItem component={NavLink} to="/admin/profile" onClick={handleCloseUserMenu}> {/* Assuming admin profile route */}
+                >                     {/* Use NavLink for Profile/Settings if they have routes */}
+                     <MenuItem component={NavLink} to="/admin/profile" onClick={handleCloseUserMenu}>
                         <ListItemIcon><AccountCircle fontSize="small" /></ListItemIcon>
                         <ListItemText>Profile</ListItemText>
                     </MenuItem>
-                     <MenuItem component={NavLink} to="/admin/settings" onClick={handleCloseUserMenu}> {/* Assuming admin settings route */}
+                     <MenuItem component={NavLink} to="/admin/settings" onClick={handleCloseUserMenu}>
                         <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
                         <ListItemText>Settings</ListItemText>
                     </MenuItem>

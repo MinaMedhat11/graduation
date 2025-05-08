@@ -84,6 +84,7 @@ const App = () => {
             { path: '/admin/course/edit/:courseId', element: <CourseEditor /> },
             { path: '/admin/grading/assignment/:submissionId', element: <AssignmentGrading /> },
             { path: '/admin/assignments', element: <AdminAssignmentSubmissions /> },
+            { path: '/admin/profile', element: <Profile /> }, // Added profile route for admin panel
           ]
         }
       ]

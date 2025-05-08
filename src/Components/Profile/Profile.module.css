@@ -23,6 +23,14 @@
   width: calc(100% - 240px);
 }
 
+.mainContentFull {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Profile Container Styles */
 .profileContent {
   flex: 1;
   padding: 1.5rem 2rem;
@@ -465,10 +473,10 @@
 }
 
 .sectionTitle {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-dark);
-  margin-bottom: var(--spacing-md);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
 }
 
 .detailsGrid {
@@ -609,7 +617,11 @@
 }
 
 .toggleInput:checked + .toggleSlider {
-  background-color: var(--primary-color);
+  background-color: #3CB0A5;
+}
+
+.toggleInput:focus + .toggleSlider {
+  box-shadow: 0 0 1px #3CB0A5;
 }
 
 .toggleInput:checked + .toggleSlider:before {
@@ -631,9 +643,9 @@
 }
 
 .sectionDescription {
-  font-size: 14px;
-  color: var(--text-light);
-  margin-bottom: 20px;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
 }
 
 .settingItem {
@@ -845,6 +857,23 @@
   margin-bottom: 20px;
 }
 
+.notificationSection {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 1.5rem;
+}
+
+.notificationSection:last-child {
+  border-bottom: none;
+}
+
+.notificationCategory {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
 .notificationCategory {
   font-size: 16px;
   font-weight: 600;
@@ -933,20 +962,20 @@
 }
 
 .savePreferencesButton {
-  background-color: var(--primary-color);
+  background-color: #3CB0A5;
   color: white;
   border: none;
-  border-radius: var(--border-radius);
-  padding: 10px 20px;
-  font-size: 14px;
+  border-radius: 4px;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
   font-weight: 500;
-  width: 200px;
-  margin-top: 20px;
-  transition: background-color 0.3s ease;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1.5rem;
 }
 
 .savePreferencesButton:hover {
-  background-color: var(--primary-dark);
+  background-color: #339e94;
 }
 
 /* Responsive Styles */
@@ -1009,4 +1038,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+/* Social Profiles Specific Styles */
+.socialProfilesSection {
+  width: 100%;
 }

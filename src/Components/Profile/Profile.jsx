@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import styles from './Profile.module.css';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Profile() {
-  // بيانات المستخدم الحالية
+  const location = useLocation();
+  const { guard } = useAuth();
+  const isAdmin = guard === 'admin' || location.pathname.includes('/admin');
+  
+  // User data
   const [userData, setUserData] = useState({
     name: 'Adam Rawles',
     email: 'alexarawles@gmail.com',
@@ -29,9 +35,18 @@ export default function Profile() {
     notifyFileDownload: false,
   });
 
-  // حالة البيانات لتعديلها
+  // Form and UI state
   const [formData, setFormData] = useState({ ...userData });
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('profile');
+  
+  // Password change form
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [passwordErrors, setPasswordErrors] = useState({});
 
   useEffect(() => {
     // جلب بيانات المستخدم من الـ API عند تحميل المكون
@@ -112,14 +127,97 @@ export default function Profile() {
       setError('Error updating profile');
     }
   };
+  // Handle password form changes
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm({ ...passwordForm, [name]: value });
+    if (passwordErrors[name]) {
+      setPasswordErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
 
+  // Handle password form submission
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate password form
+    const newErrors = {};
+    if (!passwordForm.currentPassword) {
+      newErrors.currentPassword = 'Current password is required';
+    }
+    
+    if (!passwordForm.newPassword) {
+      newErrors.newPassword = 'New password is required';
+    } else if (passwordForm.newPassword.length < 8) {
+      newErrors.newPassword = 'Password must be at least 8 characters';
+    }
+    
+    if (!passwordForm.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your new password';
+    } else if (passwordForm.confirmPassword !== passwordForm.newPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setPasswordErrors(newErrors);
+      return;
+    }
+
+    // Send API request to change password
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setPasswordErrors({ general: 'Token is missing or expired' });
+        return;
+      }
+      
+      const response = await fetch('http://127.0.0.1:8000/api/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          current_password: passwordForm.currentPassword,
+          new_password: passwordForm.newPassword,
+          new_password_confirmation: passwordForm.confirmPassword,
+        }),
+      });
+      
+      const result = await response.json();
+      if (response.ok) {
+        alert('Password changed successfully!');
+        setPasswordForm({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        });
+      } else {
+        setPasswordErrors({ general: result.message || 'Error changing password' });
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setPasswordErrors({ general: 'Error changing password' });
+    }
+  };
+
+  // Handle notification toggle
+  const handleNotificationToggle = (notificationType) => {
+    setFormData(prev => ({
+      ...prev,
+      [notificationType]: !prev[notificationType]
+    }));
+  };
+  
   return (
     <div className={styles.profileContainer}>
-      <div className={styles.sidebarWrapper}>
-        <Sidebar />
-      </div>
-      <div className={styles.mainContent}>
-        <Header />
+      {!isAdmin && (
+        <div className={styles.sidebarWrapper}>
+          <Sidebar />
+        </div>
+      )}
+      <div className={isAdmin ? styles.mainContentFull : styles.mainContent}>
+        {!isAdmin && <Header />}
         <div className={styles.profileContent}>
           {/* Edit Profile Header */}
           <div className={styles.editProfileHeader}>
@@ -129,7 +227,33 @@ export default function Profile() {
             <h2 className={styles.editTitle}>Edit profile</h2>
           </div>
 
-          {/* Profile Card */}
+          {/* Profile Tabs */}
+          <div className={styles.profileTabs}>
+            <div 
+              className={`${styles.profileTab} ${activeTab === 'profile' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('profile')}
+            >
+              Profile
+            </div>
+            <div 
+              className={`${styles.profileTab} ${activeTab === 'password' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('password')}
+            >
+              Password
+            </div>
+            <div 
+              className={`${styles.profileTab} ${activeTab === 'notifications' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('notifications')}
+            >
+              Notifications
+            </div>
+            <div 
+              className={`${styles.profileTab} ${activeTab === 'social' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('social')}
+            >
+              Social Profiles
+            </div>
+          </div>          {/* Profile Card */}
           <div className={styles.profileCard}>
             {/* User Info Header */}
             <div className={styles.userInfoHeader}>
@@ -149,8 +273,9 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Profile Form */}
-            <form className={styles.profileForm} onSubmit={handleSubmit}>
+            {/* Profile Form - conditionally rendered based on active tab */}
+            {activeTab === 'profile' && (
+              <form className={styles.profileForm} onSubmit={handleSubmit}>
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Name *</label>
@@ -365,9 +490,378 @@ export default function Profile() {
                 Update Profile
               </button>
             </form>
-          </div>
+            )}
 
-          {error && <p className={styles.errorMessage}>{error}</p>}
+            {/* Password Change Tab */}
+            {activeTab === 'password' && (
+              <form className={styles.profileForm} onSubmit={handlePasswordSubmit}>
+                <h4 className={styles.sectionTitle}>Change Password</h4>
+                
+                {passwordErrors.general && (
+                  <div className={styles.errorMessage}>{passwordErrors.general}</div>
+                )}
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Current Password *</label>
+                  <div className={styles.inputWithIcon}>
+                    <span className={styles.iconWrapper}>
+                      <i className="fa-solid fa-lock"></i>
+                    </span>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      value={passwordForm.currentPassword}
+                      onChange={handlePasswordChange}
+                      className={styles.formInput}
+                      placeholder="••••••••••••"
+                    />
+                  </div>
+                  {passwordErrors.currentPassword && (
+                    <p className={styles.errorText}>{passwordErrors.currentPassword}</p>
+                  )}
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>New Password *</label>
+                  <div className={styles.inputWithIcon}>
+                    <span className={styles.iconWrapper}>
+                      <i className="fa-solid fa-key"></i>
+                    </span>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={passwordForm.newPassword}
+                      onChange={handlePasswordChange}
+                      className={styles.formInput}
+                      placeholder="New Password"
+                    />
+                  </div>
+                  {passwordErrors.newPassword && (
+                    <p className={styles.errorText}>{passwordErrors.newPassword}</p>
+                  )}
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Confirm New Password *</label>
+                  <div className={styles.inputWithIcon}>
+                    <span className={styles.iconWrapper}>
+                      <i className="fa-solid fa-key"></i>
+                    </span>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={passwordForm.confirmPassword}
+                      onChange={handlePasswordChange}
+                      className={styles.formInput}
+                      placeholder="Confirm New Password"
+                    />
+                  </div>
+                  {passwordErrors.confirmPassword && (
+                    <p className={styles.errorText}>{passwordErrors.confirmPassword}</p>
+                  )}
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <div className={styles.passwordRequirements}>
+                    <h5 className={styles.requirementsTitle}>Password Requirements:</h5>
+                    <ul className={styles.requirementsList}>
+                      <li className={styles.requirementItem}>At least 8 characters long</li>
+                      <li className={styles.requirementItem}>Include at least one uppercase letter</li>
+                      <li className={styles.requirementItem}>Include at least one number</li>
+                      <li className={styles.requirementItem}>Include at least one special character</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <button type="submit" className={styles.saveButton}>
+                  Change Password
+                </button>
+              </form>
+            )}
+            
+            {/* Notifications Tab */}
+            {activeTab === 'notifications' && (
+              <div className={styles.profileForm}>
+                <h4 className={styles.sectionTitle}>Notification Settings</h4>
+                <p className={styles.sectionDescription}>Manage your notification preferences</p>
+                
+                <div className={styles.notificationSettings}>
+                  <div className={styles.notificationSection}>
+                    <h5 className={styles.notificationCategory}>Course Notifications</h5>
+                    
+                    <div className={styles.notificationItem}>
+                      <div className={styles.notificationInfo}>
+                        <h6 className={styles.notificationTitle}>Course Purchase</h6>
+                        <p className={styles.notificationDescription}>Get notified when you purchase a course</p>
+                      </div>
+                      <label className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          checked={formData.notifyCourseBuy} 
+                          onChange={() => handleNotificationToggle('notifyCourseBuy')}
+                          className={styles.toggleInput}
+                        />
+                        <span className={styles.toggleSlider}></span>
+                      </label>
+                    </div>
+                    
+                    <div className={styles.notificationItem}>
+                      <div className={styles.notificationInfo}>
+                        <h6 className={styles.notificationTitle}>Course Review</h6>
+                        <p className={styles.notificationDescription}>Get notified when someone comments on your course</p>
+                      </div>
+                      <label className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          checked={formData.notifyCourseReview} 
+                          onChange={() => handleNotificationToggle('notifyCourseReview')}
+                          className={styles.toggleInput} 
+                        />
+                        <span className={styles.toggleSlider}></span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.notificationSection}>
+                    <h5 className={styles.notificationCategory}>Lecture Notifications</h5>
+                    
+                    <div className={styles.notificationItem}>
+                      <div className={styles.notificationInfo}>
+                        <h6 className={styles.notificationTitle}>Lecture Comments</h6>
+                        <p className={styles.notificationDescription}>Get notified when someone comments on your lecture</p>
+                      </div>
+                      <label className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          checked={formData.notifyLectureComment} 
+                          onChange={() => handleNotificationToggle('notifyLectureComment')}
+                          className={styles.toggleInput} 
+                        />
+                        <span className={styles.toggleSlider}></span>
+                      </label>
+                    </div>
+                    
+                    <div className={styles.notificationItem}>
+                      <div className={styles.notificationInfo}>
+                        <h6 className={styles.notificationTitle}>Lecture Downloads</h6>
+                        <p className={styles.notificationDescription}>Get notified when someone downloads your lecture</p>
+                      </div>
+                      <label className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          checked={formData.notifyLectureDownload} 
+                          onChange={() => handleNotificationToggle('notifyLectureDownload')}
+                          className={styles.toggleInput} 
+                        />
+                        <span className={styles.toggleSlider}></span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.notificationSection}>
+                    <h5 className={styles.notificationCategory}>Other Notifications</h5>
+                    
+                    <div className={styles.notificationItem}>
+                      <div className={styles.notificationInfo}>
+                        <h6 className={styles.notificationTitle}>Comment Replies</h6>
+                        <p className={styles.notificationDescription}>Get notified when someone replies to your comments</p>
+                      </div>
+                      <label className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          checked={formData.notifyCommentReply} 
+                          onChange={() => handleNotificationToggle('notifyCommentReply')}
+                          className={styles.toggleInput} 
+                        />
+                        <span className={styles.toggleSlider}></span>
+                      </label>
+                    </div>
+                    
+                    <div className={styles.notificationItem}>
+                      <div className={styles.notificationInfo}>
+                        <h6 className={styles.notificationTitle}>Profile Views</h6>
+                        <p className={styles.notificationDescription}>Get notified when someone views your profile</p>
+                      </div>
+                      <label className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          checked={formData.notifyProfileViews} 
+                          onChange={() => handleNotificationToggle('notifyProfileViews')}
+                          className={styles.toggleInput} 
+                        />
+                        <span className={styles.toggleSlider}></span>
+                      </label>
+                    </div>
+                    
+                    <div className={styles.notificationItem}>
+                      <div className={styles.notificationInfo}>
+                        <h6 className={styles.notificationTitle}>File Downloads</h6>
+                        <p className={styles.notificationDescription}>Get notified when your files are downloaded</p>
+                      </div>
+                      <label className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          checked={formData.notifyFileDownload} 
+                          onChange={() => handleNotificationToggle('notifyFileDownload')}
+                          className={styles.toggleInput} 
+                        />
+                        <span className={styles.toggleSlider}></span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    type="button" 
+                    onClick={handleSubmit}
+                    className={styles.savePreferencesButton}
+                  >
+                    Save Preferences
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Social Profile Tab */}
+            {activeTab === 'social' && (
+              <form className={styles.profileForm} onSubmit={handleSubmit}>
+                <h4 className={styles.sectionTitle}>Social Profiles</h4>
+                <p className={styles.sectionDescription}>Connect your social media accounts</p>
+                
+                <div className={styles.socialProfilesSection}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Facebook</label>
+                      <div className={styles.inputWithIcon}>
+                        <span className={styles.iconWrapper}>
+                          <i className="fa-brands fa-facebook"></i>
+                        </span>
+                        <input
+                          type="text"
+                          name="facebook"
+                          value={formData.facebook}
+                          onChange={handleInputChange}
+                          className={styles.formInput}
+                          placeholder="facebook.com/yourprofile"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Instagram</label>
+                      <div className={styles.inputWithIcon}>
+                        <span className={styles.iconWrapper}>
+                          <i className="fa-brands fa-instagram"></i>
+                        </span>
+                        <input
+                          type="text"
+                          name="instagram"
+                          value={formData.instagram}
+                          onChange={handleInputChange}
+                          className={styles.formInput}
+                          placeholder="instagram.com/yourprofile"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Twitter</label>
+                      <div className={styles.inputWithIcon}>
+                        <span className={styles.iconWrapper}>
+                          <i className="fa-brands fa-twitter"></i>
+                        </span>
+                        <input
+                          type="text"
+                          name="twitter"
+                          value={formData.twitter}
+                          onChange={handleInputChange}
+                          className={styles.formInput}
+                          placeholder="twitter.com/yourprofile"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>LinkedIn</label>
+                      <div className={styles.inputWithIcon}>
+                        <span className={styles.iconWrapper}>
+                          <i className="fa-brands fa-linkedin"></i>
+                        </span>
+                        <input
+                          type="text"
+                          name="linkedin"
+                          value={formData.linkedin}
+                          onChange={handleInputChange}
+                          className={styles.formInput}
+                          placeholder="linkedin.com/in/yourprofile"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>WhatsApp</label>
+                      <div className={styles.inputWithIcon}>
+                        <span className={styles.iconWrapper}>
+                          <i className="fa-brands fa-whatsapp"></i>
+                        </span>
+                        <input
+                          type="text"
+                          name="whatsapp"
+                          value={formData.whatsapp}
+                          onChange={handleInputChange}
+                          className={styles.formInput}
+                          placeholder="+1234567890"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>YouTube</label>
+                      <div className={styles.inputWithIcon}>
+                        <span className={styles.iconWrapper}>
+                          <i className="fa-brands fa-youtube"></i>
+                        </span>
+                        <input
+                          type="text"
+                          name="youtube"
+                          value={formData.youtube}
+                          onChange={handleInputChange}
+                          className={styles.formInput}
+                          placeholder="youtube.com/c/yourchannel"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Website</label>
+                      <div className={styles.inputWithIcon}>
+                        <span className={styles.iconWrapper}>
+                          <i className="fa-solid fa-globe"></i>
+                        </span>
+                        <input
+                          type="text"
+                          name="website"
+                          value={formData.website}
+                          onChange={handleInputChange}
+                          className={styles.formInput}
+                          placeholder="yourwebsite.com"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <button type="submit" className={styles.saveButton}>
+                    Save Social Profiles
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </div>
     </div>
