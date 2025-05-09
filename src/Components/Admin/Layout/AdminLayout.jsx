@@ -5,7 +5,6 @@ import Drawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar'; // Rename to avoid conflict
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -24,7 +23,6 @@ import { styled, useTheme } from '@mui/material/styles';
 // Import MUI Icons for Admin
 import DashboardCustomizeOutlinedIcon from '@mui/icons-material/DashboardCustomizeOutlined'; // Use outlined for consistency
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
-import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import BookOutlinedIcon from '@mui/icons-material/BookOutlined'; // For Lectures/Content
 import PaymentOutlinedIcon from '@mui/icons-material/PaymentOutlined'; // For Payments
@@ -38,7 +36,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 // Use the same logo
-import logoPlaceholder from '../../../Images/Logo.png'; // Adjust path relative to this file
+// Logo is now directly imported where used
 
 const drawerWidth = 260; // Slightly wider drawer based on screenshots
 const appBarHeight = 64;
@@ -198,10 +196,9 @@ const AdminLayout = () => {
       </AppBar>
 
       {/* Use the styled Drawer */}
-      <StyledDrawer variant="permanent">
-        <DrawerHeader>
+      <StyledDrawer variant="permanent">        <DrawerHeader>
           {/* Use actual logo */}
-          <img src={logoPlaceholder} alt="Logo" style={{ height: '40px', objectFit: 'contain' }} />
+          <img src={require('../../../Images/Logo.png')} alt="EDUCATION YOUR TAGLINE" style={{ height: '40px', objectFit: 'contain' }} />
         </DrawerHeader>
         {/* No divider needed unless design requires */}
         <List sx={{ pt: 2, px: 1.5 }}> {/* Padding top and horizontal */}

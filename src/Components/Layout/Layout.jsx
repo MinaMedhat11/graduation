@@ -5,7 +5,6 @@ import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -33,7 +32,7 @@ import SettingsIcon from '@mui/icons-material/Settings'; // For Settings link in
 import LogoutIcon from '@mui/icons-material/Logout'; // For Logout link in menu
 
 // Use the same logo (assuming path is correct relative to this new file)
-import logoPlaceholder from '../../Images/Logo.png';
+// Logo is now directly imported where used
 
 const drawerWidth = 240;
 const appBarHeight = 64; // Or adjust based on screenshot appearance
@@ -208,10 +207,9 @@ const Layout = () => {
       </StyledAppBar>
 
       {/* Sidebar Drawer */}
-      <StyledDrawer variant="permanent" open={open}>
-        <DrawerHeader>
+      <StyledDrawer variant="permanent" open={open}>        <DrawerHeader>
           {/* Logo */}
-          <img src={logoPlaceholder} alt="Education Your Tagline" style={{ height: '40px', objectFit: 'contain' }} />
+          <img src={require('../../Images/Logo.png')} alt="EDUCATION YOUR TAGLINE" style={{ height: '40px', objectFit: 'contain' }} />
         </DrawerHeader>
         {/* Removed Divider, Drawer Toggle - Add if needed based on final design */}
         <List sx={{ pt: 2 }}> {/* Add padding top */}

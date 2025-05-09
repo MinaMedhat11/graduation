@@ -138,6 +138,7 @@ label {
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
+  -webkit-user-select: none;
   user-select: none;
   border: 1px solid transparent;
   padding: 0.5rem 1rem;

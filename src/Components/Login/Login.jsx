@@ -119,12 +119,11 @@ export default function Login() {
         </div>
 
         <div className={`${styles.formContainer} container d-flex align-items-center justify-content-center`}>
-          <div className="row w-100">
-            <div className="col-md-6">
+          <div className="row w-100">            <div className="col-md-6">
               <img
                 src={require('../../Images/Logo.png')}
                 className="w-25 pt-5"
-                alt="LMS Logo"
+                alt="EDUCATION YOUR TAGLINE"
               />
               <h3 className={`${styles.signinto} pt-5`}>Sign in to</h3>
               <h2 className={styles.headline}>Learning Management System</h2>

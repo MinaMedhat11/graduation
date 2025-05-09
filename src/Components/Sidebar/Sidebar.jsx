@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
-import logoImage from '../../Images/Logo.png';
+// Logo is now directly imported where used
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,10 +24,9 @@ export default function Sidebar() {
     return (
         <div className={styles.sidebarContainer}>
             <div className={styles.sidebar}>
-                {/* Logo */}
-                <div className={styles.logoContainer}>
+                {/* Logo */}                <div className={styles.logoContainer}>
                     <Link to="/dashboard">
-                        <img src={logoImage} alt="LMS Logo" className={styles.logoImage} />
+                        <img src={require('../../Images/Logo.png')} alt="EDUCATION YOUR TAGLINE" className={styles.logoImage} />
                     </Link>
                 </div>
                 

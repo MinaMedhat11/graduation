@@ -1,0 +1,26 @@
+{
+  // VS Code specific settings for React project
+  "settings": {
+    "javascript.validate.enable": true,
+    "typescript.validate.enable": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "globals": {
+    "NODE_ENV": "readable",
+    "BABEL_ENV": "readable"
+  }
+}

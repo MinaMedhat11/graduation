@@ -542,12 +542,11 @@ return (
       </div>
 
       <div className="container d-flex align-items-center justify-content-center" style={{ position: 'relative', zIndex: '3' }}>
-        <div className="row w-100">
-          <div className="col-md-6">
+        <div className="row w-100">          <div className="col-md-6">
             <img
-              //src={require('./../../../public/')}
+              src={require('../../Images/Logo.png')}
               className="w-25 pt-5"
-              alt="LMS Logo"
+              alt="EDUCATION YOUR TAGLINE"
             />
             <h3 className={`${styles.signupto} pt-5`}>
               Sign up to{' '}

@@ -71,6 +71,23 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ## Project Specific Updates
 
+### Recent Changes (Development Environment - May 2025)
+
+- **Environment Configuration:**
+  - Updated package.json scripts to use cross-env for setting environment variables
+  - Added cross-env to ensure consistent environment variable handling across platforms
+  - Created .env configuration files for proper Babel environment setup
+  - Fixed Babel configuration issues to ensure proper JSX compilation
+  - Added VS Code support files to improve development experience
+
+- **Asset Management:**
+  - Updated logo and icon across all application components
+  - Restructured image assets into proper folders:
+    - Source images in `src/Images/` and its subfolders
+    - Public assets in `public/` directory
+    - Favicon and app icons standardized across the application
+  - Ensured consistent image import paths throughout components
+
 ### Recent Changes (Layout & Styling - July 2024)
 
 - **Routing Structure Verified:** Confirmed the use of separate layouts (`Layout.jsx` for users, `AdminLayout.jsx` for admin) controlled via `src/App.js` using `react-router-dom`.
@@ -92,3 +109,60 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 ### Course Detail View
 - Implemented the student-facing course detail page (`src/Components/CourseDetail/CourseDetail.jsx`).
 - Features include a two-column layout, video placeholder, course stats, tabbed navigation (Overview, Reviews, Content, etc.), syllabus display using Accordions, and mock data.
+
+## Development Environment Setup
+
+### Environment Variables
+This project uses environment variables for proper Babel configuration. The following files have been set up:
+- `.env`: Contains base environment variables
+- `.env.local`: Contains local overrides (gitignored)
+- `.env.development`: Contains development-specific variables
+
+### Cross-Platform Development
+We use `cross-env` to ensure environment variables work consistently across different operating systems. This is configured in the package.json scripts.
+
+### Quick Start for New Developers
+1. Clone the repository
+2. Run `npm install --legacy-peer-deps` to install dependencies
+3. Run `npm start` to start the development server
+4. If you encounter any Babel configuration issues, verify that:
+   - cross-env is installed
+   - .env files are properly set up
+   - package.json scripts are using cross-env
+
+### VS Code Setup
+Several VS Code configuration files have been added to improve the development experience:
+- `.vscode/settings.json`: Editor settings
+- `.vscode/extensions.json`: Recommended extensions
+- `.eslintrc.js`: ESLint configuration
+
+## Project Structure
+
+### Key Directories
+```
+├── public/               # Public assets and HTML template
+│   ├── favicon.ico       # Browser favicon
+│   ├── logo.png          # Application logo
+│   └── logo192.png       # Icons for PWA
+├── src/
+│   ├── Components/       # React components
+│   │   ├── Admin/        # Admin interface components
+│   │   ├── Layout/       # Layout components
+│   │   ├── Sidebar/      # Sidebar navigation
+│   │   ├── Login/        # Authentication components
+│   │   └── ...           # Other feature components
+│   ├── context/          # React context providers
+│   ├── Images/           # Images and visual assets
+│   ├── services/         # API service functions
+│   └── styles/           # Global CSS and themes
+├── .env                  # Environment variables
+├── .eslintrc.js          # ESLint configuration
+└── package.json          # Dependencies and scripts
+```
+
+### Key Features
+- **User and Admin Interfaces:** Separate layouts and permissions
+- **Course Management:** Creation, editing, and enrollment
+- **Authentication:** Login/signup with social integration
+- **Responsive Design:** Using Material-UI components
+- **State Management:** Using Redux and Context API
