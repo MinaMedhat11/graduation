@@ -51,6 +51,19 @@ npm install @reduxjs/toolkit react-redux
 # For HTTP requests
 npm install axios
 
+# UI/UX Improvements
+- Material UI components used consistently across Admin and Student layouts
+- Enhanced drawer navigation with standardized header heights and logo placement
+- Consistent styling patterns using MUI styled components (styled API)
+- Responsive drawer components using MUI's responsive API
+
+# Layout Improvements
+- Consistent UI between admin and student layouts
+- Proper logo placement in navigation drawers
+- Responsive drawer components using MUI (Material-UI)
+- Theme consistency across layouts
+npm install axios
+
 # For social login
 npm install axios react-google-login react-facebook-login --force
 

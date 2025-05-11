@@ -489,6 +489,303 @@
   font-weight: 500;
 }
 
+/* Updated Payments styles to match the provided design */
+.payments-page {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.balance-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.balance p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.balance h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.withdraw-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.withdraw-button:hover {
+  background-color: #0056b3;
+}
+
+.transaction-history {
+  margin-bottom: 20px;
+}
+
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.transaction-details p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.transaction-details span {
+  font-size: 14px;
+  color: #666;
+}
+
+.transaction-amount p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.download-receipt {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #6c757d;
+  color: white;
+  cursor: pointer;
+}
+
+.download-receipt:hover {
+  background-color: #5a6268;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-payment-method {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #6f42c1;
+  color: white;
+  cursor: pointer;
+}
+
+.add-payment-method:hover {
+  background-color: #5a3791;
+}
+
+.return-to-courses {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+}
+
+.return-to-courses:hover {
+  background-color: #218838;
+}
+
+/* Title Section */
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.titleSection h2 {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.titleSection svg {
+  font-size: 24px;
+  color: #333;
+}
+
+/* Balance Container */
+.balanceContainer {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.balanceInfo p {
+  margin: 0 0 8px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.balanceInfo h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.currency {
+  font-size: 0.8em;
+  font-weight: normal;
+}
+
+.withdrawButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* History Title */
+.historyTitle {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 20px 0;
+}
+
+/* Transactions List */
+.transactionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.transactionItem {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transactionLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.statusIconSuccess {
+  color: #4CAF50;
+  font-size: 24px;
+}
+
+.statusIconPending {
+  color: #FF9800;
+  font-size: 24px;
+}
+
+.statusIconCanceled {
+  color: #F44336;
+  font-size: 24px;
+}
+
+.transactionDetails h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.transactionDetails p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.transactionRight {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.receiptButton {
+  background-color: #e0e0e0;
+  color: #555;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.receiptButton svg {
+  font-size: 18px;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.addPaymentButton {
+  background-color: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.returnButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
 /* Responsive Styles */
 @media (max-width: 1024px) {
   .mainContent {
@@ -516,4 +813,4 @@
   .paymentsContent {
     padding: 1rem;
   }
-} 
+}

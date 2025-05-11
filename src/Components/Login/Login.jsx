@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from '../Shared/auth.module.css';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
+import ChatBot from '../ChatBot/ChatBot'; // Import ChatBot component
 
 export default function Login() {
   const navigate = useNavigate();
@@ -237,6 +238,9 @@ export default function Login() {
             </div>
           </div>
         </div>
+
+        {/* Add ChatBot for assistance even on the login page */}
+        <ChatBot />
       </div>
     </>
   );

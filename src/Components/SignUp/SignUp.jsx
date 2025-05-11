@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../Shared/auth.module.css';
 import { useAuth } from '../../context/AuthContext';
+import ChatBot from '../ChatBot/ChatBot'; // Import ChatBot component
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -695,6 +696,9 @@ return (
           </div>
         </div>
       </div>
+
+      {/* Add ChatBot for assistance during signup */}
+      <ChatBot />
     </div>
   </>
 );

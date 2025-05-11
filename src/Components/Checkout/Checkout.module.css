@@ -1,0 +1,261 @@
+/* Checkout Page Styles */
+.checkoutWrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.checkoutContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+}
+
+.checkoutHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.checkoutHeader h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.backLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #3CB0A5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.checkoutContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.orderSummary {
+  flex: 1;
+  min-width: 300px;
+}
+
+.paymentDetails {
+  flex: 2;
+  min-width: 500px;
+}
+
+.orderSummary h2,
+.paymentDetails h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.courseInfo {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.courseInfo h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.priceSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.totalRow {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid #ddd;
+}
+
+.paymentMethods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.paymentMethod {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.paymentMethod:hover {
+  border-color: #3CB0A5;
+  background-color: #f8f9fa;
+}
+
+.selectedMethod {
+  border-color: #3CB0A5;
+  background-color: #f8f9fa;
+}
+
+.paymentMethod svg {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.selectedMethod svg {
+  color: #3CB0A5;
+}
+
+.checkIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #3CB0A5;
+  font-size: 1.25rem !important;
+}
+
+/* Credit Card Form */
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.formGroup input:focus {
+  border-color: #3CB0A5;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(60, 176, 165, 0.2);
+}
+
+.formRow {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.formRow .formGroup {
+  flex: 1;
+}
+
+.formActions {
+  margin-top: 2rem;
+}
+
+.confirmButton {
+  background-color: #3CB0A5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.confirmButton:hover {
+  background-color: #339b91;
+}
+
+/* Bank Transfer Info */
+.bankTransferInfo,
+.fawryInfo {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.bankDetails {
+  margin: 1.5rem 0;
+}
+
+.bankDetails p {
+  margin-bottom: 0.5rem;
+}
+
+.noteText {
+  font-style: italic;
+  color: #666;
+  margin-top: 1.5rem;
+}
+
+.fawryInfo ol {
+  margin: 1.5rem 0 1.5rem 1.5rem;
+}
+
+.fawryInfo li {
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .checkoutWrapper {
+    padding: 1rem;
+  }
+  
+  .checkoutContainer {
+    padding: 1.5rem;
+  }
+  
+  .checkoutContent {
+    flex-direction: column;
+  }
+  
+  .formRow {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

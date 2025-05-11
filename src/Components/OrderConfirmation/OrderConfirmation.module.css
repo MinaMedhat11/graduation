@@ -1,0 +1,170 @@
+/* Order Confirmation Page Styles */
+.confirmationWrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirmationContainer {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.confirmationHeader {
+  margin-bottom: 3rem;
+}
+
+.successIcon {
+  margin: 0 auto 1.5rem;
+  width: 80px;
+  height: 80px;
+  background-color: rgba(60, 176, 165, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successIcon svg {
+  font-size: 3rem;
+  color: #3CB0A5;
+}
+
+.confirmationHeader h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.confirmationHeader p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.orderDetails {
+  margin-bottom: 3rem;
+}
+
+.orderDetails h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: left;
+}
+
+.detailsCard {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-weight: 500;
+  color: #666;
+}
+
+.detailValue {
+  font-weight: 500;
+  color: #333;
+}
+
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.returnButton,
+.courseButton,
+.receiptButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.returnButton {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  border: none;
+}
+
+.courseButton {
+  background-color: #3CB0A5; /* Teal */
+  color: white;
+  border: none;
+}
+
+.receiptButton {
+  background-color: #e0e0e0;
+  color: #555;
+  border: none;
+}
+
+.returnButton:hover {
+  background-color: #3d8b40;
+}
+
+.courseButton:hover {
+  background-color: #339b91;
+}
+
+.receiptButton:hover {
+  background-color: #d0d0d0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .confirmationWrapper {
+    padding: 1rem;
+  }
+  
+  .confirmationContainer {
+    padding: 2rem 1.5rem;
+  }
+  
+  .confirmationHeader h1 {
+    font-size: 1.75rem;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+  }
+  
+  .returnButton,
+  .courseButton,
+  .receiptButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

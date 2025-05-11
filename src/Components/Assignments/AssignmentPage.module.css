@@ -1,0 +1,48 @@
+.assignment-page {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.assignment-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.assignment-table th,
+.assignment-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.assignment-table th {
+  background-color: #f1f1f1;
+}
+
+.grade-input {
+  width: 50px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.note-input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}

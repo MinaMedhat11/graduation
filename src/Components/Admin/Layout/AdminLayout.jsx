@@ -36,7 +36,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 // Use the same logo
-// Logo is now directly imported where used
+import logoPlaceholder from '../../../Images/Logo.png'; // Adjust path relative to this file
 
 const drawerWidth = 260; // Slightly wider drawer based on screenshots
 const appBarHeight = 64;
@@ -196,9 +196,10 @@ const AdminLayout = () => {
       </AppBar>
 
       {/* Use the styled Drawer */}
-      <StyledDrawer variant="permanent">        <DrawerHeader>
+      <StyledDrawer variant="permanent">
+        <DrawerHeader>
           {/* Use actual logo */}
-          <img src={require('../../../Images/Logo.png')} alt="EDUCATION YOUR TAGLINE" style={{ height: '40px', objectFit: 'contain' }} />
+          <img src={logoPlaceholder} alt="Logo" style={{ height: '40px', objectFit: 'contain' }} />
         </DrawerHeader>
         {/* No divider needed unless design requires */}
         <List sx={{ pt: 2, px: 1.5 }}> {/* Padding top and horizontal */}

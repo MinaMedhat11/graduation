@@ -1,0 +1,24 @@
+.settingsContainer {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tabPanel {
+  padding: 24px 0;
+}
+
+.card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.saveButton {
+  background-color: #28A79F;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #1C7A73;
+}

@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../Sidebar/Sidebar';
-import Header from '../Header/Header';
 import styles from './Profile.module.css';
-import { useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+// Removed unused imports
 
 export default function Profile() {
-  const location = useLocation();
-  const { guard } = useAuth();
-  const isAdmin = guard === 'admin' || location.pathname.includes('/admin');
+  // Removed unused variables: location and guard
   
   // User data
   const [userData, setUserData] = useState({
@@ -211,14 +206,9 @@ export default function Profile() {
   
   return (
     <div className={styles.profileContainer}>
-      {!isAdmin && (
-        <div className={styles.sidebarWrapper}>
-          <Sidebar />
-        </div>
-      )}
-      <div className={isAdmin ? styles.mainContentFull : styles.mainContent}>
-        {!isAdmin && <Header />}
+      <div className={styles.mainContentFull}>
         <div className={styles.profileContent}>
+          {error && <div className={styles.errorMessage}>{error}</div>}
           {/* Edit Profile Header */}
           <div className={styles.editProfileHeader}>
             <div className={styles.editIcon}>

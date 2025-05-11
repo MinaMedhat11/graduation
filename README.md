@@ -1,6 +1,19 @@
-# Getting Started with Create React App
+# Learning Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This educational platform provides a complete learning management system with distinct interfaces for students, instructors, and administrators.
+
+## Project Overview
+
+The Learning Management System consists of:
+- Student portal for course enrollment, assignments, and learning
+- Admin dashboard for managing courses, students, and system settings
+- Responsive design with consistent styling across all interfaces
+- Material UI components for modern, accessible user experience
+
+## Recent Updates
+- **Layout Consistency**: Improved the admin layout to ensure consistent styling with the student portal
+- **Logo Visibility**: Enhanced logo placement and visibility in navigation sidebars
+- **UI Refinements**: Standardized colors, spacing, and component styling across the application
 
 ## Available Scripts
 
@@ -138,31 +151,55 @@ Several VS Code configuration files have been added to improve the development e
 
 ## Project Structure
 
-### Key Directories
-```
-├── public/               # Public assets and HTML template
-│   ├── favicon.ico       # Browser favicon
-│   ├── logo.png          # Application logo
-│   └── logo192.png       # Icons for PWA
-├── src/
-│   ├── Components/       # React components
-│   │   ├── Admin/        # Admin interface components
-│   │   ├── Layout/       # Layout components
-│   │   ├── Sidebar/      # Sidebar navigation
-│   │   ├── Login/        # Authentication components
-│   │   └── ...           # Other feature components
-│   ├── context/          # React context providers
-│   ├── Images/           # Images and visual assets
-│   ├── services/         # API service functions
-│   └── styles/           # Global CSS and themes
-├── .env                  # Environment variables
-├── .eslintrc.js          # ESLint configuration
-└── package.json          # Dependencies and scripts
-```
+### Key Components
+- **Layout Components**: Consistent design system for Admin and Student interfaces
+  - `src/Components/Layout/Layout.jsx`: Main student-facing layout
+  - `src/Components/Admin/Layout/AdminLayout.jsx`: Administrator interface layout
+- **Authentication**: Role-based access control for different user types
+- **Course Management**: Tools for creating and managing educational content
+- **User Management**: Student and instructor profile handling
 
-### Key Features
-- **User and Admin Interfaces:** Separate layouts and permissions
-- **Course Management:** Creation, editing, and enrollment
-- **Authentication:** Login/signup with social integration
-- **Responsive Design:** Using Material-UI components
-- **State Management:** Using Redux and Context API
+### Design System
+The application follows a consistent design system across all interfaces:
+
+1. **Navigation**:
+   - Fixed sidebars with standardized height and styling
+   - Consistent logo placement and visibility
+   - Unified active/hover states for menu items
+
+2. **Visual Elements**:
+   - Standard logo size (40px height) across layouts
+   - Consistent header height (64px)
+   - Uniform background colors (#FFFFFF for headers, #F1F5F9 for drawers)
+   - Standardized spacing and padding
+
+3. **Component Patterns**:
+   - Material UI styled components for consistent theming
+   - Responsive drawer components
+   - Standardized icon usage and placement
+   - Consistent search bar implementation
+
+## Development Guidelines
+
+When contributing to this project:
+
+1. **Maintain Visual Consistency**:
+   - Use existing component patterns
+   - Follow the established color scheme
+   - Maintain consistent spacing and sizing
+
+2. **Component Architecture**:
+   - Reuse existing styled components when possible
+   - Follow the established project structure
+   - Ensure responsive behavior works on all screen sizes
+
+3. **Testing**:
+   - Verify changes on multiple browsers (Chrome, Firefox, Edge)
+   - Test responsive views for mobile devices
+   - Check for visual consistency between layouts
+
+## Recent Changes (May 2025)
+- **Admin Layout Enhancement**: Fixed logo visibility issues in the admin sidebar
+- **Styling Consistency**: Standardized styling between admin and student layouts
+- **Code Cleanup**: Removed unused variables and improved code organization
+- **Documentation**: Added comprehensive documentation for layout components

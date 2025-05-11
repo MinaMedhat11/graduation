@@ -3,6 +3,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import CourseCard from '../CourseCard/CourseCard';
 import StatCard from '../StatCard/StatCard';
+import ChatBot from '../ChatBot/ChatBot'; // Import ChatBot component
 import styles from './Home.module.css';
 
 export default function Home() {
@@ -85,7 +86,7 @@ export default function Home() {
           {/* Welcome Section */}
           <div className={styles.welcomeSection}>
             <h2 className={styles.welcomeTitle}>Welcome back, John!</h2>
-            <p className={styles.welcomeSubtitle}>Here's what's happening with your learning journey today.</p>
+            <p className={styles.welcomeSubtitle}>Here&apos;s what&apos;s happening with your learning journey today.</p>
           </div>
           
           {/* Stats Section */}
@@ -135,12 +136,15 @@ export default function Home() {
                     aria-valuemax="100"
                   ></div>
                 </div>
-                <p className={styles.progressText}>You're making great progress! Keep going to reach your learning goals.</p>
+                <p className={styles.progressText}>You&apos;re making great progress! Keep going to reach your learning goals.</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Add ChatBot component */}
+      <ChatBot />
     </div>
   );
 }

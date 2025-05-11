@@ -32,7 +32,7 @@ import SettingsIcon from '@mui/icons-material/Settings'; // For Settings link in
 import LogoutIcon from '@mui/icons-material/Logout'; // For Logout link in menu
 
 // Use the same logo (assuming path is correct relative to this new file)
-// Logo is now directly imported where used
+import logoPlaceholder from '../../Images/Logo.png';
 
 const drawerWidth = 240;
 const appBarHeight = 64; // Or adjust based on screenshot appearance
@@ -207,9 +207,10 @@ const Layout = () => {
       </StyledAppBar>
 
       {/* Sidebar Drawer */}
-      <StyledDrawer variant="permanent" open={open}>        <DrawerHeader>
+      <StyledDrawer variant="permanent" open={open}>
+        <DrawerHeader>
           {/* Logo */}
-          <img src={require('../../Images/Logo.png')} alt="EDUCATION YOUR TAGLINE" style={{ height: '40px', objectFit: 'contain' }} />
+          <img src={logoPlaceholder} alt="Education Your Tagline" style={{ height: '40px', objectFit: 'contain' }} />
         </DrawerHeader>
         {/* Removed Divider, Drawer Toggle - Add if needed based on final design */}
         <List sx={{ pt: 2 }}> {/* Add padding top */}
