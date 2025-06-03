@@ -6,11 +6,10 @@
 
 .mainContent {
   flex: 1;
-  margin-left: var(--sidebar-width);
 }
 
 .assignmentsContent {
-  padding: 2rem;
+  padding: 2rem 2rem 2rem 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto 1fr;
@@ -337,12 +336,12 @@
 .pageTitle {
   font-size: var(--font-size-xxl);
   font-weight: var(--font-weight-bold);
-  color: var(--text-dark);
+  color: var(--text-primary);
   margin-bottom: var(--spacing-xs);
 }
 
 .pageSubtitle {
-  color: var(--text-light);
+  color: var(--text-muted);
   font-size: var(--font-size-md);
 }
 
@@ -411,7 +410,7 @@
 
 .assignmentTitle {
   font-weight: var(--font-weight-semibold);
-  color: var(--text-dark);
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -435,7 +434,7 @@
 .assignmentMeta {
   display: flex;
   justify-content: space-between;
-  color: var(--text-light);
+  color: var(--text-muted);
   font-size: var(--font-size-xs);
   margin-bottom: var(--spacing-md);
 }
@@ -509,11 +508,11 @@
 .emptyTitle {
   font-weight: var(--font-weight-medium);
   margin-bottom: var(--spacing-sm);
-  color: var(--text-dark);
+  color: var(--text-primary);
 }
 
 .emptyText {
-  color: var(--text-light);
+  color: var(--text-muted);
   margin-bottom: var(--spacing-lg);
   max-width: 500px;
   margin-left: auto;

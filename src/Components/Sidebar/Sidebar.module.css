@@ -16,15 +16,19 @@
 }
 
 .logoContainer {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 180px; /* Accommodate 150px logo + margins */
+  padding: 15px 0;
 }
 
 .logoImage {
-  width: 100px;
-  height: auto;
+  height: 150px;
+  width: auto;
+  object-fit: contain;
+  margin: 10px 0;
 }
 
 .logoText {
@@ -122,11 +126,14 @@
   }
   
   .logoContainer {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    min-height: 80px; /* Smaller on mobile */
+    padding: 10px 0;
   }
   
   .logoImage {
-    width: 40px;
+    height: 60px; /* Smaller logo on mobile */
+    width: auto;
   }
   
   .navLink span {

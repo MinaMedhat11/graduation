@@ -25,7 +25,6 @@ import { useNavigate } from 'react-router-dom';
 import DashboardCustomizeOutlinedIcon from '@mui/icons-material/DashboardCustomizeOutlined'; // Use outlined for consistency
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
-import BookOutlinedIcon from '@mui/icons-material/BookOutlined'; // For Lectures/Content
 import PaymentOutlinedIcon from '@mui/icons-material/PaymentOutlined'; // For Payments
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'; // Enrollments
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined'; // Students & Instructors
@@ -69,7 +68,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 // Styled Drawer to match design
-const StyledDrawer = styled(Drawer)(({ theme }) => ({
+const StyledDrawer = styled(Drawer)(() => ({
   width: drawerWidth,
   flexShrink: 0,
   whiteSpace: 'nowrap',
@@ -86,8 +85,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center', // Center logo
-  padding: theme.spacing(0, 1),
-  height: appBarHeight,
+  padding: theme.spacing(1),
+  height: '180px', // Increased to accommodate 150px logo + margin
+  minHeight: '180px',
   // ...theme.mixins.toolbar, // Not needed if AppBar is separate
 }));
 
@@ -95,7 +95,6 @@ const AdminLayout = () => {
   const location = useLocation();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const theme = useTheme(); // Use theme
-  const [open, setOpen] = React.useState(true); // Keep drawer open by default
   const navigate = useNavigate();
 
   const handleOpenUserMenu = (event) => {
@@ -208,10 +207,18 @@ const AdminLayout = () => {
       </AppBar>
 
       {/* Use the styled Drawer */}
-      <StyledDrawer variant="permanent">
-        <DrawerHeader>
-          {/* Use actual logo */}
-          <img src={logoPlaceholder} alt="Logo" style={{ height: '40px', objectFit: 'contain' }} />
+      <StyledDrawer variant="permanent">        <DrawerHeader>
+          {/* Use direct logo image with 150px height */}
+          <img 
+            src={logoPlaceholder} 
+            alt="SMART LMS" 
+            style={{ 
+              height: '150px', 
+              width: 'auto',
+              objectFit: 'contain',
+              margin: '10px 0'
+            }} 
+          />
         </DrawerHeader>
         {/* No divider needed unless design requires */}
         <List sx={{ pt: 2, px: 1.5 }}> {/* Padding top and horizontal */}

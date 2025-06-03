@@ -9,12 +9,12 @@
 .pageTitle {
   font-size: var(--font-size-xxl);
   font-weight: var(--font-weight-bold);
-  color: var(--text-dark);
+  color: var(--text-primary);
   margin-bottom: var(--spacing-xs);
 }
 
 .pageSubtitle {
-  color: var(--text-light);
+  color: var(--text-muted);
   font-size: var(--font-size-md);
 }
 
@@ -377,8 +377,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 240px; /* Match sidebar width */
-  width: calc(100% - 240px);
+  padding-left: 250px; /* Account for fixed sidebar width */
+  margin-left: 0;
+  width: 100%;
 }
 
 .paymentsContent {
@@ -789,8 +790,9 @@
 /* Responsive Styles */
 @media (max-width: 1024px) {
   .mainContent {
-    width: calc(100% - 240px);
-    margin-left: 240px;
+    width: 100%;
+    padding-left: 250px;
+    margin-left: 0;
   }
   
   .cardsRow {

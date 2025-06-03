@@ -246,8 +246,9 @@
 /* Responsive Styles */
 @media (max-width: 1024px) {
   .mainContent {
-    width: calc(100% - 240px);
-    margin-left: 240px;
+    width: 100%;
+    padding-left: 250px;
+    margin-left: 0;
   }
   
   .profileContent {

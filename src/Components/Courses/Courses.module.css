@@ -56,6 +56,7 @@
   min-height: 100vh;
   background-color: #f8f9fa;
   width: 100%;
+  padding-left: 240px; /* Account for fixed sidebar */
 }
 
 .sidebarWrapper {
@@ -71,8 +72,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 240px; /* Match sidebar width */
-  width: calc(100% - 240px);
+  margin-left: 0; /* Remove margin */
+  width: 100%;
 }
 
 .coursesContent {
@@ -268,8 +269,9 @@
 /* Responsive Styles */
 @media (max-width: 1024px) {
   .mainContent {
-    width: calc(100% - 240px);
-    margin-left: 240px;
+    width: 100%;
+    padding-left: 250px;
+    margin-left: 0;
   }
   
   .coursesGrid {

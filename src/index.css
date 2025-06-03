@@ -7,10 +7,9 @@
   --secondary-color: #2A9A90;
   --success-color: #4CAF50;
   --warning-color: #FF9800;
-  --danger-color: #F44336;
-  --text-dark: #333333;
-  --text-medium: #555555;
-  --text-light: #6C757D;
+  --danger-color: #F44336;  --text-primary: #333333;
+  --text-secondary: #555555;
+  --text-muted: #6C757D;
   --border-color: #E0E0E0;
   --bg-color: #F5F7FA;
   --bg-light: #FFFFFF;
@@ -51,8 +50,7 @@
   
   /* Surface colors */
   --surface-color: #FFFFFF;
-  --surface-hover: #F5F5F5;
-  
+  --surface-hover: #F5F5F5;  
   /* Text colors */
   --text-primary: #333333;
   --text-secondary: #555555;
@@ -71,9 +69,8 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-color);
-  color: var(--text-dark);
+  -moz-osx-font-smoothing: grayscale;  background-color: var(--bg-color);
+  color: var(--text-primary);
 }
 
 code {
@@ -84,12 +81,12 @@ code {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: var(--text-dark);
+  color: var(--text-primary);
 }
 
 p {
   margin-bottom: 1rem;
-  color: var(--text-light);
+  color: var(--text-muted);
 }
 
 a {
@@ -121,7 +118,7 @@ label {
 
 /* Layout Classes */
 .main-content {
-  margin-left: var(--sidebar-width);
+  margin-left: 0;
   min-height: 100vh;
   padding-top: var(--header-height);
   transition: margin-left 0.3s ease;
@@ -178,7 +175,7 @@ label {
 .text-success { color: var(--success-color); }
 .text-warning { color: var(--warning-color); }
 .text-danger { color: var(--danger-color); }
-.text-muted { color: var(--text-light); }
+.text-muted { color: var(--text-muted); }
 
 .bg-primary { background-color: var(--primary-color); }
 .bg-primary-light { background-color: var(--primary-light); }
@@ -217,6 +214,33 @@ label {
 .shadow-md { box-shadow: var(--shadow-md); }
 .shadow-lg { box-shadow: var(--shadow-lg); }
 
+/* Force remove spacing between sidebar and main content */
+.main-content,
+[class*="mainContent"],
+main,
+main > div,
+main > div > div {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Ensure sidebar is properly positioned */
+.sidebar,
+[role="presentation"],
+.MuiDrawer-root .MuiDrawer-paper {
+  position: fixed !important;
+  left: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Force main content to start next to sidebar */
+main[class*="css"] {
+  margin-left: 240px !important;
+  width: calc(100% - 240px) !important;
+  position: relative !important;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 992px) {
   .main-content {
@@ -224,7 +248,7 @@ label {
   }
   
   .sidebar-open .main-content {
-    margin-left: var(--sidebar-width);
+    margin-left: 0;
   }
 }
 

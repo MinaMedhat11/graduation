@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 // Icons
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SchoolIcon from '@mui/icons-material/School';
@@ -43,6 +43,7 @@ const StyledAppBar = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  position: 'fixed',
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -64,7 +65,7 @@ const StyledDrawer = styled(Drawer, {
   shouldForwardProp: (prop) => prop !== 'open'
 })(({ theme, open }) => ({
   '& .MuiDrawer-paper': {
-    position: 'relative',
+    position: 'fixed',
     whiteSpace: 'nowrap',
     width: drawerWidth,
     transition: theme.transitions.create('width', {
@@ -74,6 +75,8 @@ const StyledDrawer = styled(Drawer, {
     boxSizing: 'border-box',
     borderRight: 'none',
     backgroundColor: '#E0F2F1',
+    margin: 0,
+    padding: 0,
     ...(!open && {
       overflowX: 'hidden',
       transition: theme.transitions.create('width', {
@@ -92,8 +95,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: theme.spacing(0, 1),
-  height: appBarHeight,
+  padding: theme.spacing(1),
+  height: '180px', // Increased to accommodate 150px logo + margin
+  minHeight: '180px',
   ...theme.mixins.toolbar,
 }));
 
@@ -101,10 +105,9 @@ const Layout = () => {
   // Hooks
   const navigate = useNavigate();
   const location = useLocation();
-  const theme = useTheme();
 
   // State
-  const [open, setOpen] = useState(true);
+  const [open] = useState(true);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
   // Handlers
@@ -140,10 +143,8 @@ const Layout = () => {
   const isActive = (path) => {
     return location.pathname === path ||
       (path !== '/dashboard' && location.pathname.startsWith(path));
-  };
-
-  return (
-    <Box sx={{ display: 'flex' }}>
+  };  return (
+    <Box sx={{ display: 'flex', margin: 0, padding: 0, gap: 0, width: '100%', height: '100vh' }}>
       <CssBaseline />
 
       {/*ChatBot */}
@@ -232,12 +233,16 @@ const Layout = () => {
       </StyledAppBar>
 
       {/* Sidebar Drawer */}
-      <StyledDrawer variant="permanent" open={open}>
-        <DrawerHeader>
+      <StyledDrawer variant="permanent" open={open}>        <DrawerHeader>
           <img
             src={logoPlaceholder}
-            alt="Education Your Tagline"
-            style={{ height: '40px', objectFit: 'contain' }}
+            alt="SMART LMS"
+            style={{ 
+              height: '150px', 
+              width: 'auto',
+              objectFit: 'contain',
+              margin: '10px 0'
+            }}
           />
         </DrawerHeader>
 
@@ -297,13 +302,11 @@ const Layout = () => {
             </ListItem>
           ))}
         </List>
-      </StyledDrawer>
-
-      {/* Main Content */}
+      </StyledDrawer>      {/* Main Content */}
       <Box
         component="main"
-        sx={{
-          backgroundColor: (theme) =>
+        sx={(theme) => ({
+          backgroundColor: 
             theme.palette.mode === 'light'
               ? theme.palette.grey[100]
               : theme.palette.grey[900],
@@ -311,9 +314,19 @@ const Layout = () => {
           height: '100vh',
           overflow: 'auto',
           pt: `${appBarHeight}px`,
-        }}
+          ml: `${drawerWidth}px !important`,
+          mr: 0,
+          padding: 0,
+          margin: 0,
+          marginLeft: `${drawerWidth}px !important`,
+          marginTop: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          width: `calc(100% - ${drawerWidth}px) !important`,
+          position: 'relative',
+        })}
       >
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 0 }}>
           <Outlet />
         </Box>
       </Box>

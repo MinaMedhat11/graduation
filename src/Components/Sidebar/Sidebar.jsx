@@ -23,10 +23,19 @@ export default function Sidebar() {
     
     return (
         <div className={styles.sidebarContainer}>
-            <div className={styles.sidebar}>
-                {/* Logo */}                <div className={styles.logoContainer}>
+            <div className={styles.sidebar}>                {/* Logo */}                
+                <div className={styles.logoContainer}>
                     <Link to="/dashboard">
-                        <img src={require('../../Images/Logo.png')} alt="EDUCATION YOUR TAGLINE" className={styles.logoImage} />
+                        <img 
+                            src={require('../../Images/Logo.png')} 
+                            alt="SMART LMS" 
+                            style={{
+                                height: '150px',
+                                width: 'auto',
+                                objectFit: 'contain',
+                                margin: '10px 0'
+                            }}
+                        />
                     </Link>
                 </div>
                 

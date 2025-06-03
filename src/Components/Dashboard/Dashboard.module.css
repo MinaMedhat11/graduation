@@ -1,17 +1,18 @@
 .welcomeSection {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 2rem;
 }
 
 .welcomeTitle {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-xs);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 0.5rem 0;
 }
 
 .welcomeSubtitle {
-  color: var(--text-secondary);
-  font-size: var(--font-size-md);
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
 }
 
 .statsSection {
@@ -174,7 +175,7 @@
   display: flex;
   align-items: center;
   padding: var(--spacing-sm) var(--spacing-md);
-  color: var(--text-dark);
+  color: var(--text-primary);
   text-decoration: none;
   border-radius: var(--border-radius-sm);
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -198,25 +199,26 @@
   display: flex;
   min-height: 100vh;
   background-color: #f8f9fa;
+  padding-left: 250px; /* Account for fixed sidebar width */
 }
 
 .mainContent {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 250px; /* Match sidebar width */
-  width: calc(100% - 250px);
+  margin-left: 0;
+  width: 100%;
 }
 
 .dashboardContent {
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 0; /* No left padding for flush design */
   flex-grow: 1;
 }
 
-/* Dashboard Cards */
-.dashboardCards {
+/* Dashboard Grid - 3 Column Layout */
+.dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -234,6 +236,8 @@
   font-weight: 600;
   color: #333;
   margin: 0 0 1.5rem 0;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
 }
 
 /* Task Progress */
@@ -251,223 +255,386 @@
 }
 
 .taskItem {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
 }
 
 .taskInfo {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  align-items: center;
 }
 
 .taskTitle {
-  font-size: 0.95rem;
+  font-weight: 500;
   color: #333;
 }
 
 .taskCompletion {
+  font-weight: 600;
+  color: #28a79f;
   font-size: 0.9rem;
-  color: #666;
 }
 
 .progressBarContainer {
+  width: 100%;
   height: 8px;
-  background-color: #f0f0f0;
+  background: #e9ecef;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progressBar {
   height: 100%;
-  background-color: #3CB0A5; /* Teal color */
+  background: linear-gradient(90deg, #28a79f, #20918a);
   border-radius: 4px;
+  transition: width 0.3s ease;
 }
 
 /* Performance */
 .performanceContainer {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  gap: 1rem;
 }
 
 .performanceHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .pointType {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.95rem;
+  font-weight: 500;
   color: #333;
 }
 
 .pointIndicator {
-  width: 12px;
-  height: 12px;
-  background-color: #3CB0A5; /* Teal color */
-  border-radius: 50%;
-  display: inline-block;
+  font-size: 1.2rem;
 }
 
-.periodSelector {
-  position: relative;
-}
-
-.periodSelect {
-  padding: 0.5rem 1rem;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  background-color: white;
+.periodSelector select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
   font-size: 0.9rem;
-  color: #333;
-  appearance: none;
-  padding-right: 2rem;
-  cursor: pointer;
 }
 
-.gaugeContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+.progressPercentage {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
-.gauge {
-  width: 200px;
-  height: 200px;
-  position: relative;
-}
-
-.gaugeBody {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 15px solid #f0f0f0;
-  border-top-color: #3CB0A5; /* Teal color */
-  transform: rotate(45deg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.gaugeValue {
-  transform: rotate(-45deg);
-  text-align: center;
-}
-
-.pointValue {
+/* Course Progress Container */
+.courseProgressContainer {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.pointNumber {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
-}
-
-/* Pending Invoices */
-.pendingInvoicesContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-  padding: 2rem 1rem;
-}
-
-.checkIcon {
-  font-size: 3rem;
-  color: #3CB0A5;
-  margin-bottom: 1.5rem;
-}
-
-.noInvoicesText {
-  font-size: 0.95rem;
-  color: #666;
-  max-width: 80%;
-  line-height: 1.5;
-}
-
-/* Courses Section */
-.coursesSection {
-  margin-bottom: 2rem;
-}
-
-.sectionTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 1.5rem;
-}
-
-.coursesGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.courseCard {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
-  display: flex;
-  align-items: flex-start;
   gap: 1rem;
 }
 
-.courseIcon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+.courseProgressItem {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.courseInfo {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-  flex-shrink: 0;
 }
 
-.courseContent {
-  flex-grow: 1;
+.courseName {
+  font-weight: 500;
+  color: #333;
 }
 
-.courseTitle {
-  font-size: 1.1rem;
+.coursePercentage {
   font-weight: 600;
+  color: #28a79f;
+}
+
+/* Section Subtitle */
+.sectionSubTitle {
+  font-size: 1rem;
+  font-weight: 500;
   color: #333;
   margin: 0 0 1rem 0;
 }
 
-.courseStats {
+/* No Data Message */
+.noDataMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+}
+
+.noDataMessage p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* Enhanced Ranking Styles */
+.rankingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rankingHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.rankingType {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.rankingIndicator {
+  font-size: 1.2rem;
+}
+
+.courseSelector select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+}
+
+.currentRankDisplay {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.userRankBadge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #28a79f, #20918a);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(40, 167, 159, 0.3);
+}
+
+.rankNumber {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.rankLabel {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.rankingList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rankingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.rankingItem:hover {
+  background: #e9ecef;
+}
+
+.rankingItem.currentUser {
+  background: #e8f5f4;
+  border-color: #28a79f;
+  font-weight: 500;
+}
+
+.rankInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rankPosition {
+  font-weight: 600;
+  color: #333;
+}
+
+.studentName {
+  color: #333;
+}
+
+.studentPoints {
+  font-weight: 500;
+  color: #28a79f;
+}
+
+.rankingGap {
+  text-align: center;
+  padding: 0.5rem;
+  color: #666;
+}
+
+/* Circular Progress Styles */
+.circularProgress {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.progressCircle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(#28a79f 0deg 252deg, #e9ecef 252deg 360deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.progressCircle::before {
+  content: '';
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+}
+
+.progressValue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+
+.pointsText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #28a79f;
+  line-height: 1;
+}
+
+.pointsLabel {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.progressStats {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .statItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  flex: 1;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
-.statItem i {
-  font-size: 1.25rem;
-  color: #3CB0A5; /* Teal color */
+.statLabel {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.25rem;
 }
 
-.statItem span {
+.statValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #28a79f;
+}
+
+/* Pending Invoices Section */
+.pendingInvoicesSection {
+  margin-bottom: 2rem;
+}
+
+.invoicesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.invoiceItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.invoiceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.invoiceTitle {
+  font-weight: 500;
+  color: #333;
+}
+
+.invoiceDate {
   font-size: 0.9rem;
   color: #666;
+}
+
+.invoiceAmount {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-right: 1rem;
+}
+
+.payButton {
+  padding: 0.5rem 1rem;
+  background: #28a79f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.payButton:hover {
+  background: #20918a;
 }
 
 /* Continue Watching Section */
@@ -477,26 +644,25 @@
 
 .watchingGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
 }
 
 .watchingCard {
-  background-color: white;
+  background: white;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease;
 }
 
 .watchingCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .watchingThumbnail {
+  width: 100%;
   height: 150px;
-  position: relative;
   overflow: hidden;
 }
 
@@ -506,286 +672,63 @@
   object-fit: cover;
 }
 
-.categoryBadge {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background-color: rgba(60, 176, 165, 0.9); /* Teal color with opacity */
-  color: white;
-  padding: 0.35rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.thumbnailOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.watchingCard:hover .thumbnailOverlay {
-  opacity: 1;
-}
-
-.playButton {
-  width: 50px;
-  height: 50px;
-  background-color: #3CB0A5; /* Teal color */
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 1.25rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.playButton:hover {
-  transform: scale(1.1);
-}
-
 .watchingInfo {
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .watchingTitle {
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
   margin: 0 0 1rem 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.5;
-  height: 3em;
-}
-
-.watchingProgress {
-  height: 4px;
-  background-color: #f0f0f0;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.progressIndicator {
-  height: 100%;
-  background-color: #3CB0A5; /* Teal color */
-  border-radius: 2px;
-}
-
-/* Responsive Styles */
-@media (max-width: 1200px) {
-  .dashboardCards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .coursesGrid, .watchingGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .mainContent {
-    margin-left: 0;
-    width: 100%;
-  }
-  
-  .dashboardCards, .coursesGrid, .watchingGrid {
-    grid-template-columns: 1fr;
-  }
-} 
-.linkContainer{
-  background-color: #09c ;
-  width: 500px;
-}
-.linkButton{
-  text-decoration: none;
-  color: black;
-  font-size: 20px;
-  text-align: center;
-  padding-bottom: 15px;
-}
-
-/* Ranking Card Styles */
-.rankingContainer {
-  padding: 15px;
-}
-
-.rankingHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.rankingType {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.rankingIndicator {
-  font-size: 18px;
-}
-
-.courseSelector {
-  position: relative;
-}
-
-.courseSelect {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
-  font-size: 14px;
   color: #333;
-  cursor: pointer;
-  min-width: 200px;
 }
 
-.courseSelect:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-.currentRankDisplay {
-  text-align: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
+.linkButton {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background: #28a79f;
   color: white;
-}
-
-.userRankBadge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.rankNumber {
-  font-size: 32px;
-  font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.rankLabel {
-  font-size: 14px;
-  opacity: 0.9;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.rankingList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.rankingItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  border-left: 4px solid transparent;
-}
-
-.rankingItem:hover {
-  background-color: #e9ecef;
-  transform: translateX(3px);
-}
-
-.rankingItem.currentUser {
-  background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
-  border-left-color: #e17055;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(225, 112, 85, 0.3);
-}
-
-.rankInfo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.rankPosition {
-  font-weight: bold;
-  color: #2c3e50;
-  min-width: 50px;
-  font-size: 16px;
-}
-
-.studentName {
-  color: #34495e;
-  font-size: 15px;
-}
-
-.currentUser .studentName {
-  color: #d63031;
-  font-weight: 600;
-}
-
-.studentPoints {
-  font-weight: 600;
-  color: #27ae60;
-  font-size: 14px;
-  background-color: rgba(39, 174, 96, 0.1);
-  padding: 4px 8px;
-  border-radius: 12px;
-}
-
-.currentUser .studentPoints {
-  background-color: rgba(214, 48, 49, 0.1);
-  color: #d63031;
-}
-
-.rankingGap {
+  text-decoration: none;
   text-align: center;
-  padding: 8px;
-  color: #95a5a6;
+  border-radius: 0 0 10px 10px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
-.gapIndicator {
-  font-size: 20px;
-  font-weight: bold;
+.linkButton:hover {
+  background: #20918a;
+  color: white;
+  text-decoration: none;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .dashboardCards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .welcomeTitle {
+    font-size: 1.5rem;
+  }
+  
+  .performanceHeader,
   .rankingHeader {
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
     align-items: stretch;
   }
   
-  .courseSelect {
-    width: 100%;
+  .courseInfo,
+  .taskInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   
-  .rankingItem {
-    padding: 10px 12px;
-  }
-  
-  .rankNumber {
-    font-size: 28px;
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }

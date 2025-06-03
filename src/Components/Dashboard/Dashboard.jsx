@@ -4,7 +4,6 @@ import Sidebar from '../Sidebar/Sidebar';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
-  const [selectedPeriod, setSelectedPeriod] = useState('Monthly');
   const [courses, setCourses] = useState([]);
   const [overallPercentage, setOverallPercentage] = useState(0);
   const [selectedRankingCourse, setSelectedRankingCourse] = useState('Introduction to Programming');
@@ -97,13 +96,15 @@ export default function Dashboard() {
 
   return (
     <div className={styles.dashboardContainer}>
-      <Sidebar />
-      <div className={styles.mainContent}>
+      <Sidebar />      <div className={styles.mainContent}>
         <div className={styles.dashboardContent}>
-          {/* Main Dashboard Cards */}
-          <div className={styles.dashboardCards}>
-
- {/* Course Ranking Card */}
+          {/* Welcome Section */}
+          <div className={styles.welcomeSection}>
+            <h1 className={styles.welcomeTitle}>Welcome back!</h1>
+            <p className={styles.welcomeSubtitle}>Here&apos;s what&apos;s happening with your courses today.</p>
+          </div>          {/* Main Dashboard Grid - 3 Column Layout */}
+          <div className={styles.dashboardGrid}>
+            {/* Course Ranking Card - Left Column */}
             <div className={styles.dashboardCard}>
               <h3 className={styles.cardTitle}>Course Ranking</h3>
               <div className={styles.rankingContainer}>
@@ -128,7 +129,7 @@ export default function Dashboard() {
                 <div className={styles.currentRankDisplay}>
                   <div className={styles.userRankBadge}>
                     <span className={styles.rankNumber}>#{getCurrentRankingData().currentUserRank}</span>
-                    <span className={styles.rankLabel}>Your Rank</span>
+                    <span className={styles.rankLabel}>Rank</span>
                   </div>
                 </div>
 
@@ -144,6 +145,7 @@ export default function Dashboard() {
                         </span>
                         <span className={styles.studentName}>{student.name}</span>
                       </div>
+                      <span className={styles.studentPoints}>{student.points} pts</span>
                     </div>
                   ))}
                   
@@ -156,13 +158,12 @@ export default function Dashboard() {
               </div>
             </div>
 
-
-            {/* Assignment Card */}
+            {/* Assignment Card - Center Column */}
             <div className={styles.dashboardCard}>
               <h3 className={styles.cardTitle}>Assignment</h3>
               <div className={styles.taskProgressContainer}>
-                <h4 className={styles.sectionTitle}>Task Progress</h4>
-                {Array.isArray(courses) && courses.map((course) => {
+                <h4 className={styles.sectionSubTitle}>Task Progress</h4>
+                {Array.isArray(courses) && courses.length > 0 ? courses.map((course) => {
                   if (course && course.total_assignments_count > 0) {
                     const progress = (course.submitted_assignments_count / course.total_assignments_count) * 100;
                     return (
@@ -183,59 +184,67 @@ export default function Dashboard() {
                     );
                   }
                   return null;
-                })}
+                }).filter(Boolean) : (
+                  <div className={styles.noDataMessage}>
+                    <p>No assignments available</p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Performance Card */}
+            {/* Performance Card - Right Column */}
             <div className={styles.dashboardCard}>
               <h3 className={styles.cardTitle}>Performance</h3>
               <div className={styles.performanceContainer}>
                 <div className={styles.performanceHeader}>
                   <div className={styles.pointType}>
-                    <span className={styles.pointIndicator}></span>
+                    <span className={styles.pointIndicator}>📊</span>
                     <span>Point Progress</span>
                   </div>
-                  <div className={styles.periodSelector}>
-                    <select
-                      value={selectedPeriod}
-                      onChange={(e) => setSelectedPeriod(e.target.value)}
-                      className={styles.periodSelect}
-                    >
-                      <option value="Weekly">Weekly</option>
-                      <option value="Monthly">Monthly</option>
-                      <option value="Yearly">Yearly</option>
-                    </select>
+                </div>
+                <div className={styles.circularProgress}>
+                  <div className={styles.progressCircle}>
+                    <div className={styles.progressValue}>
+                      <span className={styles.pointsText}>8,966</span>
+                      <span className={styles.pointsLabel}>Points</span>
+                    </div>
                   </div>
                 </div>
-                <div className={styles.gaugeContainer}>
-                  <div className={styles.gauge}>
-                    <div className={styles.gaugeBody}>
-                      <div className={styles.gaugeIndicator}></div>
-                      <div className={styles.gaugeValue}>
-                        <div className={styles.pointValue}>
-                          <span>Your Point:</span>
-                          <span className={styles.pointNumber}>8,966</span>
-                        </div>
-                      </div>
-                    </div>
+                <div className={styles.progressStats}>
+                  <div className={styles.statItem}>
+                    <span className={styles.statLabel}>This Month</span>
+                    <span className={styles.statValue}>+2,450</span>
+                  </div>
+                  <div className={styles.statItem}>
+                    <span className={styles.statLabel}>Progress</span>
+                    <span className={styles.statValue}>{overallPercentage}%</span>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-           
-
-            {/* Pending Invoices Card */}
+          {/* Pending Invoices Section - Full Width */}
+          <div className={styles.pendingInvoicesSection}>
             <div className={styles.dashboardCard}>
               <h3 className={styles.cardTitle}>Pending invoices</h3>
-              <div className={styles.pendingInvoicesContainer}>
-                <div className={styles.checkIcon}>
-                  <i className="fa-solid fa-circle-check"></i>
+              <div className={styles.invoicesContainer}>
+                <div className={styles.invoiceItem}>
+                  <div className={styles.invoiceInfo}>
+                    <span className={styles.invoiceTitle}>Web Development Course</span>
+                    <span className={styles.invoiceDate}>Due: March 15, 2024</span>
+                  </div>
+                  <div className={styles.invoiceAmount}>$299.00</div>
+                  <button className={styles.payButton}>Pay Now</button>
                 </div>
-                <p className={styles.noInvoicesText}>
-                  You don&apos;t have any pending invoices. If any to be issued later you would find them here.
-                </p>
+                <div className={styles.invoiceItem}>
+                  <div className={styles.invoiceInfo}>
+                    <span className={styles.invoiceTitle}>Data Science Specialization</span>
+                    <span className={styles.invoiceDate}>Due: March 20, 2024</span>
+                  </div>
+                  <div className={styles.invoiceAmount}>$499.00</div>
+                  <button className={styles.payButton}>Pay Now</button>
+                </div>
               </div>
             </div>
           </div>
