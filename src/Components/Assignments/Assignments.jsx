@@ -253,7 +253,7 @@ export default function Assignments() {
           <Card sx={{ p: 2, textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '2px dashed #ccc', borderRadius: '12px' }}>
             <UploadFileIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
             <Typography variant="h6" gutterBottom>Please Drop Assignment Here</Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>Or Click on the "Add" Button</Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Or Click on the &quot;Add&quot; Button</Typography>
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddAssignment} sx={{ mt: 1, backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}>
               Add
             </Button>
@@ -281,7 +281,6 @@ export default function Assignments() {
               <TableHead>
                 <TableRow sx={{ '& th': { fontWeight: 'bold' } }}>
                   <TableCell>Assignment</TableCell>
-                  <TableCell>Deadline</TableCell>
                   <TableCell>Course</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Action</TableCell>
@@ -296,7 +295,6 @@ export default function Assignments() {
                         {statusProps.icon}
                         {row.title}
                       </TableCell>
-                      <TableCell>{formatDate(row.due_date)}</TableCell>
                       <TableCell>{row.course}</TableCell>
                       <TableCell>
                         <Chip 

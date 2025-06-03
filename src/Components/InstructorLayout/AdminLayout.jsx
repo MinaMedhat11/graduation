@@ -40,8 +40,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 // Use the same logo
-import logoPlaceholder from '../../../Images/Logo.png'; // Adjust path relative to this file
-import { authService } from './../../../services/authService';
+import logoPlaceholder from '../../Images/Logo.png'; // Adjust path relative to this file
+import { authService } from './../../services/authService';
 
 const drawerWidth = 260; // Slightly wider drawer based on screenshots
 const appBarHeight = 64;
@@ -120,23 +120,19 @@ const AdminLayout = () => {
 
   // Admin Sidebar items definition - updated based on screenshots
   const sidebarItems = [
-    { text: 'Dashboard', icon: <DashboardCustomizeOutlinedIcon />, path: '/admin/dashboard' },
-    { text: 'Courses', icon: <SchoolOutlinedIcon />, path: '/admin/courses' },
-    { text: 'Assignment', icon: <AssignmentTurnedInOutlinedIcon />, path: '/admin/assignments' },
-    { text: 'Payments', icon: <PaymentOutlinedIcon />, path: '/admin/payments' }, // Assuming path exists
-    { text: 'Enrollments', icon: <PeopleAltOutlinedIcon />, path: '/admin/enrollments' }, // Assuming path exists
-    { text: 'Students & Instructors', icon: <SupervisorAccountOutlinedIcon />, path: '/admin/users' }, // Combined path
-    { text: 'Majors', icon: <CategoryIcon />, path: '/admin/majors' }, // Example for Majors
-    { text: 'Instructors Performance', icon: <MilitaryTechIcon />, path: '/admin/instructor-progress' }, // Example for Instructor Progress
-    { text: 'Courses Progress', icon: <ModelTrainingIcon />, path: '/admin/course-progress' }, // Example for Instructor Progress
+    { text: 'Dashboard', icon: <DashboardCustomizeOutlinedIcon />, path: '/instructor/dashboard' },
+    { text: 'Courses', icon: <SchoolOutlinedIcon />, path: '/instructor/courses' },
+    { text: 'Assignment', icon: <AssignmentTurnedInOutlinedIcon />, path: '/instructor/assignments' },
+    { text: 'Majors', icon: <CategoryIcon />, path: '/instructor/majors' }, // Example for Majors
+    { text: 'Courses Progress', icon: <ModelTrainingIcon />, path: '/instructor/course-progress' }, // Example for Instructor Progress
   ];
 
   const isActive = (path) => {
     // Handle nested routes like course edit/add under courses
-    if (path === '/admin/courses' && location.pathname.startsWith('/admin/course/')) {
+    if (path === '/instructor/courses' && location.pathname.startsWith('/instructor/course/')) {
       return true;
     }
-    return location.pathname === path || (path !== '/admin/dashboard' && location.pathname.startsWith(path) && path !== '/admin');
+    return location.pathname === path || (path !== '/instructor/dashboard' && location.pathname.startsWith(path) && path !== '/instructor');
   }
 
   return (
@@ -188,11 +184,11 @@ const AdminLayout = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >                     {/* Use NavLink for Profile/Settings if they have routes */}
-                <MenuItem component={NavLink} to="/admin/profile" onClick={handleCloseUserMenu}>
+                <MenuItem component={NavLink} to="/instructor/profile" onClick={handleCloseUserMenu}>
                   <ListItemIcon><AccountCircle fontSize="small" /></ListItemIcon>
                   <ListItemText>Profile</ListItemText>
                 </MenuItem>
-                <MenuItem component={NavLink} to="/admin/settings" onClick={handleCloseUserMenu}>
+                <MenuItem component={NavLink} to="/instructor/settings" onClick={handleCloseUserMenu}>
                   <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
                   <ListItemText>Settings</ListItemText>
                 </MenuItem>

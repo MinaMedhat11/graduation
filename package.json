@@ -36,7 +36,9 @@
     "test": "cross-env NODE_ENV=test BABEL_ENV=test react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "lint": "eslint . --fix"
+
   },
   "eslintConfig": {
     "extends": [
@@ -59,6 +61,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "cross-env": "^7.0.3",
+    "eslint": "^9.26.0",
     "gh-pages": "^6.3.0"
   },
   "babel": {

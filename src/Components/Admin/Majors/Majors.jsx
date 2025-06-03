@@ -1,10 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios'; // تأكد من تثبيت axios أولاً
 import './Majors.module.css';
+import Loading from './../../Loading/Loading';
 
 const Majors = () => {
+  const [majors, setMajors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMajors = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/major/index', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        setMajors(response.data.major.data);
+        setLoading(false);
+      } catch (err) {
+        setError('فشل في جلب البيانات');
+        setLoading(false);
+      }
+    };
+
+    fetchMajors();
+  }, []);
+
+  if (loading) return <Loading/>;
+  if (error) return <div>{error}</div>;
+
   return (
     <div className="majors-page">
-      <h1>Majors</h1>
+      <h1>Majorssssssssss</h1>
       <div className="search-bar">
         <input type="text" placeholder="Search by Major Name..." />
         <button className="filter-button">Filter</button>
@@ -14,26 +44,22 @@ const Majors = () => {
         <thead>
           <tr>
             <th>Major Name</th>
-            <th>Description</th>
-            <th>Courses</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Back-End</td>
-            <td>This course is your best way to learn mobile app development for Android and Apple</td>
-            <td>10</td>
-            <td>
-              <button className="edit-button">Edit</button>
-              <button className="delete-button">Delete</button>
-            </td>
-          </tr>
-          {/* Add more rows dynamically */}
+          {majors.map((major) => (
+            <tr key={major.id}>
+              <td>{major.title}</td>
+              <td>
+                <button className="edit-button">Edittttttttt</button>
+                <button className="delete-button">Delete</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
   );
 };
-
 export default Majors;

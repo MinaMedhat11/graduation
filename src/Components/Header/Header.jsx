@@ -34,7 +34,7 @@ export default function Header() {
                 {/* Hello Message */}
                 <div className={styles.helloMessage}>
                     <h2 className={styles.greeting}>Hello {userName} <span className={styles.waveEmoji}>👋</span></h2>
-                    <p className={styles.subGreeting}>Let's learn something new today!</p>
+                    <p className={styles.subGreeting}>Let&apos;s learn something new today!</p>
                 </div>
                 
                 {/* Search Bar */}

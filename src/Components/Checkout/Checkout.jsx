@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import styles from './Checkout.module.css';
-// Import icons
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PaymentIcon from '@mui/icons-material/Payment';
@@ -10,27 +10,124 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState('creditCard');
+  const location = useLocation();
+  const { courseId } = location.state || {};
   
-  // Mock course data
-  const courseData = {
-    title: 'Advanced Course in Networks',
-    price: 1800.00,
+  const [paymentMethod, setPaymentMethod] = useState('creditCard');
+  const [courseData, setCourseData] = useState({
+    title: '',
+    price: 0,
     discount: 0,
     currency: 'EGP'
-  };
-
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    country: 'egypt',
+    card_number: '',
+    cvc: '',
+    expiry: ''
+  });
+  
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      if (!courseId) {
+        setError('No course selected');
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://127.0.0.1:8000/api/all-courses/subscribe/${courseId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        const course = response.data.data;
+        setCourseData({
+          title: course.name,
+          price: course.price,
+          discount: course.discount > 0 ? (course.price * course.discount / 100) : 0,
+          currency: 'EGP'
+        });
+        
+      } catch (err) {
+        console.error('Error fetching course data:', err);
+        setError('Failed to load course data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCourseData();
+  }, [courseId]);
+  
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // In a real application, process payment here
-    // Then navigate to confirmation page
-    navigate('/order-confirmation');
+  
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({
+      ...formData,
+      [id]: value
+    });
   };
-
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (paymentMethod !== 'creditCard') {
+      navigate('/order-confirmation');
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!courseId) {
+        alert('Error: Course ID is missing');
+        return;
+      }
+      
+      await axios.post('http://127.0.0.1:8000/api/all-courses/complete-enrollment', {
+        course_id: courseId,
+        name: formData.name,
+        country: formData.country,
+        card_number: formData.card_number,
+        cvc: formData.cvc
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
+      
+      navigate('/order-confirmation');
+      
+    } catch (err) {
+      console.error('Payment failed:', err);
+      alert('Payment failed. Please check your card details and try again.');
+    }
+  };
+  
+  if (loading) {
+    return <div className={styles.loadingMessage}>Loading checkout information...</div>;
+  }
+  
+  if (error) {
+    return (
+      <div className={styles.errorMessage}>
+        {error}
+        <Link to="/courses" className={styles.backLink}>Return to Courses</Link>
+      </div>
+    );
+  }
+  
   return (
     <div className={styles.checkoutWrapper}>
       <div className={styles.checkoutContainer}>
@@ -40,7 +137,6 @@ const Checkout = () => {
             <ArrowBackIcon /> Back to Courses
           </Link>
         </div>
-
         <div className={styles.checkoutContent}>
           <div className={styles.orderSummary}>
             <h2>Order Summary</h2>
@@ -68,7 +164,6 @@ const Checkout = () => {
               </div>
             </div>
           </div>
-
           <div className={styles.paymentDetails}>
             <h2>Payment Details</h2>
             
@@ -100,31 +195,58 @@ const Checkout = () => {
                 {paymentMethod === 'fawry' && <CheckCircleIcon className={styles.checkIcon} />}
               </div>
             </div>
-
             <form onSubmit={handleSubmit}>
               {paymentMethod === 'creditCard' && (
                 <div className={styles.creditCardForm}>
                   <div className={styles.formGroup}>
-                    <label htmlFor="cardName">Cardholder Name</label>
-                    <input type="text" id="cardName" placeholder="Name on card" required />
+                    <label htmlFor="name">Cardholder Name</label>
+                    <input 
+                      type="text" 
+                      id="name" 
+                      placeholder="Name on card" 
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required 
+                    />
                   </div>
                   <div className={styles.formGroup}>
-                    <label htmlFor="cardNumber">Card Number</label>
-                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required />
+                    <label htmlFor="card_number">Card Number</label>
+                    <input 
+                      type="text" 
+                      id="card_number" 
+                      placeholder="1234 5678 9012 3456" 
+                      value={formData.card_number}
+                      onChange={handleInputChange}
+                      required 
+                    />
                   </div>
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                       <label htmlFor="expiry">Expiry Date</label>
-                      <input type="text" id="expiry" placeholder="MM/YY" required />
+                      <input 
+                        type="text" 
+                        id="expiry" 
+                        placeholder="MM/YY" 
+                        value={formData.expiry}
+                        onChange={handleInputChange}
+                        required 
+                      />
                     </div>
+                    
                     <div className={styles.formGroup}>
-                      <label htmlFor="cvv">CVV</label>
-                      <input type="text" id="cvv" placeholder="123" required />
+                      <label htmlFor="cvc">CVV</label>
+                      <input 
+                        type="text" 
+                        id="cvc" 
+                        placeholder="123" 
+                        value={formData.cvc}
+                        onChange={handleInputChange}
+                        required 
+                      />
                     </div>
                   </div>
                 </div>
               )}
-
               {paymentMethod === 'bankTransfer' && (
                 <div className={styles.bankTransferInfo}>
                   <p>Please transfer the exact amount to the following bank account:</p>
@@ -137,7 +259,6 @@ const Checkout = () => {
                   <p className={styles.noteText}>Note: Your enrollment will be confirmed once payment is verified.</p>
                 </div>
               )}
-
               {paymentMethod === 'fawry' && (
                 <div className={styles.fawryInfo}>
                   <p>To pay with Fawry:</p>
@@ -150,7 +271,6 @@ const Checkout = () => {
                   <p className={styles.noteText}>Please keep your payment receipt for reference.</p>
                 </div>
               )}
-
               <div className={styles.formActions}>
                 <button type="submit" className={styles.confirmButton}>
                   Confirm Payment

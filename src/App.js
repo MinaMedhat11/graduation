@@ -19,7 +19,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
-
+import { ThemeProviderr } from './context/ThemeContext';
+import './styles/darkMode.css'
 // Layout
 import Layout from './Components/Layout/Layout';
 
@@ -42,9 +43,17 @@ import AdminAssignmentSubmissions from './Components/Admin/Assignments/AdminAssi
 import AdminPayments from './Components/Admin/Payments/AdminPayments';
 import AdminEnrollments from './Components/Admin/Enrollments/AdminEnrollments';
 import Majors from './Components/Majors/Majors';
+import InstructorProgress from './Components/Admin/InstructorProgress/InstructorProgress';
+import CourseProgress from './Components/Admin/CourseProgress/CourseProgress';
+import QuizCreateForm from './Components/Admin/Quiz/QuizCreateForm';
 
 // Protected Route by role
 import RoleProtectedRoute from './Components/RoleProtectedRoute';
+import VideoPlayer from "./Components/VideoPlayer/VideoPlayer";
+import ChatBot from "Components/ChatBot/ChatBot";
+
+//Instructor
+import InstructorLayout from './Components/InstructorLayout/AdminLayout';
 
 const App = () => {
   const router = createBrowserRouter([
@@ -62,14 +71,15 @@ const App = () => {
           children: [
             { path: '/', element: <Navigate to="/dashboard" replace /> },
             { path: '/dashboard', element: <Dashboard /> },
-            { path: '/courses', element: <Courses /> },            { path: '/course/:id', element: <CourseDetail /> },
+            { path: '/courses', element: <Courses /> }, { path: '/course/:id', element: <CourseDetail /> },
             { path: '/course/:courseId/lecture/:lectureId', element: <Suspense fallback={<div>Loading...</div>}>{React.createElement(lazy(() => import('./Components/VideoPlayer/VideoPlayer')))}</Suspense> },
             { path: '/payments', element: <Payments /> },
             { path: '/assignments', element: <Assignments /> },
-            { path: '/assignment/submit/:assignmentId', element: <AssignmentSubmission /> },            { path: '/lectures', element: <Lectures /> },
-            { path: '/enrollments', element: <Enrollments /> },            { path: '/profile', element: <Profile /> },
+            { path: '/assignment/submit/:assignmentId', element: <AssignmentSubmission /> }, { path: '/lectures', element: <Lectures /> },
+            { path: '/enrollments', element: <Enrollments /> }, { path: '/profile', element: <Profile /> },
             { path: '/settings', element: <Settings /> },
             { path: '/chat', element: <Chat /> },
+            { path: '/chatbot', element: <ChatBot /> },
             { path: '/quiz/:quizId', element: <QuizView /> },
             { path: '/checkout', element: <Checkout /> },
             { path: '/order-confirmation', element: <OrderConfirmation /> },
@@ -85,35 +95,68 @@ const App = () => {
         {
           element: <AdminLayout />,
           children: [
-            { path: '/admin', element: <Navigate to="/admin/dashboard" replace /> },            { path: '/admin/dashboard', element: <AdminDashboard /> },
+            { path: '/admin', element: <Navigate to="/admin/dashboard" replace /> }, { path: '/admin/dashboard', element: <AdminDashboard /> },
             { path: '/admin/courses', element: <AdminCourses /> },
             { path: '/admin/users', element: <AdminUsers /> },
             { path: '/admin/course/create', element: <CourseEditor /> },
             { path: '/admin/course/edit/:courseId', element: <CourseEditor /> },
             { path: '/admin/grading/assignment/:submissionId', element: <AssignmentGrading /> },
-            { path: '/admin/assignments', element: <AdminAssignmentSubmissions /> },            { path: '/admin/payments', element: <AdminPayments /> },
-            { path: '/admin/enrollments', element: <AdminEnrollments /> }, 
-            { path: '/admin/majors', element: <Majors /> },
+            { path: '/admin/assignments', element: <AdminAssignmentSubmissions /> }, { path: '/admin/payments', element: <AdminPayments /> },
+            { path: '/admin/enrollments', element: <AdminEnrollments /> },
             { path: '/admin/lectures', element: <Lectures /> },
             { path: '/admin/profile', element: <Profile /> },
-            { path: '/admin/settings', element: <Settings /> }
+            { path: '/admin/majors', element: <Majors /> },
+            { path: '/admin/settings', element: <Settings /> },
+            { path: '/admin/video-player', element: <VideoPlayer /> },
+            { path: '/admin/chat', element: <Chat /> },
+            { path: "/admin/instructor-progress", element: <InstructorProgress /> },
+            { path: "/admin/course-progress", element: <CourseProgress /> },
+            { path: "/admin/quiz-create", element: <QuizCreateForm /> }
+          ]
+        }
+      ]
+    },
+    {
+      element: <RoleProtectedRoute allowedGuard="instructor" />,
+      children: [
+        {
+          element: <InstructorLayout />,
+          children: [
+            { path: '/instructor', element: <Navigate to="/instructor/dashboard" replace /> }, { path: '/instructor/dashboard', element: <AdminDashboard /> },
+            { path: '/instructor/courses', element: <AdminCourses /> },
+            { path: '/instructor/course/create', element: <CourseEditor /> },
+            { path: '/instructor/course/edit/:courseId', element: <CourseEditor /> },
+            { path: '/instructor/grading/assignment/:submissionId', element: <AssignmentGrading /> },
+            { path: '/instructor/assignments', element: <AdminAssignmentSubmissions /> },
+            { path: '/instructor/lectures', element: <Lectures /> },
+            { path: '/instructor/profile', element: <Profile /> },
+            { path: '/instructor/majors', element: <Majors /> },
+            { path: '/instructor/settings', element: <Settings /> },
+            { path: '/instructor/video-player', element: <VideoPlayer /> },
+            { path: '/instructor/chat', element: <Chat /> },
+            { path: "/instructor/course-progress", element: <CourseProgress /> },
+            { path: "/instructor/quiz-create", element: <QuizCreateForm /> }
           ]
         }
       ]
     }
+
+
 
     // Optional: 404 route
     // { path: '*', element: <NotFound /> }
   ]);
 
   return (
-    <AuthProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <RouterProvider router={router} />
-        <ToastContainer position="bottom-right" autoClose={3000} />
-      </ThemeProvider>
-    </AuthProvider>
+    <ThemeProviderr>
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <RouterProvider router={router} />
+          <ToastContainer position="bottom-right" autoClose={3000} />
+        </ThemeProvider>
+      </AuthProvider>
+    </ThemeProviderr>
   );
 }
 

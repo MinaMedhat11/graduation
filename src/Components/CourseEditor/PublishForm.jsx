@@ -33,9 +33,9 @@ export default function PublishForm({ initialData, onSave, onBack }) {
                  {/* ... more summary details ... */}
              {/* </Paper> */}
 
-             <Typography sx={{ mb: 3 }}>
-                 Clicking 'Publish Course' will make your course available according to the platform settings.
-             </Typography>
+           <Typography sx={{ mb: 3 }}>
+    Clicking &apos;Publish Course&apos; will make your course available according to the platform settings.
+</Typography>
 
              {/* Action Buttons */}
              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>

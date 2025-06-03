@@ -24,105 +24,141 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-
-// Icons
-import CategoryIcon from '@mui/icons-material/Category'; // Title Icon
+import CategoryIcon from '@mui/icons-material/Category';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import CircularProgress from '@mui/material/CircularProgress';
 
-// Mock Data
-const majorsData = [
-    { id: 1, name: 'Back-End', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 10 },
-    { id: 2, name: 'Mobile Application', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 14 },
-    { id: 3, name: 'Front-End', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 19 },
-    { id: 4, name: 'Design', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 10 },
-    { id: 5, name: 'Artificial intelligence', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 12 },
-    { id: 6, name: 'Mobile Application', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 12 },
-    { id: 7, name: 'Front-End', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 19 },
-    { id: 8, name: 'Mobile Application', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 10 },
-    { id: 9, name: 'Front-End', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 10 },
-    { id: 10, name: 'Mobile Application', description: 'This course is your best way to learn mobile app development for Android and Apple', coursesCount: 10 },
-];
-
-// --- Add Major Dialog Component ---
-const AddMajorDialog = ({ open, handleClose, handleAddMajor }) => {
-    const [majorData, setMajorData] = useState({
-        name: '',
-        description: '',
-        course: '', // Course field from the modal image
+// API Service
+const apiService = {
+  fetchMajors: async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://127.0.0.1:8000/api/major/index', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     });
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setMajorData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        handleAddMajor(majorData);
-        handleClose();
-    };
-
-    // Mock data for course dropdown in modal
-    const courses = ['Course A', 'Course B', 'Course C'];
-
-    return (
-        <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
-            <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                Add Major
-                <IconButton aria-label="close" onClick={handleClose}>
-                    <CloseIcon />
-                </IconButton>
-            </DialogTitle>
-            <DialogContent dividers>
-                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                     <Grid container spacing={2}>
-                         <Grid item xs={12}>
-                             <TextField required fullWidth label="Major Name" name="name" value={majorData.name} onChange={handleChange} size="small" />
-                         </Grid>
-                         <Grid item xs={12}>
-                            {/* Course dropdown - assuming it relates to the major? */}
-                             <FormControl fullWidth size="small">
-                                 <InputLabel id="course-select-modal-label">Course</InputLabel>
-                                 <Select labelId="course-select-modal-label" label="Course" name="course" value={majorData.course} onChange={handleChange}>
-                                     {courses.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-                                 </Select>
-                             </FormControl>
-                         </Grid>
-                         <Grid item xs={12}>
-                             <TextField
-                                required
-                                fullWidth
-                                multiline
-                                rows={4}
-                                label="Description"
-                                name="description"
-                                value={majorData.description}
-                                onChange={handleChange}
-                                size="small"
-                            />
-                         </Grid>
-                     </Grid>
-                     <input type="submit" hidden />
-                 </Box>
-             </DialogContent>
-            <DialogActions sx={{ p: '16px 24px', justifyContent: 'space-between' }}>
-                 <Button onClick={() => console.log('Add another clicked')} startIcon={<AddIcon />}>Add another</Button>
-                <Button type="submit" onClick={handleSubmit} variant="contained" sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}>Add Major</Button>
-            </DialogActions>
-        </Dialog>
-    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch majors');
+    }
+    return await response.json();
+  },
+  addMajor: async (majorData) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://127.0.0.1:8000/api/major/create', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(majorData),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add major');
+    }
+    return await response.json();
+  },
+  deleteMajor: async (id) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://127.0.0.1:8000/api/major/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Auth ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete major');
+    }
+    return await response.json();
+  }
 };
-// --- End Add Major Dialog ---
 
-// --- Majors Table Toolbar Component ---
-function MajorsTableToolbar(props) {
-  const { onSearchChange, searchTerm, onAddMajorClick } = props;
+// Add Major Dialog Component
+const AddMajorDialog = ({ open, handleClose, handleAddMajor }) => {
+  const [majorData, setMajorData] = useState({
+    title: '',
+    description: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setMajorData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await handleAddMajor(majorData);
+      handleClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
+      <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        Add Major
+        <IconButton aria-label="close" onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Major Name"
+                name="title"
+                value={majorData.title}
+                onChange={handleChange}
+                size="small"
+              />
+            </Grid>
+            
+          </Grid>
+          {error && (
+            <Typography color="error" sx={{ mt: 2 }}>
+              {error}
+            </Typography>
+          )}
+        </Box>
+      </DialogContent>
+      <DialogActions sx={{ p: '16px 24px', justifyContent: 'space-between' }}>
+        <Button onClick={handleClose} startIcon={<CloseIcon />}>
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={loading}
+          sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Add Major'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+// Majors Table Toolbar Component
+function MajorsTableToolbar({ onSearchChange, searchTerm, onAddMajorClick }) {
   return (
     <Toolbar
       sx={{
@@ -136,7 +172,6 @@ function MajorsTableToolbar(props) {
       <Typography sx={{ flex: '1 1 100%', fontWeight: 'bold' }} variant="h6" component="div">
         Majors
       </Typography>
-
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <TextField
           variant="outlined"
@@ -145,14 +180,14 @@ function MajorsTableToolbar(props) {
           value={searchTerm}
           onChange={onSearchChange}
           InputProps={{
-            startAdornment: (
+            startAdrip: (
               <InputAdornment position="start">
                 <SearchIcon sx={{ color: 'action.active' }} />
               </InputAdornment>
             ),
             sx: { borderRadius: '8px', backgroundColor: '#F9FAFB' }
           }}
-          sx={{ width: '300px', '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#E5E7EB' }}}}
+          sx={{ width: '300px', '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#E5E7EB' } } }}
         />
         <Tooltip title="Filter list">
           <IconButton>
@@ -160,123 +195,142 @@ function MajorsTableToolbar(props) {
           </IconButton>
         </Tooltip>
         <Button
-            variant="contained"
-            onClick={onAddMajorClick}
-            startIcon={<AddIcon />}
-            sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}
+          variant="contained"
+          onClick={onAddMajorClick}
+          startIcon={<AddIcon />}
+          sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}
         >
-             Add Major
+          Add Major
         </Button>
       </Box>
     </Toolbar>
   );
 }
 
+// Main Component
 export default function Majors() {
-  const [majors, setMajors] = useState(majorsData);
+  const [majors, setMajors] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-
-  // Add useEffect for actual data fetching here
+  const [openAddDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null)
+  const fetchMajors = async () => {
+    setLoading(true);
+    try {
+      const response = await apiService.fetchMajors();
+      setMajors(response.major.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  // Filtering logic
+  const handleAddMajor = async (newMajor) => {
+    await apiService.addMajor(newMajor);
+    fetchMajors(); // Refresh the list
+  };
+
+  const handleDeleteMajor = async (id) => {
+    try {
+      await apiService.deleteMajor(id);
+      fetchMajors(); // Refresh the list
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchMajors();
+  }, []);
+
   const filteredMajors = majors.filter(major =>
-    major.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    major.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     major.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEditMajor = (id) => {
-    console.log('Edit major:', id);
-    // Add edit logic (e.g., open dialog with data)
-  };
-
-  const handleDeleteMajor = (id) => {
-    console.log('Delete major:', id);
-    setMajors(prev => prev.filter(m => m.id !== id));
-  };
-
-  const handleOpenAddDialog = () => {
-      setOpenAddDialog(true);
-  };
-
-  const handleCloseAddDialog = () => {
-      setOpenAddDialog(false);
-  };
-
-  const handleAddMajor = (newMajorData) => {
-      console.log("Adding major:", newMajorData);
-      // Add logic to send data to API
-      const newId = majors.length > 0 ? Math.max(...majors.map(m => m.id)) + 1 : 1;
-      // The mock data needs 'coursesCount', Add Major modal doesn't provide it
-      setMajors(prev => [...prev, { ...newMajorData, id: newId, coursesCount: 0 }])
-  };
-
   return (
     <Box sx={{ width: '100%' }}>
-       <Typography variant="h5" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 2, fontWeight: 'bold' }}>
-           <CategoryIcon sx={{ mr: 1 }} /> Majors
-       </Typography>
+      <Typography variant="h5" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 2, fontWeight: 'bold' }}>
+        <CategoryIcon sx={{ mr: 1 }} /> Majors
+      </Typography>
+
+      {error && (
+        <Typography color="error" sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
 
       <Paper sx={{ width: '100%', mb: 2, borderRadius: '12px', overflow: 'hidden' }}>
         <MajorsTableToolbar
           searchTerm={searchTerm}
           onSearchChange={handleSearchChange}
-          onAddMajorClick={handleOpenAddDialog}
+          onAddMajorClick={() => setOpenDialog(true)}
         />
+
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="majorsTableTitle">
-            <TableHead>
-              <TableRow sx={{ '& th': { fontWeight: 'bold', backgroundColor: '#F9FAFB' } }}>
-                <TableCell>Major Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="center">Courses</TableCell>
-                <TableCell align="center">Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredMajors.map((row) => (
-                  <TableRow hover key={row.id}>
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Table sx={{ minWidth: 750 }} aria-labelledby="majorsTableTitle">
+              <TableHead>
+                <TableRow sx={{ '& th': { fontWeight: 'bold', backgroundColor: '#F9FAFB' } }}>
+                  <TableCell>Major Name</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell align="center">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredMajors.map((major) => (
+                  <TableRow hover key={major.id}>
                     <TableCell component="th" scope="row">
-                      {row.name}
+                      {major.title}
                     </TableCell>
-                    <TableCell sx={{ maxWidth: 400, whiteSpace: 'normal' }}>{row.description}</TableCell> {/* Allow wrapping */}
-                    <TableCell align="center">
-                        <Chip label={row.coursesCount} size="small" sx={{ fontWeight: 500 }}/>
+                    <TableCell sx={{ maxWidth: 400, whiteSpace: 'normal' }}>
+                      {major.description}
                     </TableCell>
                     <TableCell align="center">
                       <Tooltip title="Edit">
-                         <IconButton size="small" onClick={() => handleEditMajor(row.id)}>
-                           <EditIcon fontSize="small" />
-                         </IconButton>
-                       </Tooltip>
-                       <Tooltip title="Delete">
-                         <IconButton size="small" onClick={() => handleDeleteMajor(row.id)} sx={{ color: 'error.main' }}>
-                           <DeleteIcon fontSize="small" />
-                         </IconButton>
-                       </Tooltip>
+                        <IconButton size="small" onClick={() => console.log('Edit:', major.id)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDeleteMajor(major.id)}
+                          sx={{ color: 'error.main' }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}
                 {filteredMajors.length === 0 && (
-                    <TableRow>
-                        <TableCell colSpan={4} align="center">No majors found.</TableCell>
-                    </TableRow>
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      {loading ? 'Loading...' : 'No majors found'}
+                    </TableCell>
+                  </TableRow>
                 )}
-            </TableBody>
-          </Table>
+              </TableBody>
+            </Table>
+          )}
         </TableContainer>
-        {/* Add Pagination if needed */}
       </Paper>
 
-       <AddMajorDialog
-          open={openAddDialog}
-          handleClose={handleCloseAddDialog}
-          handleAddMajor={handleAddMajor}
-       />
+      <AddMajorDialog
+        open={openAddDialog}
+        handleClose={() => setOpenDialog(false)}
+        handleAddMajor={handleAddMajor}
+      />
     </Box>
   );
-} 
+}

@@ -10,67 +10,33 @@ import {
   ListItem,
   Fab,
   Zoom,
-  Collapse
+  Collapse,
+  CircularProgress // لاستخدامه كمؤشر تحميل
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import ChatIcon from '@mui/icons-material/Chat';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useAuth } from '../../context/AuthContext';
-
-// Sample responses for the educational chatbot
-const getBotResponse = (message) => {
-  const lowerCaseMessage = message.toLowerCase();
-  
-  if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi')) {
-    return "Hello! How can I help you with your learning today?";
-  } 
-  else if (lowerCaseMessage.includes('course')) {
-    return "We have many courses available. You can browse our course catalog from the Courses page. Is there a specific subject you're interested in?";
-  } 
-  else if (lowerCaseMessage.includes('payment') || lowerCaseMessage.includes('pay')) {
-    return "We accept various payment methods including credit cards and PayPal. You can view your payment history and pending payments in the Payments section.";
-  } 
-  else if (lowerCaseMessage.includes('assignment') || lowerCaseMessage.includes('homework')) {
-    return "You can view and submit your assignments from the Assignment page. If you're having trouble with a specific assignment, please contact your instructor directly.";
-  }
-  else if (lowerCaseMessage.includes('deadline') || lowerCaseMessage.includes('due date')) {
-    return "All assignment deadlines are listed on the Assignment page. You can also check the course syllabus for a comprehensive schedule.";
-  }
-  else if (lowerCaseMessage.includes('enroll') || lowerCaseMessage.includes('register')) {
-    return "To enroll in a course, browse the course catalog, select your desired course, and click the Enroll button. Payment will be required to complete enrollment.";
-  } 
-  else if (lowerCaseMessage.includes('certificate') || lowerCaseMessage.includes('completion')) {
-    return "Certificates of completion are issued automatically when you complete all course requirements. You can download them from your Profile page.";
-  }
-  else if (lowerCaseMessage.includes('instructor') || lowerCaseMessage.includes('teacher')) {
-    return "You can view instructor profiles on the course detail page. If you need to contact an instructor, use the messaging feature in the course.";
-  }
-  else if (lowerCaseMessage.includes('help') || lowerCaseMessage.includes('support')) {
-    return "For technical support, please email support@education.com. For academic questions, please contact your instructor through the course messaging system.";
-  }
-  else if (lowerCaseMessage.includes('thank')) {
-    return "You're welcome! Is there anything else I can help you with?";
-  }
-  else {
-    return "I'm sorry, I don't have information about that topic yet. Please try asking another question or contact support for more assistance.";
-  }
-};
+// const { useAuth } = '../../context/AuthContext'; // إذا كنت ستستخدمه لاحقًا
 
 const ChatBot = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: 'bot', content: 'Hello! How can I help you today?' }
-  ]);  const [input, setInput] = useState('');
+    // يمكنك اختيار إبقاء رسالة ترحيب أولية أو جعلها تأتي من الـ API عند أول تفاعل
+    { sender: 'bot', content: 'Hello! How can I assist you today?' }
+  ]);
+  const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
-  // Not using auth context currently, but keeping the reference
-  const auth = useAuth();
+  
+  // حالات جديدة
+  const [sessionId, setSessionId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  // const auth = useAuth(); // إذا كنت ستستخدمه لاحقًا للحصول على userId
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (open) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (open && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, open]);
 
@@ -78,20 +44,62 @@ const ChatBot = () => {
     setInput(e.target.value);
   };
 
-  const handleSend = () => {
-    if (input.trim() === '') return;
+  const addMessageToState = (content, sender) => {
+    setMessages(prev => [...prev, { sender, content }]);
+  };
 
-    // Add user message
-    setMessages(prev => [...prev, { sender: 'user', content: input }]);
-    
-    // Simulate bot response delay
-    setTimeout(() => {
-      const botResponse = getBotResponse(input);
-      setMessages(prev => [...prev, { sender: 'bot', content: botResponse }]);
-    }, 800);
+  const handleSend = async () => {
+    const userMessage = input.trim();
+    if (userMessage === '' || isLoading) return;
 
-    // Clear input
+    addMessageToState(userMessage, 'user');
     setInput('');
+    setIsLoading(true);
+
+    try {
+      const payload = {
+        message: userMessage,
+        sessionId: sessionId // سيكون null في الطلب الأول
+      };
+
+      // ملاحظة: الـ userId هنا ثابت. قد تحتاج لتغييره بناءً على المستخدم المسجل دخوله
+      const response = await fetch('http://chatnabot.runasp.net/api/Chatbot/send?userId=react-test-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        // محاولة قراءة رسالة الخطأ من الـ API إذا كانت JSON
+        let errorData;
+        try {
+            errorData = await response.json();
+        } catch (e) {
+            // تجاهل إذا لم تكن الاستجابة JSON
+        }
+        const errorMessage = errorData?.message || `Error: ${response.status} ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+
+      if (data.sessionId) {
+        setSessionId(data.sessionId);
+        // console.log("Session ID updated:", data.sessionId); // لعرض معرف الجلسة إذا لزم الأمر
+      }
+      if (data.message) {
+        addMessageToState(data.message, 'bot');
+      }
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      addMessageToState(`Sorry, something went wrong: ${error.message}`, 'bot');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -164,6 +172,7 @@ const ChatBot = () => {
 
           {/* Chat Messages */}
           <Box
+            id="chat-messages-container-react" // معرف مختلف لتجنب التعارض إذا كان الكود القديم لا يزال في الصفحة
             sx={{
               flex: 1,
               overflowY: 'auto',
@@ -192,12 +201,13 @@ const ChatBot = () => {
                   >
                     {message.sender === 'bot' ? (
                       <Avatar
-                        sx={{ bgcolor: '#28A79F', width: 32, height: 32, mr: 1 }}
+                        sx={{ bgcolor: '#28A79F', width: 32, height: 32, mr: 1, alignSelf: 'flex-start' }}
                       >
                         <SmartToyIcon fontSize="small" />
-                      </Avatar>                    ) : (
+                      </Avatar>
+                    ) : (
                       <Avatar
-                        sx={{ bgcolor: '#28A79F', width: 32, height: 32, ml: 1 }}
+                        sx={{ bgcolor: '#4A90E2', width: 32, height: 32, ml: 1, alignSelf: 'flex-start' }} // لون مختلف للمستخدم
                       >
                         <AccountCircleIcon fontSize="small" />
                       </Avatar>
@@ -205,15 +215,17 @@ const ChatBot = () => {
                     <Paper
                       elevation={1}
                       sx={{
-                        p: 1.5,                        borderRadius: '16px',
+                        p: 1.5,
+                        borderRadius: '16px',
                         borderTopLeftRadius: message.sender === 'bot' ? '4px' : '16px',
                         borderTopRightRadius: message.sender === 'user' ? '4px' : '16px',
-                        backgroundColor: message.sender === 'user' ? '#28A79F' : 'white',
+                        backgroundColor: message.sender === 'user' ? '#4A90E2' : 'white', // لون مختلف للمستخدم
                         color: message.sender === 'user' ? 'white' : 'black',
                         maxWidth: '100%',
+                        wordWrap: 'break-word',
                       }}
                     >
-                      <Typography variant="body2">{message.content}</Typography>
+                      <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{message.content}</Typography>
                     </Paper>
                   </Box>
                 </ListItem>
@@ -229,6 +241,7 @@ const ChatBot = () => {
               borderTop: '1px solid rgba(0, 0, 0, 0.12)',
               backgroundColor: 'white',
               display: 'flex',
+              alignItems: 'center',
             }}
           >
             <TextField
@@ -239,19 +252,21 @@ const ChatBot = () => {
               value={input}
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
+              disabled={isLoading} // تعطيل الإدخال أثناء التحميل
               InputProps={{
                 sx: { borderRadius: '20px' },
               }}
-            />            <IconButton 
+            />
+            <IconButton 
               onClick={handleSend} 
-              disabled={input.trim() === ''}
+              disabled={input.trim() === '' || isLoading}
               sx={{ 
                 ml: 1, 
-                color: input.trim() !== '' ? '#28A79F' : 'inherit',
-                bgcolor: input.trim() !== '' ? 'rgba(40, 167, 159, 0.1)' : 'inherit'
+                color: (input.trim() !== '' && !isLoading) ? '#28A79F' : 'grey.500',
+                bgcolor: (input.trim() !== '' && !isLoading) ? 'rgba(40, 167, 159, 0.1)' : 'transparent'
               }}
             >
-              <SendIcon />
+              {isLoading ? <CircularProgress size={24} sx={{color: '#28A79F'}} /> : <SendIcon />}
             </IconButton>
           </Box>
         </Paper>

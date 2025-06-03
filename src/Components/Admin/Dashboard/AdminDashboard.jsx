@@ -27,13 +27,13 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 const SalesDetailChart = ({ data }) => {
   const [month, setMonth] = useState('October');
-  
+
   // بيانات تجريبية - سيتم استبدالها ببيانات فعلية من API
   const labels = Array.from({ length: 12 }, (_, i) => `${(i + 1) * 5}k`);
-  
+
   // توليد بيانات مشابهة للرسم البياني المطلوب
   const salesData = [20, 30, 45, 40, 35, 45, 35, 45, 50, 45, 25, 30, 45, 40, 60, 80, 35, 45, 40, 45, 50, 45, 25, 30, 45, 75, 65, 55, 45, 50];
-  
+
   const chartData = {
     labels,
     datasets: [
@@ -67,7 +67,7 @@ const SalesDetailChart = ({ data }) => {
         titleColor: '#fff',
         bodyColor: '#fff',
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';
@@ -78,7 +78,7 @@ const SalesDetailChart = ({ data }) => {
             }
             return label;
           },
-          title: function(context) {
+          title: function (context) {
             // إظهار رقم محدد فوق النقطة المحددة (مثل المبلغ)
             if (context[0].dataIndex === 4) { // مثال لنقطة معينة
               return '64,3664.77';
@@ -99,7 +99,7 @@ const SalesDetailChart = ({ data }) => {
         max: 100,
         ticks: {
           stepSize: 20,
-          callback: function(value) {
+          callback: function (value) {
             return value + '%';
           }
         },
@@ -156,7 +156,7 @@ const PaymentGraph = ({ data }) => {
     ],
   };
 
- 
+
 };
 
 const PlaceholderChart = ({ title }) => (
@@ -183,7 +183,7 @@ const StatCard = ({ icon, title, value, change, changeType, iconBgColor }) => (
 );
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState(null); // تعريف setStats مع stats
+  const [stats, setStats] = useState(null); 
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/dashboard/')
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
             <StatCard {...stat} />
           </Grid>
         ))}
-        
+
         {/* الرسم البياني الجديد للمبيعات */}
         <Grid item xs={12} md={12}>
           <SalesDetailChart data={stats} />
@@ -341,7 +341,7 @@ export default function AdminDashboard() {
             </Box>
           </Paper>
         </Grid>
-        
+
         {/* قسم الكورسات المميزة - Best Seller */}
         <Grid item xs={12}>
           <Paper elevation={2} sx={{ p: 3, borderRadius: '12px', mt: 2 }}>
@@ -356,17 +356,17 @@ export default function AdminDashboard() {
                   'Network Course': 'https://placehold.co/300x160/2196F3/FFFFFF/png?text=Computer+Networking',
                   'AI Course': 'https://placehold.co/300x160/FF9800/FFFFFF/png?text=AI+Course'
                 };
-                
+
                 // إنشاء نجوم التقييم
                 const stars = Array(5).fill().map((_, i) => (
                   <span key={i} style={{ color: i < Math.floor(course.rating) ? '#FFC107' : '#e0e0e0', fontSize: '18px' }}>★</span>
                 ));
-                
+
                 return (
                   <Grid item xs={12} sm={6} md={4} key={index}>
-                    <Box sx={{ 
-                      border: '1px solid #eaeaea', 
-                      borderRadius: '12px', 
+                    <Box sx={{
+                      border: '1px solid #eaeaea',
+                      borderRadius: '12px',
                       overflow: 'hidden',
                       transition: 'transform 0.3s, box-shadow 0.3s',
                       '&:hover': {
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
                       }
                     }}>
                       <Box sx={{ height: 160, overflow: 'hidden' }}>
-                        <img 
+                        <img
                           src={courseImages[course.course_name] || 'https://placehold.co/300x160/9C27B0/FFFFFF/png?text=Course'}
                           alt={course.course_name}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -388,7 +388,7 @@ export default function AdminDashboard() {
                         </Box>
                         <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>{course.course_name}</Typography>
                         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                          Beginner's Guide To Becoming A Professional Backend Developer
+                          Beginner&apos;s Guide To Becoming A Professional Backend Developer
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -408,12 +408,12 @@ export default function AdminDashboard() {
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <Box>
-                            <Typography component="span" sx={{fontSize:"22px", color: 'black',  mr: 1 }}>
+                            <Typography component="span" sx={{ fontSize: "22px", color: 'black', mr: 1 }}>
                               {course.price}
                             </Typography>
-                       
+
                           </Box>
-                          
+
                         </Box>
                       </Box>
                     </Box>

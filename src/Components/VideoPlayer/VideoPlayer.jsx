@@ -5,73 +5,257 @@ import styles from './VideoPlayer.module.css';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import Loading from '../Loading/Loading';
+import quizImg from '../../../src/Images/quiz-time.avif'
+
+const YouTubePlayer = ({ videoUrl, onTimeUpdate, onVideoEnded }) => {
+  const playerRef = useRef(null);
+  const playerContainerRef = useRef(null);
+  const intervalRef = useRef(null);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
+
+  const getVideoId = (url) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const videoId = getVideoId(videoUrl);
+
+  useEffect(() => {
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    window.onYouTubeIframeAPIReady = () => {
+      if (playerContainerRef.current && !playerRef.current) {
+        playerRef.current = new window.YT.Player(playerContainerRef.current, {
+          videoId: videoId,
+          playerVars: {
+            autoplay: 1,
+            controls: 1,
+            modestbranding: 1,
+            rel: 0,
+            enablejsapi: 1
+          },
+          events: {
+            onReady: (event) => {
+              console.log('YouTube player is ready');
+              setIsPlayerReady(true);
+            },
+            onStateChange: (event) => {
+              if (event.data === window.YT.PlayerState.PLAYING) {
+                startTracking();
+              } else if (event.data === window.YT.PlayerState.ENDED) {
+                if (onVideoEnded && typeof onVideoEnded === 'function') {
+                  onVideoEnded();
+                }
+                stopTracking();
+              } else {
+                stopTracking();
+              }
+            }
+          }
+        });
+      }
+    };
+
+    if (window.YT && window.YT.Player) {
+      window.onYouTubeIframeAPIReady();
+    }
+
+    return () => {
+      stopTracking();
+      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
+        try {
+          playerRef.current.destroy();
+        } catch (error) {
+          console.error('Error destroying YouTube player:', error);
+        }
+        playerRef.current = null;
+      }
+    };
+  }, [videoId]);
+
+  const startTracking = () => {
+    if (intervalRef.current) return;
+
+    intervalRef.current = setInterval(() => {
+      if (playerRef.current && isPlayerReady && typeof playerRef.current.getCurrentTime === 'function') {
+        try {
+          const currentTime = playerRef.current.getCurrentTime();
+          const duration = playerRef.current.getDuration();
+          if (duration > 0) {
+            const percent = Math.floor((currentTime / duration) * 100);
+            if (onTimeUpdate && typeof onTimeUpdate === 'function') {
+              onTimeUpdate(percent);
+            }
+          }
+        } catch (error) {
+          console.error('Error tracking video progress:', error);
+        }
+      }
+    }, 5000);
+  };
+
+  const stopTracking = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  if (!videoId) {
+    return (
+      <iframe
+        src={videoUrl}
+        title="Lecture Video"
+        className={styles.videoPlayer}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      ></iframe>
+    );
+  }
+
+  return (
+    <div
+      ref={playerContainerRef}
+      className={styles.videoPlayer}
+    />
+  );
+};
 
 export default function VideoPlayer() {
   const { courseId, lectureId } = useParams();
   const navigate = useNavigate();
   const [courseData, setCourseData] = useState(null);
+  const [courseContent, setCourseContent] = useState([]);
   const [currentSection, setCurrentSection] = useState(null);
   const [currentLecture, setCurrentLecture] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({});
   const [progress, setProgress] = useState(0);
+  const [progressSent80, setProgressSent80] = useState(false);
+  const [progressSent100, setProgressSent100] = useState(false);
   const videoRef = useRef(null);
 
-  // Fetch course data
+  // Fetch base course info
   useEffect(() => {
-    const fetchCourseData = async () => {
+    const fetchBaseCourse = async () => {
       try {
         setIsLoading(true);
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://127.0.0.1:8000/api/courses/${courseId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await axios.get(`http://127.0.0.1:8000/api/courses/${courseId}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setCourseData(response.data);
-        
-        // Initialize expanded sections
-        const sectionsState = {};
-        if (response.data.sections) {
-          response.data.sections.forEach((section) => {
-            sectionsState[section.id] = false;
-          });
-          // Expand the section containing the current lecture
-          if (lectureId) {
-            const sectionWithLecture = response.data.sections.find(section => 
-              section.lectures.some(lecture => lecture.id.toString() === lectureId)
-            );
-            if (sectionWithLecture) {
-              sectionsState[sectionWithLecture.id] = true;
-              
-              // Set current lecture
-              const lecture = sectionWithLecture.lectures.find(
-                lecture => lecture.id.toString() === lectureId
-              );
-              setCurrentLecture(lecture);
-              setCurrentSection(sectionWithLecture);
-            }
-          } else if (response.data.sections.length > 0 && 
-                     response.data.sections[0].lectures && 
-                     response.data.sections[0].lectures.length > 0) {
-            // If no specific lecture is selected, start with the first one
-            setCurrentSection(response.data.sections[0]);
-            setCurrentLecture(response.data.sections[0].lectures[0]);
-            sectionsState[response.data.sections[0].id] = true;
-          }
-        }
-        setExpandedSections(sectionsState);
-      } catch (error) {
-        console.error('Error fetching course data:', error);
+        setCourseData(res.data);
+      } catch (err) {
+        console.error('Error fetching course info:', err);
       } finally {
         setIsLoading(false);
       }
     };
+    fetchBaseCourse();
+  }, [courseId]);
 
-    fetchCourseData();
+  // Fetch course content
+  useEffect(() => {
+    const fetchCourseContent = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`http://127.0.0.1:8000/api/course-content/course/${courseId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = res.data.data;
+        const sectionMap = {};
+
+        data.forEach(item => {
+          const sectionId = item.section.id;
+          if (!sectionMap[sectionId]) {
+            sectionMap[sectionId] = {
+              id: sectionId,
+              title: item.section.title,
+              order: item.section.order ?? 0,
+              lectures: []
+            };
+          }
+          sectionMap[sectionId].lectures.push({
+            id: item.id,
+            title: item.title,
+            duration: `${item.duration} min`,
+            completed: false,
+            type: item.type,
+            video_url: item.video_url,
+            quiz_data: item.quiz_data,
+            order: item.order
+          });
+        });
+
+        const finalSections = Object.values(sectionMap)
+          .sort((a, b) => a.order - b.order)
+          .map(section => ({
+            ...section,
+            lectures: section.lectures.sort((a, b) => a.order - b.order)
+          }));
+
+        setCourseContent(finalSections);
+
+        // Set expanded initially
+        const expanded = {};
+        finalSections.forEach(sec => {
+          expanded[sec.id] = false;
+        });
+        if (finalSections.length > 0) {
+          expanded[finalSections[0].id] = true;
+        }
+        setExpandedSections(expanded);
+
+        // Select current lecture if ID provided
+        if (lectureId) {
+          for (const section of finalSections) {
+            const foundLecture = section.lectures.find(l => l.id === parseInt(lectureId));
+            if (foundLecture) {
+              setCurrentSection(section);
+              setCurrentLecture(foundLecture);
+              break;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching course content:', err);
+      }
+    };
+    fetchCourseContent();
   }, [courseId, lectureId]);
 
-  // Handle section toggle
+  // Fetch lecture details
+  useEffect(() => {
+    const fetchLectureDetails = async () => {
+      if (!lectureId) return;
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://127.0.0.1:8000/api/course-content/${lectureId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('Lecture Details:', response.data);
+      } catch (error) {
+        console.error('Error fetching lecture details:', error);
+      }
+    };
+    fetchLectureDetails();
+  }, [lectureId]);
+
+  // Reset progress flags when lecture changes
+  useEffect(() => {
+    setProgressSent80(false);
+    setProgressSent100(false);
+  }, [currentLecture?.id]);
+
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -79,318 +263,217 @@ export default function VideoPlayer() {
     }));
   };
 
-  // Handle lecture selection
   const handleLectureSelect = (section, lecture) => {
     setCurrentSection(section);
     setCurrentLecture(lecture);
-    // Update URL without reloading the page
-    navigate(`/course/${courseId}/lecture/${lecture.id}`, { replace: true });
-    
-    // Reset video progress
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-    }
-    
-    // Mark lecture as started/in-progress
-    updateLectureProgress(lecture.id, 'in-progress');
-  };
 
-  // Handle time update to track progress
-  const handleTimeUpdate = () => {
-    if (videoRef.current && currentLecture) {
-      const progress = Math.floor((videoRef.current.currentTime / videoRef.current.duration) * 100);
-      setProgress(progress);
-      
-      // Mark as completed if reached end (95% or more)
-      if (progress >= 95) {
-        updateLectureProgress(currentLecture.id, 'completed');
+    // التحقق من نوع المحتوى
+    if (lecture.type === 'quiz') {
+      // التوجيه لصفحة الكويز
+      navigate(`/quiz/${lecture.id}`);
+    } else {
+      // التوجيه لصفحة الفيديو (السلوك الافتراضي)
+      navigate(`/course/${courseId}/lecture/${lecture.id}`, { replace: true });
+
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
       }
+
+      // Reset progress flags for new lecture
+      setProgressSent80(false);
+      setProgressSent100(false);
     }
   };
 
-  // Update lecture progress in DB or local storage
-  const updateLectureProgress = (lectureId, status) => {
-    // This would typically be an API call to update progress
-    console.log(`Updating lecture ${lectureId} status to ${status}`);
-    // For now, we'll just update the UI
-    if (status === 'completed' && courseData) {
-      const updatedCourseData = {...courseData};
-      updatedCourseData.sections = courseData.sections.map(section => ({
-        ...section,
-        lectures: section.lectures.map(lecture => 
-          lecture.id === lectureId 
-            ? {...lecture, completed: true} 
-            : lecture
-        )
-      }));
-      setCourseData(updatedCourseData);
+  const updateLectureProgress = async (lectureId, progressPercent) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/lecture/create-progress',
+        {
+          course_content_id: lectureId,
+          progress: progressPercent
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log(`Progress updated: ${progressPercent}% for lecture ${lectureId}`);
+      console.log('API Response:', response.data);
+
+      // Update local state if progress is 100%
+      if (progressPercent === 100) {
+        const updated = courseContent.map(section => ({
+          ...section,
+          lectures: section.lectures.map(lec =>
+            lec.id === lectureId ? { ...lec, completed: true } : lec
+          )
+        }));
+        setCourseContent(updated);
+      }
+    } catch (error) {
+      console.error('Error updating lecture progress:', error);
     }
   };
 
-  // Handle video end
-  const handleVideoEnded = () => {
+  const handleTimeUpdate = (percent) => {
+    setProgress(percent);
+
     if (currentLecture) {
-      updateLectureProgress(currentLecture.id, 'completed');
-      
-      // Find the next lecture to play
-      const nextLecture = findNextLecture();
-      if (nextLecture) {
-        handleLectureSelect(nextLecture.section, nextLecture.lecture);
+      // Send progress at 75% as 80% (only once per lecture)
+      if (percent >= 75 && !progressSent80) {
+        updateLectureProgress(currentLecture.id, 80);
+        setProgressSent80(true);
+      }
+
+      // Send progress at 90% as 100% (only once per lecture)
+      if (percent >= 90 && !progressSent100) {
+        updateLectureProgress(currentLecture.id, 100);
+        setProgressSent100(true);
       }
     }
-  };
-  // Find the next lecture to play
-  const findNextLecture = () => {
-    if (!courseData || !currentSection || !currentLecture) return null;
-    
-    const currentSectionIndex = courseData.sections.findIndex(
-      section => section.id === currentSection.id
-    );
-    
-    if (currentSectionIndex === -1) return null;
-    
-    const currentLectureIndex = currentSection.lectures.findIndex(
-      lecture => lecture.id === currentLecture.id
-    );
-    
-    // Check if there's another lecture in the current section
-    if (currentLectureIndex < currentSection.lectures.length - 1) {
-      return {
-        section: currentSection,
-        lecture: currentSection.lectures[currentLectureIndex + 1]
-      };
-    }
-    
-    // Check if there's another section with lectures
-    if (currentSectionIndex < courseData.sections.length - 1) {
-      const nextSection = courseData.sections[currentSectionIndex + 1];
-      if (nextSection.lectures && nextSection.lectures.length > 0) {
-        return {
-          section: nextSection,
-          lecture: nextSection.lectures[0]
-        };
-      }
-    }
-    
-    return null;
-  };
-  
-  // Find the previous lecture to play
-  const findPreviousLecture = () => {
-    if (!courseData || !currentSection || !currentLecture) return null;
-    
-    const currentSectionIndex = courseData.sections.findIndex(
-      section => section.id === currentSection.id
-    );
-    
-    if (currentSectionIndex === -1) return null;
-    
-    const currentLectureIndex = currentSection.lectures.findIndex(
-      lecture => lecture.id === currentLecture.id
-    );
-    
-    // Check if there's a previous lecture in the current section
-    if (currentLectureIndex > 0) {
-      return {
-        section: currentSection,
-        lecture: currentSection.lectures[currentLectureIndex - 1]
-      };
-    }
-    
-    // Check if there's a previous section with lectures
-    if (currentSectionIndex > 0) {
-      const prevSection = courseData.sections[currentSectionIndex - 1];
-      if (prevSection.lectures && prevSection.lectures.length > 0) {
-        return {
-          section: prevSection,
-          lecture: prevSection.lectures[prevSection.lectures.length - 1]
-        };
-      }
-    }
-    
-    return null;
   };
 
-  // Calculate overall course progress
+  const handleVideoEnded = () => {
+    if (currentLecture && !progressSent100) {
+      updateLectureProgress(currentLecture.id, 100);
+      setProgressSent100(true);
+    }
+  };
+
   const calculateCourseProgress = () => {
-    if (!courseData || !courseData.sections) return 0;
-    
-    const allLectures = courseData.sections.flatMap(section => section.lectures);
-    if (allLectures.length === 0) return 0;
-    
-    const completedLectures = allLectures.filter(lecture => lecture.completed).length;
-    return Math.round((completedLectures / allLectures.length) * 100);
+    const allLectures = courseContent.flatMap(sec => sec.lectures);
+    const completed = allLectures.filter(l => l.completed).length;
+    return allLectures.length ? Math.round((completed / allLectures.length) * 100) : 0;
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  if (isLoading) return <Loading />;
 
   return (
     <div className={styles.videoPlayerContainer}>
       <div className={styles.sidebarWrapper}>
         <Sidebar />
       </div>
-
       <div className={styles.mainContent}>
         <Header />
-        
         <div className={styles.videoContent}>
           <div className={styles.videoSection}>
             {currentLecture ? (
-              <>                <div className={styles.videoWrapper}>
-                  <video
-                    ref={videoRef}
-                    className={styles.videoPlayer}
-                    controls
-                    onTimeUpdate={handleTimeUpdate}
-                    onEnded={handleVideoEnded}
-                    src={currentLecture.video_url || "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"}
-                    poster={currentLecture.thumbnail || courseData.course_image}
-                    controlsList="nodownload"
-                  />
-                  <div className={styles.playIcon}>
-                    <i className="fa-solid fa-play"></i>
-                  </div>
-                  
-                  <div className={styles.videoControls}>
-                    <div className={styles.controlLeft}>
-                      <div className={styles.previousLecture} onClick={() => {
-                        const prevLecture = findPreviousLecture();
-                        if (prevLecture) {
-                          handleLectureSelect(prevLecture.section, prevLecture.lecture);
-                        }
-                      }}>
-                        <i className="fa-solid fa-backward-step"></i>
-                        <span>Previous</span>
-                      </div>
-                    </div>
-                    
-                    <div className={styles.controlRight}>
-                      <div className={styles.nextLecture} onClick={() => {
-                        const nextLecture = findNextLecture();
-                        if (nextLecture) {
-                          handleLectureSelect(nextLecture.section, nextLecture.lecture);
-                        }
-                      }}>
-                        <span>Next</span>
-                        <i className="fa-solid fa-forward-step"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className={styles.lectureInfo}>
-                  <h2 className={styles.lectureTitle}>{currentLecture.title}</h2>
-                  <div className={styles.lectureMetadata}>
-                    <span className={styles.lectureSection}>
-                      {currentSection ? currentSection.title : 'Section'} | 
-                    </span>
-                    <span className={styles.lectureDuration}>
-                      <i className="fa-regular fa-clock"></i>
-                      {currentLecture.duration || '15 minutes'}
-                    </span>
-                  </div>
-                </div>
-                  <div className={styles.lectureControls}>
-                  <div className={styles.controlTabs}>
-                    <button className={`${styles.controlTab} ${styles.activeTab}`}>Description</button>
-                    <button className={styles.controlTab}>Notes</button>
-                    <button className={styles.controlTab}>Discussion</button>
-                  </div>
-                  
-                  <div className={styles.controlContent}>
-                    <div className={styles.lectureDescription}>
-                      <h3>Description</h3>
-                      <p>{currentLecture.description || "This lecture covers important concepts related to this topic. Follow along with the video and complete any exercises mentioned."}</p>
-                      
-                      <div className={styles.completionSection}>
-                        <h4>Mark Your Progress</h4>
-                        <button 
-                          className={`${styles.completionButton} ${currentLecture.completed ? styles.completed : ''}`}
-                          onClick={() => updateLectureProgress(currentLecture.id, currentLecture.completed ? 'in-progress' : 'completed')}
+              <>
+                <div className={styles.videoWrapper}>
+                  {currentLecture.type === 'quiz' ? (
+                    // عرض صورة للكويز
+                    <div className={styles.quizPreview}>
+                      <img
+                        src={courseData?.course_image || quizImg}
+                        alt="Quiz Preview"
+                        className={styles.quizImage}
+                      />
+                      <div className={styles.quizOverlay}>
+                        <div className={styles.quizIcon}>
+                          <i className="fa-solid fa-clipboard-question"></i>
+                        </div>
+                        <h3>Quiz: {currentLecture.title}</h3>
+                        <p>Duration: {currentLecture.duration}</p>
+                        <button
+                          className={styles.startQuizBtn}
+                          onClick={() => navigate(`/quiz/${currentLecture.id}`)}
                         >
-                          {currentLecture.completed ? (
-                            <>
-                              <i className="fa-solid fa-check-circle"></i> Completed
-                            </>
-                          ) : (
-                            <>
-                              <i className="fa-regular fa-circle-check"></i> Mark as Complete
-                            </>
-                          )}
+                          <i className="fa-solid fa-play"></i>
+                          Start Quiz
                         </button>
                       </div>
                     </div>
-                  </div>
+                  ) : currentLecture.type === 'video' ? (
+                    // عرض الفيديو العادي
+                    currentLecture.video_url.includes('youtube') ? (
+                      <YouTubePlayer
+                        videoUrl={currentLecture.video_url}
+                        onTimeUpdate={handleTimeUpdate}
+                        onVideoEnded={handleVideoEnded}
+                      />
+                    ) : (
+                      <video
+                        ref={videoRef}
+                        className={styles.videoPlayer}
+                        controls
+                        onTimeUpdate={handleTimeUpdate}
+                        onEnded={handleVideoEnded}
+                        src={currentLecture.video_url}
+                        poster={courseData?.course_image}
+                      />
+                    )
+                  ) : (
+                    // محتوى آخر
+                    <div className={styles.contentPreview}>
+                      <img
+                        src={courseData?.course_image || ''}
+                        alt="Content Preview"
+                        className={styles.contentImage}
+                      />
+                      <div className={styles.contentOverlay}>
+                        <h3>{currentLecture.title}</h3>
+                        <p>Type: {currentLecture.type}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                {currentLecture.resources && currentLecture.resources.length > 0 && (
-                  <div className={styles.lectureResources}>
-                    <h3>Resources</h3>
-                    <ul>
-                      {currentLecture.resources.map((resource, index) => (
-                        <li key={index}>
-                          <a href={resource.url} target="_blank" rel="noreferrer">
-                            <i className="fa-solid fa-file-pdf"></i>
-                            {resource.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
+
+                <div className={styles.lectureInfo}>
+                  <h2>{currentLecture.title}</h2>
+                  {currentLecture.type === 'quiz' && (
+                    <div className={styles.quizInfo}>
+                      <span className={styles.quizBadge}>
+                        <i className="fa-solid fa-clipboard-question"></i>
+                        Quiz
+                      </span>
+                      <span className={styles.quizDuration}>
+                        <i className="fa-regular fa-clock"></i>
+                        {currentLecture.duration}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.lectureControls}>
+                  <div className={styles.controlTabs}>
+                    <button className={`${styles.controlTab} ${styles.activeTab}`}>
+                      {currentLecture.type === 'quiz' ? 'Quiz Details' : 'Description'}
+                    </button>
                   </div>
-                )}
-                
-                <div className={styles.courseNavigation}>
-                  <div className={styles.navSection}>
-                    <h3>Course Navigation</h3>
-                    <div className={styles.navButtons}>
-                      <button 
-                        className={styles.navButton} 
-                        disabled={!findPreviousLecture()}
-                        onClick={() => {
-                          const prevLecture = findPreviousLecture();
-                          if (prevLecture) {
-                            handleLectureSelect(prevLecture.section, prevLecture.lecture);
-                          }
-                        }}
-                      >
-                        <i className="fa-solid fa-arrow-left"></i>
-                        <span>Previous Lecture</span>
-                      </button>
-                      
-                      <button 
-                        className={styles.navButton}
-                        disabled={!findNextLecture()}
-                        onClick={() => {
-                          const nextLecture = findNextLecture();
-                          if (nextLecture) {
-                            handleLectureSelect(nextLecture.section, nextLecture.lecture);
-                          }
-                        }}
-                      >
-                        <span>Next Lecture</span>
-                        <i className="fa-solid fa-arrow-right"></i>
-                      </button>
+                  <div className={styles.controlContent}>
+                    <div className={styles.lectureDescription}>
+                      <h3>{currentLecture.type === 'quiz' ? 'Quiz Information' : 'Description'}</h3>
+                      {currentLecture.type === 'quiz' ? (
+                        <div className={styles.quizDetails}>
+                          <p><strong>Quiz Title:</strong> {currentLecture.title}</p>
+                          <p><strong>Duration:</strong> {currentLecture.duration}</p>
+                          <p><strong>Type:</strong> Interactive Quiz</p>
+                          <div className={styles.quizActions}>
+                            <button
+                              className={styles.primaryButton}
+                              onClick={() => navigate(`/quiz/${currentLecture.id}`)}
+                            >
+                              <i className="fa-solid fa-play"></i>
+                              Take Quiz
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p>{currentLecture.description || 'No description available.'}</p>
+                      )}
                     </div>
                   </div>
                 </div>
               </>
-            ) : (              <div className={styles.noLectureSelected}>
-                <i className="fa-solid fa-video-slash"></i>
-                <h2>No lecture selected</h2>
-                <p>Please select a lecture from the course content sidebar</p>
-                <button 
-                  className={styles.browseButton}
-                  onClick={() => navigate(`/course/${courseId}`)}
-                >
-                  <i className="fa-solid fa-arrow-left"></i>
-                  Back to Course
-                </button>
-              </div>
+            ) : (
+              <h3 style={{ padding: '2rem' }}>Please select a lecture</h3>
             )}
           </div>
-          
           <div className={styles.contentSidebar}>
             <div className={styles.courseInfo}>
               <h2 className={styles.courseTitle}>{courseData?.name}</h2>
@@ -400,54 +483,54 @@ export default function VideoPlayer() {
                   <span>{calculateCourseProgress()}% complete</span>
                 </div>
                 <div className={styles.progressBar}>
-                  <div 
-                    className={styles.progress} 
+                  <div
+                    className={styles.progress}
                     style={{ width: `${calculateCourseProgress()}%` }}
                   ></div>
                 </div>
               </div>
             </div>
-            
             <div className={styles.contentList}>
-              <h3 className={styles.contentHeader}>Course Content</h3>
-              
-              {courseData?.sections && courseData.sections.map((section) => (
+              <h3>Course Content</h3>
+              {courseContent.map(section => (
                 <div key={section.id} className={styles.contentSection}>
-                  <div 
-                    className={styles.sectionHeader} 
-                    onClick={() => toggleSection(section.id)}
-                  >
-                    <div className={styles.sectionTitle}>
+                  <div className={styles.sectionHeader} onClick={() => toggleSection(section.id)}>
+                    <span>
                       <i className={`fa-solid ${expandedSections[section.id] ? 'fa-chevron-down' : 'fa-chevron-right'}`}></i>
-                      <span>{section.title}</span>
-                    </div>
-                    <div className={styles.sectionMeta}>
-                      <span>{section.lectures.length} lectures</span>
-                    </div>
+                      {section.title}
+                    </span>
                   </div>
-                  
                   {expandedSections[section.id] && (
                     <div className={styles.lecturesList}>
-                      {section.lectures.map((lecture) => (
-                        <div 
-                          key={lecture.id} 
-                          className={`${styles.lectureItem} ${currentLecture && currentLecture.id === lecture.id ? styles.activeLecture : ''} ${lecture.completed ? styles.completedLecture : ''}`}
+                      {section.lectures.map(lecture => (
+                        <div
+                          key={lecture.id}
+                          className={`${styles.lectureItem} ${currentLecture?.id === lecture.id ? styles.activeLecture : ''
+                            } ${lecture.completed ? styles.completedLecture : ''} ${lecture.type === 'quiz' ? styles.quizItem : ''
+                            }`}
                           onClick={() => handleLectureSelect(section, lecture)}
                         >
                           <div className={styles.lectureStatus}>
                             {lecture.completed ? (
                               <i className="fa-solid fa-circle-check"></i>
-                            ) : currentLecture && currentLecture.id === lecture.id ? (
-                              <i className="fa-solid fa-circle-play"></i>
+                            ) : lecture.type === 'quiz' ? (
+                              <i className="fa-solid fa-question-circle"></i>
                             ) : (
-                              <i className="fa-regular fa-circle"></i>
+                              <i className="fa-regular fa-circle-play"></i>
                             )}
                           </div>
                           <div className={styles.lectureDetails}>
-                            <span className={styles.lectureItemTitle}>{lecture.title}</span>
-                            <span className={styles.lectureItemDuration}>
-                              <i className="fa-regular fa-clock"></i>
-                              {lecture.duration || '15 min'}
+                            <span>
+                              {lecture.type === 'quiz' && (
+                                <span className={styles.quizBadge}>Quiz: </span>
+                              )}
+                              {lecture.title}
+                            </span>
+                            <span>
+                              <i className="fa-regular fa-clock"></i> {lecture.duration}
+                              {lecture.type === 'quiz' && (
+                                <span className={styles.quizLabel}> • Quiz</span>
+                              )}
                             </span>
                           </div>
                         </div>

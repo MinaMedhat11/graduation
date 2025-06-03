@@ -1,19 +1,23 @@
 // src/routes/RoleProtectedRoute.js
+import React from 'react'; // أضف هذا السطر في الأعلى
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const RoleProtectedRoute = ({ allowedGuard }) => {
   const { isAuthenticated, loading, guard } = useAuth();
-
+  
   if (loading) return <div>Loading...</div>;
-
+  
   if (!isAuthenticated) return <Navigate to="/login" />;
 
-  if (guard !== allowedGuard) {
-    // Redirect based on user's actual role
-    if (guard === 'admin') return <Navigate to="/admin/dashboard" />;
-    if (guard === 'instructor') return <Navigate to="/instructor/dashboard" />;
-    return <Navigate to="/dashboard" />;
+  // اعتماد كامل على القيمة المخزنة محلياً
+  const storedGuard = localStorage.getItem('guard');
+  
+  if (storedGuard !== allowedGuard) {
+    const redirectPath = storedGuard === 'admin' ? '/admin/dashboard' 
+      : storedGuard === 'instructor' ? '/instructor/dashboard' 
+      : '/dashboard';
+    return <Navigate to={redirectPath} />;
   }
 
   return <Outlet />;

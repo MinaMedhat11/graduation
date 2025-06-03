@@ -134,6 +134,7 @@ export default function QuizView() {
                  <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
                      <AccessTimeIcon sx={{ fontSize: 60, color: 'error.main', mb: 2 }} />
                      <Typography variant="h5" gutterBottom>Time's Up!</Typography>
+
                      <Typography variant="body1">The quiz was automatically submitted.</Typography>
                      <Button variant="contained" sx={{ mt: 3 }} onClick={() => window.history.back()}>\n                         Back to Course
                     </Button>

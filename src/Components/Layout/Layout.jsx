@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { useNavigate, Outlet, NavLink, useLocation } from 'react-router-dom';
+import { authService } from '../../services/authService';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
@@ -18,24 +19,25 @@ import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { styled, useTheme } from '@mui/material/styles';
-
-// Icons for User Layout
+// Icons
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import SchoolIcon from '@mui/icons-material/School'; // Courses
-import AssignmentIcon from '@mui/icons-material/Assignment'; // Assignment
-import PaymentIcon from '@mui/icons-material/Payment'; // Payments
-import OndemandVideoIcon from '@mui/icons-material/OndemandVideo'; // Lectures
+import SchoolIcon from '@mui/icons-material/School';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import PaymentIcon from '@mui/icons-material/Payment';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import AccountCircle from '@mui/icons-material/AccountCircle'; // For Profile link in menu
-import SettingsIcon from '@mui/icons-material/Settings'; // For Settings link in menu
-import LogoutIcon from '@mui/icons-material/Logout'; // For Logout link in menu
-
-// Use the same logo (assuming path is correct relative to this new file)
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+// Images
 import logoPlaceholder from '../../Images/Logo.png';
+import ChatBot from 'Components/ChatBot/ChatBot';
 
+// Styled Components
 const drawerWidth = 240;
-const appBarHeight = 64; // Or adjust based on screenshot appearance
+const appBarHeight = 64;
 
 const StyledAppBar = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -53,57 +55,59 @@ const StyledAppBar = styled(AppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-  // Match the design: White background, subtle shadow, etc.
   backgroundColor: '#ffffff',
-  color: theme.palette.text.primary, // Adjust as needed
-  boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.05)', // Example shadow
+  color: theme.palette.text.primary,
+  boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.05)',
 }));
 
-
-const StyledDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
+const StyledDrawer = styled(Drawer, {
+  shouldForwardProp: (prop) => prop !== 'open'
+})(({ theme, open }) => ({
+  '& .MuiDrawer-paper': {
+    position: 'relative',
+    whiteSpace: 'nowrap',
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    boxSizing: 'border-box',
+    borderRight: 'none',
+    backgroundColor: '#E0F2F1',
+    ...(!open && {
+      overflowX: 'hidden',
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
+        duration: theme.transitions.duration.leavingScreen,
       }),
-      boxSizing: 'border-box',
-      borderRight: 'none', // Remove default border if needed
-      backgroundColor: '#E0F2F1', // Example light teal background from screenshots
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
+      width: theme.spacing(7),
+      [theme.breakpoints.up('sm')]: {
+        width: theme.spacing(9),
+      },
+    }),
+  },
+}));
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center', // Center the logo
+  justifyContent: 'center',
   padding: theme.spacing(0, 1),
-  height: appBarHeight, // Match AppBar height
-  ...theme.mixins.toolbar, // Necessary for content to be below app bar
+  height: appBarHeight,
+  ...theme.mixins.toolbar,
 }));
 
-
 const Layout = () => {
+  // Hooks
+  const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const [open, setOpen] = useState(true); // Drawer starts open
+
+  // State
+  const [open, setOpen] = useState(true);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
+  // Handlers
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -112,134 +116,162 @@ const Layout = () => {
     setAnchorElUser(null);
   };
 
-  // Basic Logout handler (implement actual logic later)
-  const handleLogout = () => {
-      console.log("Logout clicked");
-      handleCloseUserMenu();
-      // Add actual logout logic here (clear context/token, navigate to login)
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+    handleCloseUserMenu();
   };
 
-  // Sidebar items definition based on user screenshots and App.js routes
+  // Sidebar Configuration
   const sidebarItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Courses', icon: <SchoolIcon />, path: '/courses' },
-    { text: 'Assignment', icon: <AssignmentIcon />, path: '/assignments' }, // Ensure path matches App.js
+    { text: 'Assignment', icon: <AssignmentIcon />, path: '/assignments' },
     { text: 'Payments', icon: <PaymentIcon />, path: '/payments' },
     { text: 'Lectures', icon: <OndemandVideoIcon />, path: '/lectures' },
-    // Add Enrollments, Students & Instructors if they are part of this user layout
-    // { text: 'Enrollments', icon: <PeopleIcon />, path: '/enrollments' }, // Example
-    // { text: 'Students & Instructors', icon: <GroupIcon />, path: '/manage-users' }, // Example
+    { text: 'Chat', icon: <ChatOutlinedIcon />, path: '/chat' },
+
   ];
 
-  // Function to check if a sidebar item is active
   const isActive = (path) => {
-    // Exact match for dashboard,startsWith for others might be needed depending on sub-routes
-    return location.pathname === path || (path !== '/dashboard' && location.pathname.startsWith(path));
-  }
+    return location.pathname === path ||
+      (path !== '/dashboard' && location.pathname.startsWith(path));
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
+
+      {/*ChatBot */}
+      <ChatBot />
+
+
       {/* Top App Bar */}
       <StyledAppBar position="fixed" open={open}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: appBarHeight }}>
-           {/* Left side - Placeholder for potential drawer toggle or empty space */}
-           <Box sx={{ width: open ? 0 : 60 }}></Box> {/* Adjust width to match closed drawer icon space */}
+        <Toolbar sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          height: appBarHeight
+        }}>
+          <Box sx={{ width: open ? 0 : 60 }}></Box>
 
-           {/* Right side - Search, Notifications, User Menu */}
-           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexGrow: 1, justifyContent: 'flex-end' }}>
-               {/* Top Search Bar */}
-               <TextField
-                    variant="outlined"
-                    size="small"
-                    placeholder="Search your course here..."
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon sx={{ color: 'action.active' }} />
-                            </InputAdornment>
-                        ),
-                        sx: {
-                            borderRadius: '30px', // Make it rounded
-                            backgroundColor: '#F8F9FA', // Light background
-                            width: '350px', // Adjust width as needed
-                            '& fieldset': { border: 'none' }, // Remove border
-                        }
-                    }}
-                    sx={{ display: { xs: 'none', sm: 'block' } }} // Hide on small screens if needed
-                />
-                <IconButton color="inherit" aria-label="notifications">
-                  <NotificationsNoneOutlinedIcon />
-                </IconButton>
-                {/* User Avatar and Menu */}
-                <Box sx={{ flexGrow: 0 }}>
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        {/* Replace with actual user data */}
-                        <Avatar alt="User Name" src="/static/images/avatar/2.jpg" />
-                    </IconButton>
-                    <Menu
-                        sx={{ mt: '45px' }}
-                        id="menu-appbar"
-                        anchorEl={anchorElUser}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        keepMounted
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        open={Boolean(anchorElUser)}
-                        onClose={handleCloseUserMenu}
-                    >
-                        <MenuItem component={NavLink} to="/profile" onClick={handleCloseUserMenu}>
-                            <ListItemIcon><AccountCircle fontSize="small" /></ListItemIcon>
-                            <ListItemText>Profile</ListItemText>
-                        </MenuItem>
-                        <MenuItem component={NavLink} to="/settings" onClick={handleCloseUserMenu}> {/* Assuming a /settings route */}
-                            <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
-                            <ListItemText>Settings</ListItemText>
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem onClick={handleLogout}>
-                            <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
-                           <ListItemText>Logout</ListItemText>
-                        </MenuItem>
-                    </Menu>
-                </Box>
-           </Box>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            flexGrow: 1,
+            justifyContent: 'flex-end'
+          }}>
+            {/* Search Bar */}
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search your course here..."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'action.active' }} />
+                  </InputAdornment>
+                ),
+                sx: {
+                  borderRadius: '30px',
+                  backgroundColor: '#F8F9FA',
+                  width: '350px',
+                  '& fieldset': { border: 'none' },
+                }
+              }}
+              sx={{ display: { xs: 'none', sm: 'block' } }}
+            />
+
+            {/* Notifications */}
+            <IconButton color="inherit" aria-label="notifications">
+              <NotificationsNoneOutlinedIcon />
+            </IconButton>
+
+            {/* User Menu */}
+            <Box sx={{ flexGrow: 0 }}>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="User Name" src="/static/images/avatar/2.jpg" />
+              </IconButton>
+
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                keepMounted
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem component={NavLink} to="/profile" onClick={handleCloseUserMenu}>
+                  <ListItemIcon><AccountCircle fontSize="small" /></ListItemIcon>
+                  <ListItemText>Profile</ListItemText>
+                </MenuItem>
+
+                <MenuItem component={NavLink} to="/settings" onClick={handleCloseUserMenu}>
+                  <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>Settings</ListItemText>
+                </MenuItem>
+
+                <Divider />
+
+                <MenuItem onClick={handleLogout}>
+                  <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>Logout</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Box>
         </Toolbar>
       </StyledAppBar>
 
       {/* Sidebar Drawer */}
       <StyledDrawer variant="permanent" open={open}>
         <DrawerHeader>
-          {/* Logo */}
-          <img src={logoPlaceholder} alt="Education Your Tagline" style={{ height: '40px', objectFit: 'contain' }} />
+          <img
+            src={logoPlaceholder}
+            alt="Education Your Tagline"
+            style={{ height: '40px', objectFit: 'contain' }}
+          />
         </DrawerHeader>
-        {/* Removed Divider, Drawer Toggle - Add if needed based on final design */}
-        <List sx={{ pt: 2 }}> {/* Add padding top */}
+
+        <List sx={{ pt: 2 }}>
           {sidebarItems.map((item) => (
-            <ListItem key={item.text} disablePadding sx={{ display: 'block', px: 1.5 }}> {/* Padding for list items */}
+            <ListItem
+              key={item.text}
+              disablePadding
+              sx={{ display: 'block', px: 1.5 }}
+            >
               <ListItemButton
                 component={NavLink}
                 to={item.path}
-                selected={isActive(item.path)} // Use selected prop for styling
+                selected={isActive(item.path)}
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
-                  mb: 1, // Margin bottom for spacing
-                  borderRadius: '8px', // Rounded corners
-                  // Active styles
+                  mb: 1,
+                  borderRadius: '8px',
+
                   '&.Mui-selected': {
-                    backgroundColor: '#28A79F', // Teal background for active
-                    color: '#ffffff', // White text for active
+                    backgroundColor: '#28A79F',
+                    color: '#ffffff',
                     '& .MuiListItemIcon-root': {
-                      color: '#ffffff', // White icon for active
+                      color: '#ffffff',
                     },
-                    '&:hover': { // Hover on active item
-                        backgroundColor: '#239089', // Slightly darker teal
+                    '&:hover': {
+                      backgroundColor: '#239089',
                     }
                   },
-                  // Hover styles for non-active items
+
                   '&:hover': {
-                    backgroundColor: 'rgba(40, 167, 159, 0.1)', // Light teal hover
+                    backgroundColor: 'rgba(40, 167, 159, 0.1)',
                   },
                 }}
               >
@@ -248,40 +280,45 @@ const Layout = () => {
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
-                    color: isActive(item.path) ? '#ffffff' : '#28A79F', // Icon color: white if active, teal otherwise
+                    color: isActive(item.path) ? '#ffffff' : '#28A79F',
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0, color: isActive(item.path) ? '#ffffff' : 'inherit' }} />
+
+                <ListItemText
+                  primary={item.text}
+                  sx={{
+                    opacity: open ? 1 : 0,
+                    color: isActive(item.path) ? '#ffffff' : 'inherit'
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </StyledDrawer>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
           backgroundColor: (theme) =>
             theme.palette.mode === 'light'
-              ? theme.palette.grey[100] // Light grey background like screenshots
+              ? theme.palette.grey[100]
               : theme.palette.grey[900],
           flexGrow: 1,
           height: '100vh',
           overflow: 'auto',
-          pt: `${appBarHeight}px`, // Ensure content starts below app bar
+          pt: `${appBarHeight}px`,
         }}
       >
-        {/* Add a Toolbar spacer only if not using theme.mixins.toolbar in DrawerHeader correctly */}
-        {/* <Toolbar /> */}
-        <Box sx={{ p: 3 }}> {/* Add padding to the main content area */}
-             <Outlet /> {/* Renders the matched child route component */}
+        <Box sx={{ p: 3 }}>
+          <Outlet />
         </Box>
       </Box>
     </Box>
   );
 };
 
-export default Layout; 
+export default Layout;

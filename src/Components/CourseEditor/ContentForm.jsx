@@ -12,23 +12,20 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
-
-// Icons
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import EditIcon from '@mui/icons-material/Edit';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-// Content Type Icons (Placeholders)
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import DescriptionIcon from '@mui/icons-material/Description';
 import NoteAltIcon from '@mui/icons-material/NoteAlt';
 
-// --- Lecture Component ---
 const LectureItem = ({ lecture, sectionIndex, lectureIndex, onUpdateLecture, onDeleteLecture }) => {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [showVideoUrl, setShowVideoUrl] = useState(lecture.type === 'video');
+    const [showDescription, setShowDescription] = useState(false);
     const open = Boolean(anchorEl);
 
     const handleMenuClick = (event) => {
@@ -40,105 +37,189 @@ const LectureItem = ({ lecture, sectionIndex, lectureIndex, onUpdateLecture, onD
     };
 
     const handleAddContent = (contentType) => {
-        console.log(`Add ${contentType} to lecture ${lectureIndex} in section ${sectionIndex}`);
-        // Add logic here to update lecture state with content type
-        // e.g., show relevant upload/input field
+        const updatedLecture = {
+            ...lecture,
+            type: contentType === 'Video' ? 'video' : contentType.toLowerCase(),
+            quiz_data: null,
+            is_free: 0
+        };
+        
+        onUpdateLecture(sectionIndex, lectureIndex, updatedLecture);
+        setShowVideoUrl(contentType === 'Video');
+        setShowDescription(true);
         handleMenuClose();
     };
 
-    const handleTitleChange = (event) => {
-        onUpdateLecture(sectionIndex, lectureIndex, { ...lecture, title: event.target.value });
-    }
+    const handleFieldChange = (field, value) => {
+        onUpdateLecture(sectionIndex, lectureIndex, { ...lecture, [field]: value });
+    };
 
     return (
-        <Paper variant="outlined" sx={{ p: 1.5, mb: 1, display: 'flex', alignItems: 'center' }}>
-             <IconButton size="small" sx={{ cursor: 'grab', mr: 1 }}><DragIndicatorIcon fontSize="small" /></IconButton>
-             <TextField
-                variant="standard"
-                size="small"
-                fullWidth
-                placeholder="Lecture name"
-                value={lecture.title}
-                onChange={handleTitleChange}
-                InputProps={{ disableUnderline: true }}
-                sx={{ mr: 1 }}
-            />
-             <Button
-                id={`content-button-${sectionIndex}-${lectureIndex}`}
-                aria-controls={open ? `content-menu-${sectionIndex}-${lectureIndex}` : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
+        <Paper variant="outlined" sx={{ p: 1.5, mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <IconButton size="small" sx={{ cursor: 'grab', mr: 1 }}>
+                    <DragIndicatorIcon fontSize="small" />
+                </IconButton>
+                
+                <TextField
+                    variant="standard"
+                    size="small"
+                    fullWidth
+                    placeholder="Lecture name"
+                    value={lecture.title}
+                    onChange={(e) => handleFieldChange('title', e.target.value)}
+                    InputProps={{ disableUnderline: true }}
+                    sx={{ mr: 1 }}
+                />
+                
+                <Button
+                    id={`content-button-${sectionIndex}-${lectureIndex}`}
+                    aria-controls={open ? `content-menu-${sectionIndex}-${lectureIndex}` : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    variant="outlined"
+                    size="small"
+                    onClick={handleMenuClick}
+                    endIcon={<ArrowDropDownIcon />}
+                    sx={{ textTransform: 'none', minWidth: 120 }}
+                >
+                    {lecture.type || 'Content Type'}
+                </Button>
+                
+                <Menu
+                    id={`content-menu-${sectionIndex}-${lectureIndex}`}
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleMenuClose}
+                    MenuListProps={{ 'aria-labelledby': `content-button-${sectionIndex}-${lectureIndex}` }}
+                >
+                    <MenuItem onClick={() => handleAddContent('Video')}>
+                        <OndemandVideoIcon fontSize="small" sx={{ mr: 1 }} />
+                        Video
+                    </MenuItem>
+                    <MenuItem onClick={() => handleAddContent('Attach File')}>
+                        <AttachFileIcon fontSize="small" sx={{ mr: 1 }} />
+                        Attach File
+                    </MenuItem>
+                    <MenuItem onClick={() => handleAddContent('Description')}>
+                        <DescriptionIcon fontSize="small" sx={{ mr: 1 }} />
+                        Description
+                    </MenuItem>
+                    <MenuItem onClick={() => handleAddContent('Lecture Notes')}>
+                        <NoteAltIcon fontSize="small" sx={{ mr: 1 }} />
+                        Lecture Notes
+                    </MenuItem>
+                </Menu>
+                
+                <Tooltip title="Delete Lecture">
+                    <IconButton 
+                        size="small" 
+                        color="error" 
+                        sx={{ ml: 1 }} 
+                        onClick={() => onDeleteLecture(sectionIndex, lectureIndex)}
+                    >
+                        <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+
+            {showVideoUrl && (
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    label="Video URL"
+                    value={lecture.video_url || ''}
+                    onChange={(e) => handleFieldChange('video_url', e.target.value)}
+                    sx={{ mb: 2 }}
+                />
+            )}
+            
+            <TextField
                 variant="outlined"
                 size="small"
-                onClick={handleMenuClick}
-                endIcon={<ArrowDropDownIcon />}
-                sx={{ textTransform: 'none', minWidth: 120 }}
-            >
-                Contents
-            </Button>
-            <Menu
-                id={`content-menu-${sectionIndex}-${lectureIndex}`}
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleMenuClose}
-                MenuListProps={{ 'aria-labelledby': `content-button-${sectionIndex}-${lectureIndex}` }}
-            >
-                <MenuItem onClick={() => handleAddContent('Video')}><OndemandVideoIcon fontSize="small" sx={{ mr: 1 }}/>Video</MenuItem>
-                <MenuItem onClick={() => handleAddContent('Attach File')}><AttachFileIcon fontSize="small" sx={{ mr: 1 }}/>Attach File</MenuItem>
-                <MenuItem onClick={() => handleAddContent('Description')}><DescriptionIcon fontSize="small" sx={{ mr: 1 }}/>Description</MenuItem>
-                <MenuItem onClick={() => handleAddContent('Lecture Notes')}><NoteAltIcon fontSize="small" sx={{ mr: 1 }}/>Lecture Notes</MenuItem>
-            </Menu>
-            <Tooltip title="Delete Lecture">
-                 <IconButton size="small" color="error" sx={{ ml: 1 }} onClick={() => onDeleteLecture(sectionIndex, lectureIndex)}>
-                     <DeleteOutlineIcon fontSize="small" />
-                 </IconButton>
-            </Tooltip>
-             {/* Add placeholder/logic here to show added content type */}
+                fullWidth
+                label="Duration (minutes)"
+                type="number"
+                value={lecture.duration || ''}
+                onChange={(e) => handleFieldChange('duration', e.target.value)}
+                sx={{ mb: 2 }}
+            />
+            
+            {showDescription && (
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    label="Description"
+                    multiline
+                    rows={3}
+                    value={lecture.description || ''}
+                    onChange={(e) => handleFieldChange('description', e.target.value)}
+                    sx={{ mb: 2 }}
+                />
+            )}
         </Paper>
     );
-}
+};
 
-// --- Section Component ---
 const SectionItem = ({ section, index, onUpdateSection, onDeleteSection, onAddLecture, onUpdateLecture, onDeleteLecture }) => {
-
     const handleTitleChange = (event) => {
         onUpdateSection(index, { ...section, title: event.target.value });
     };
 
     return (
-        <Accordion defaultExpanded sx={{ border: '1px solid #eee', mb: 2, '&:before': { display: 'none' }, boxShadow: 'none' }}>
+        <Accordion defaultExpanded sx={{ 
+            border: '1px solid #eee', 
+            mb: 2, 
+            '&:before': { display: 'none' }, 
+            boxShadow: 'none' 
+        }}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls={`section-${index}-content`}
                 id={`section-${index}-header`}
                 sx={{ borderBottom: '1px solid #eee', bgcolor: '#fafafa' }}
             >
-                <IconButton size="small" sx={{ cursor: 'grab', mr: 1 }}><DragIndicatorIcon fontSize="small" /></IconButton>
+                <IconButton size="small" sx={{ cursor: 'grab', mr: 1 }}>
+                    <DragIndicatorIcon fontSize="small" />
+                </IconButton>
+                
                 <TextField
                     variant="standard"
                     size="small"
                     fullWidth
                     placeholder={`Section ${index + 1}: Section name`}
                     value={section.title}
-                    onClick={(e) => e.stopPropagation()} // Prevent accordion toggle on textfield click
+                    onClick={(e) => e.stopPropagation()}
                     onChange={handleTitleChange}
-                    InputProps={{ disableUnderline: true, style: { fontWeight: 500 } }}
+                    InputProps={{ 
+                        disableUnderline: true, 
+                        style: { fontWeight: 500 } 
+                    }}
                     sx={{ mr: 1 }}
                 />
-                 <Tooltip title="Delete Section">
-                     <IconButton size="small" color="error" onClick={(e) => {e.stopPropagation(); onDeleteSection(index);}}>
-                         <DeleteOutlineIcon fontSize="small" />
-                     </IconButton>
-                 </Tooltip>
-                 {/* Add Edit icon if needed */}
-                 {/* <IconButton size="small" sx={{ ml: 0.5 }}><EditIcon fontSize="small" /></IconButton> */}
+                
+                <Tooltip title="Delete Section">
+                    <IconButton 
+                        size="small" 
+                        color="error" 
+                        onClick={(e) => {
+                            e.stopPropagation(); 
+                            onDeleteSection(index);
+                        }}
+                    >
+                        <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             </AccordionSummary>
+            
             <AccordionDetails sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                   {section.lectures.map((lecture, lectureIndex) => (
+                <Stack spacing={2}>
+                    {section.lectures.map((lecture, lectureIndex) => (
                         <LectureItem
-                            key={lectureIndex} // Consider using a unique ID if available
-                            lecture={lecture}
+                            key={lectureIndex}
+                            lecture={{ ...lecture, order: lectureIndex + 1 }}
                             sectionIndex={index}
                             lectureIndex={lectureIndex}
                             onUpdateLecture={onUpdateLecture}
@@ -146,30 +227,62 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection, onAddLe
                         />
                     ))}
                 </Stack>
-                 <Button
-                     size="small"
-                     startIcon={<AddIcon />}
-                     onClick={() => onAddLecture(index)}
-                     sx={{ mt: 1, textTransform: 'none' }}
-                 >
-                     Add Lecture
-                 </Button>
+                
+                <Button
+                    size="small"
+                    startIcon={<AddIcon />}
+                    onClick={() => onAddLecture(index)}
+                    sx={{ mt: 1, textTransform: 'none' }}
+                >
+                    Add Lecture
+                </Button>
             </AccordionDetails>
         </Accordion>
     );
-}
+};
 
-// --- Main Content Form Component ---
-export default function ContentForm({ initialData, onNext, onBack }) {
-    // Initialize sections from initialData or start with one empty section
-    const [sections, setSections] = useState(initialData?.sections?.length > 0 ? initialData.sections : [{ title: '', lectures: [{ title: '' }] }]);
+export default function ContentForm({ courseId, initialData, onNext, onBack }) {
+    const [sections, setSections] = useState(
+        initialData?.sections?.length > 0 
+            ? initialData.sections 
+            : [{ 
+                title: '', 
+                lectures: [{ 
+                    title: '', 
+                    type: '', 
+                    description: '', 
+                    video_url: '', 
+                    duration: 0, 
+                    order: 1, 
+                    is_free: 0, 
+                    quiz_data: null 
+                }] 
+            }]
+    );
+    
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleAddSection = () => {
-        setSections(prev => [...prev, { title: '', lectures: [{ title: '' }] }]);
+        setSections(prev => [...prev, { 
+            title: '', 
+            lectures: [{ 
+                title: '', 
+                type: '', 
+                description: '', 
+                video_url: '', 
+                duration: 0, 
+                order: 1, 
+                is_free: 0, 
+                quiz_data: null 
+            }] 
+        }]);
     };
 
     const handleUpdateSection = (index, updatedSection) => {
-        setSections(prev => prev.map((section, i) => i === index ? updatedSection : section));
+        setSections(prev => prev.map((section, i) => 
+            i === index ? updatedSection : section
+        ));
     };
 
     const handleDeleteSection = (index) => {
@@ -179,7 +292,19 @@ export default function ContentForm({ initialData, onNext, onBack }) {
     const handleAddLecture = (sectionIndex) => {
         setSections(prev => prev.map((section, i) => {
             if (i === sectionIndex) {
-                return { ...section, lectures: [...section.lectures, { title: '' }] };
+                return { 
+                    ...section, 
+                    lectures: [...section.lectures, { 
+                        title: '', 
+                        type: '', 
+                        description: '', 
+                        video_url: '', 
+                        duration: 0, 
+                        order: section.lectures.length + 1, 
+                        is_free: 0, 
+                        quiz_data: null 
+                    }] 
+                };
             }
             return section;
         }));
@@ -188,7 +313,9 @@ export default function ContentForm({ initialData, onNext, onBack }) {
     const handleUpdateLecture = (sectionIndex, lectureIndex, updatedLecture) => {
         setSections(prev => prev.map((section, i) => {
             if (i === sectionIndex) {
-                const newLectures = section.lectures.map((lecture, li) => li === lectureIndex ? updatedLecture : lecture);
+                const newLectures = section.lectures.map((lecture, li) => 
+                    li === lectureIndex ? updatedLecture : lecture
+                );
                 return { ...section, lectures: newLectures };
             }
             return section;
@@ -196,28 +323,98 @@ export default function ContentForm({ initialData, onNext, onBack }) {
     };
 
     const handleDeleteLecture = (sectionIndex, lectureIndex) => {
-         setSections(prev => prev.map((section, i) => {
-             if (i === sectionIndex) {
-                 // Prevent deleting the last lecture in a section
-                 if (section.lectures.length <= 1) return section;
-                 const newLectures = section.lectures.filter((_, li) => li !== lectureIndex);
-                 return { ...section, lectures: newLectures };
-             }
-             return section;
-         }));
+        setSections(prev => prev.map((section, i) => {
+            if (i === sectionIndex) {
+                if (section.lectures.length <= 1) return section;
+                
+                const newLectures = section.lectures
+                    .filter((_, li) => li !== lectureIndex)
+                    .map((lecture, index) => ({ 
+                        ...lecture, 
+                        order: index + 1 
+                    }));
+                
+                return { ...section, lectures: newLectures };
+            }
+            return section;
+        }));
     };
 
-    const handleFormSubmit = (event) => {
+    const handleFormSubmit = async (event) => {
         event.preventDefault();
-        // Validate data if needed
-        onNext({ sections }); // Pass updated sections data to parent
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('No authentication token found');
+
+            // Prepare all requests
+            const requests = sections.flatMap(section => {
+                return section.lectures.map(lecture => {
+                    const lectureData = {
+                        course_id: courseId,
+                        section_name: section.title,
+                        title: lecture.title,
+                        type: lecture.type || 'video',
+                        description: lecture.description || '',
+                        order: lecture.order,
+                        duration: lecture.duration || 0,
+                        is_free: 0,
+                        video_url: lecture.video_url || '',
+                        quiz_data: null
+                    };
+
+                    return fetch('http://127.0.0.1:8000/api/course-content/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(lectureData)
+                    });
+                });
+            });
+
+            // Execute all requests
+            const responses = await Promise.all(requests);
+            
+            // Check for any failed requests
+            const hasErrors = responses.some(response => !response.ok);
+            if (hasErrors) {
+                const errorResults = await Promise.all(
+                    responses.map(res => res.ok ? null : res.json().catch(() => null))
+                );
+                const errorMessages = errorResults.filter(Boolean).map(err => err.message);
+                throw new Error(
+                    `Some lectures failed to save: ${errorMessages.join(', ')}`
+                );
+            }
+
+            onNext({ sections });
+        } catch (error) {
+            console.error('Error saving content:', error);
+            setError(error.message || 'An error occurred while saving');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
         <Box component="form" onSubmit={handleFormSubmit} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                Course Content
+            </Typography>
+
+            {error && (
+                <Typography color="error" sx={{ mb: 2 }}>
+                    {error}
+                </Typography>
+            )}
+
             {sections.map((section, index) => (
                 <SectionItem
-                    key={index} // Consider using a unique ID if sections have one
+                    key={index}
                     section={section}
                     index={index}
                     onUpdateSection={handleUpdateSection}
@@ -227,21 +424,38 @@ export default function ContentForm({ initialData, onNext, onBack }) {
                     onDeleteLecture={handleDeleteLecture}
                 />
             ))}
-
-             <Button
-                 variant="contained"
-                 startIcon={<AddIcon />}
-                 onClick={handleAddSection}
-                 sx={{ mt: 2, mb: 3, backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}
-             >
-                 Add Sections
-             </Button>
-
-             {/* Action Buttons */}
-             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-                 <Button variant="outlined" onClick={onBack}>Previous</Button>
-                 <Button type="submit" variant="contained" sx={{ backgroundColor: '#25cf9d', '&:hover': { backgroundColor: '#1da884' } }}>Save & Next</Button>
-             </Box>
+            
+            <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleAddSection}
+                sx={{ 
+                    mt: 2, 
+                    mb: 3, 
+                    backgroundColor: '#25cf9d', 
+                    '&:hover': { backgroundColor: '#1da884' } 
+                }}
+            >
+                Add Section
+            </Button>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+                <Button variant="outlined" onClick={onBack}>
+                    Previous
+                </Button>
+                
+                <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={isSubmitting}
+                    sx={{ 
+                        backgroundColor: '#25cf9d', 
+                        '&:hover': { backgroundColor: '#1da884' } 
+                    }}
+                >
+                    {isSubmitting ? 'Saving...' : 'Save & Next'}
+                </Button>
+            </Box>
         </Box>
     );
-} 
+}

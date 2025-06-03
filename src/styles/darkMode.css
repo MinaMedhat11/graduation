@@ -1,0 +1,56 @@
+/* src/styles/darkMode.css */
+[data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --card-bg: #2d2d2d;
+  --border-color: #444444;
+  --shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+  --sidebar-bg: #1e1e1e;
+  --header-bg: #1e1e1e;
+}
+
+[data-theme="light"] {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --card-bg: #ffffff;
+  --border-color: #e0e0e0;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --sidebar-bg: #ffffff;
+  --header-bg: #28A79F;
+}
+
+/* تطبيق المتغيرات على العناصر */
+body {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  transition: all 0.3s ease;
+}
+
+.sidebar {
+  background-color: var(--sidebar-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.header {
+  background-color: var(--header-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.card, .dashboard-card {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* للفيديو بلاير */
+.video-player-container {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+.content-sidebar {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+}

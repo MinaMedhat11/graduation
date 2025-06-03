@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styles from './Lectures.module.css';
-
-// Icons
 import VideocamIcon from '@mui/icons-material/Videocam';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -14,45 +13,68 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 export default function Lectures() {
   const [lectures, setLectures] = useState([]);
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const selectedCourse = 'Advanced Course In Networks';
+  const [currentCourseIndex, setCurrentCourseIndex] = useState(0);
 
   useEffect(() => {
     const fetchLectures = async () => {
       try {
-        setLoading(false); // Set to false immediately for now to show UI
-        // Mock data instead of API call
-        setLectures([
-          { date: '12/13/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 39, status: 'upcoming' },
-          { date: '12/11/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 38, status: 'upcoming' },
-          { date: '12/8/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 37, status: 'missed' },
-          { date: '12/6/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 36, status: 'attended' },
-          { date: '12/3/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 35, status: 'missed' },
-          { date: '12/1/2024', duration: '06:00', course: 'Advanced Course In Networks', number: 34, status: 'attended' },
-        ]);
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/lecture', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Extract enrolled courses
+        const enrolled = response.data.data.filter(course => course.pivot);
+        setEnrolledCourses(enrolled);
+        
+        // Set initial selected course
+        if (enrolled.length > 0) {
+          setSelectedCourse(enrolled[0]);
+          transformLectures(enrolled[0]);
+        }
+        
       } catch (error) {
         console.error('Error fetching lectures:', error);
+      } finally {
+        setLoading(false);
       }
     };
-
+    
     fetchLectures();
   }, []);
 
-  const handlePrevPage = () => {
-    setCurrentPage(prev => Math.max(prev - 1, 1));
+  const transformLectures = (course) => {
+    const transformed = course.contents.map((content, index) => ({
+      id: content.id,
+      date: new Date(content.created_at).toLocaleDateString('en-US'),
+      duration: `${content.duration} min`,
+      course: course.name,
+      number: index + 1,
+      status: content.is_free ? 'attended' : 'upcoming'
+    }));
+    setLectures(transformed);
   };
 
-  const handleNextPage = () => {
-    setCurrentPage(prev => prev + 1);
+  const handleCourseNavigation = (direction) => {
+    setCurrentCourseIndex(prev => {
+      const newIndex = direction === 'next' 
+        ? Math.min(prev + 1, enrolledCourses.length - 1)
+        : Math.max(prev - 1, 0);
+      
+      const selected = enrolledCourses[newIndex];
+      setSelectedCourse(selected);
+      transformLectures(selected);
+      return newIndex;
+    });
   };
-
   const handleCheckLecture = () => {
     console.log('Check Online Lecture');
     // Add logic to check for live lecture
   };
 
-  // Helper function to get row class based on status
   const getStatusClass = (status) => {
     switch(status) {
       case 'attended': return styles.attendedRow;
@@ -60,8 +82,7 @@ export default function Lectures() {
       default: return '';
     }
   };
-  
-  // Helper function to get status icon
+
   const getStatusIcon = (status) => {
     switch(status) {
       case 'attended': return <CheckCircleIcon className={styles.attendedIcon} />;
@@ -70,12 +91,11 @@ export default function Lectures() {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (!enrolledCourses.length) return <div>No enrolled courses found</div>;
 
   return (
-    <div className={styles.lecturesWrapper}>
+     <div className={styles.lecturesWrapper}>
       <div className={styles.joinLectureSection}>
         <VideocamIcon className={styles.videoIcon} />
         <h2 className={styles.joinLectureTitle}>Join Online Lecture</h2>
@@ -87,7 +107,6 @@ export default function Lectures() {
           Check
         </button>
       </div>
-          
       <div className={styles.myCourses}>
         <div className={styles.myCoursesHeader}>
           <MenuBookIcon className={styles.courseIcon} />
@@ -95,14 +114,28 @@ export default function Lectures() {
         </div>
         
         <div className={styles.courseNavigation}>
-          <button className={styles.navButton} onClick={handlePrevPage} disabled={currentPage === 1}>
+          <button 
+            className={styles.navButton} 
+            onClick={() => handleCourseNavigation('prev')}
+            disabled={currentCourseIndex === 0}
+          >
             <ChevronLeftIcon />
           </button>
+          
           <div className={styles.courseInfo}>
-            <h3 className={styles.courseName}>{selectedCourse}</h3>
-            <p className={styles.courseLabel}>Chose Your Course</p>
+            <h3 className={styles.courseName}>
+              {selectedCourse?.name || 'Select Course'}
+            </h3>
+            <p className={styles.courseLabel}>
+              {currentCourseIndex + 1} of {enrolledCourses.length} courses
+            </p>
           </div>
-          <button className={styles.navButton} onClick={handleNextPage}>
+          
+          <button 
+            className={styles.navButton} 
+            onClick={() => handleCourseNavigation('next')}
+            disabled={currentCourseIndex === enrolledCourses.length - 1}
+          >
             <ChevronRightIcon />
           </button>
         </div>
@@ -112,7 +145,7 @@ export default function Lectures() {
         <div className={styles.scheduleHeader}>
           <div className={styles.scheduleTitle}>
             <h3>Lecture Schedule</h3>
-            <p>12/2024</p>
+            <p>{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
           </div>
           <div className={styles.scheduleNavigation}>
             <button className={styles.scheduleNavButton}>
@@ -134,8 +167,8 @@ export default function Lectures() {
             </tr>
           </thead>
           <tbody>
-            {lectures.map((lecture, index) => (
-              <tr key={index} className={getStatusClass(lecture.status)}>
+            {lectures.map((lecture) => (
+              <tr key={lecture.id} className={getStatusClass(lecture.status)}>
                 <td>
                   {getStatusIcon(lecture.status)}
                   <span className={styles.dateText}>{lecture.date}</span>

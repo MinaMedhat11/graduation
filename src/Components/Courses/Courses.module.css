@@ -297,3 +297,25 @@
     grid-template-columns: 1fr;
   }
 } 
+.loadMoreButton {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.loadMoreButton:hover {
+  background-color: #e0e0e0;
+}
+
+.noCourses {
+  text-align: center;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 15px;
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -31,55 +32,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Loading from './../../Loading/Loading';
 
-// Mock Data for Admin Courses
-const mockCourses = [
-    { id: 'c1', title: 'Advanced React Masterclass', category: 'Programming', instructor: 'John Doe', price: 99.99, status: 'Published', students: 1500, dateCreated: '2024-01-10' },
-    { id: 'c2', title: 'Introduction to UI/UX Design', category: 'Design', instructor: 'Jane Smith', price: 49.99, status: 'Published', students: 850, dateCreated: '2024-02-15' },
-    { id: 'c3', title: 'Data Science with Python', category: 'Data Science', instructor: 'Alice Brown', price: 129.99, status: 'Draft', students: 0, dateCreated: '2024-03-20' },
-    { id: 'c4', title: 'Complete Node.js Developer Course', category: 'Programming', instructor: 'Bob White', price: 89.99, status: 'Published', students: 1100, dateCreated: '2023-11-05' },
-    { id: 'c5', title: 'Digital Marketing Fundamentals', category: 'Marketing', instructor: 'Charlie Green', price: 39.99, status: 'Published', students: 2500, dateCreated: '2024-01-25' },
-    { id: 'c6', title: 'Cloud Computing Basics (AWS)', category: 'IT & Software', instructor: 'John Doe', price: 79.99, status: 'Draft', students: 0, dateCreated: '2024-04-01' },
-];
-
-// Extract unique categories and statuses for filter options
-const categories = ['All', ...new Set(mockCourses.map(course => course.category))];
-const statuses = ['All', ...new Set(mockCourses.map(course => course.status))];
-
-// Helper function for sorting
-function descendingComparator(a, b, orderBy) {
-  if (orderBy === 'students') {
-    return b[orderBy] - a[orderBy];
-  }
-  if (String(b[orderBy]).toLowerCase() < String(a[orderBy]).toLowerCase()) return -1;
-  if (String(b[orderBy]).toLowerCase() > String(a[orderBy]).toLowerCase()) return 1;
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// Stable sort function
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-// Table Head Columns Definition
+// Table Head Columns
 const headCells = [
   { id: 'title', numeric: false, disablePadding: false, label: 'Course Title' },
   { id: 'category', numeric: false, disablePadding: false, label: 'Category' },
   { id: 'instructor', numeric: false, disablePadding: false, label: 'Instructor' },
   { id: 'students', numeric: true, disablePadding: false, label: 'Students' },
-  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
+  { id: 'status', numeric: false, disablePadding: false, label: 'Status', sortable: false },
   { id: 'actions', numeric: true, disablePadding: false, label: 'Actions', sortable: false },
 ];
 
@@ -121,7 +82,9 @@ function EnhancedTableHead(props) {
                   </Box>
                 ) : null}
               </TableSortLabel>
-            ) : headCell.label}
+            ) : (
+              headCell.label
+            )}
           </TableCell>
         ))}
       </TableRow>
@@ -129,7 +92,7 @@ function EnhancedTableHead(props) {
   );
 }
 
-// Helper function to get chip props based on status
+// Helper function for status chip
 const getStatusChipProps = (status) => {
   switch (status) {
     case 'Published':
@@ -141,9 +104,38 @@ const getStatusChipProps = (status) => {
   }
 };
 
+// Sorting functions
+function descendingComparator(a, b, orderBy) {
+  if (orderBy === 'students') {
+    return b[orderBy] - a[orderBy];
+  }
+  if (String(b[orderBy]).toLowerCase() < String(a[orderBy]).toLowerCase()) return -1;
+  if (String(b[orderBy]).toLowerCase() > String(a[orderBy]).toLowerCase()) return 1;
+  return 0;
+}
+
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
 export default function AdminCourses() {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState(mockCourses);
+
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('title');
   const [page, setPage] = useState(0);
@@ -154,27 +146,71 @@ export default function AdminCourses() {
   const [currentCourseId, setCurrentCourseId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [deleting, setDeleting] = useState(false);
 
+  // Extract unique categories and statuses from data
+  const categories = useMemo(() => ['All', ...new Set(courses.map(c => c.category))], [courses]);
+  const statuses = useMemo(() => ['All', ...new Set(courses.map(c => c.status))], [courses]);
+
+  // Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/courses/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const mappedCourses = response.data.data.map(course => ({
+          id: course.id.toString(),
+          title: course.name,
+          category: course.major_id.toString(), // Should be updated to use major name if available
+          instructor: course.instructor.name,
+          price: course.price - course.discount,
+          status: course.status === 1 ? 'Published' : 'Draft',
+          students: course.enrollments_count,
+          dateCreated: course.created_at.split('T')[0],
+        }));
+
+        setCourses(mappedCourses);
+      } catch (err) {
+        console.error('Failed to fetch courses:', err);
+        setError('Failed to fetch courses. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // Sort table
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
+  // Change page
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  // Change rows per page
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
+  // Search input
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
     setPage(0);
   };
 
+  // Filter menu
   const handleFilterMenuClick = (event) => {
     setFilterMenuAnchorEl(event.currentTarget);
   };
@@ -195,6 +231,7 @@ export default function AdminCourses() {
     handleFilterMenuClose();
   };
 
+  // Action menu
   const handleActionMenuClick = (event, courseId) => {
     setActionMenuAnchorEl(event.currentTarget);
     setCurrentCourseId(courseId);
@@ -204,81 +241,149 @@ export default function AdminCourses() {
     setActionMenuAnchorEl(null);
     setCurrentCourseId(null);
   };
-  
+
+  // Edit course
   const handleEdit = () => {
     if (!currentCourseId) return;
-    console.log('Edit clicked for course:', currentCourseId);
     navigate(`/admin/course/edit/${currentCourseId}`);
     handleActionMenuClose();
   };
 
-  const handleDelete = () => {
+  // Toggle publish/unpublish
+  const handleTogglePublish = async () => {
     if (!currentCourseId) return;
-    console.log('Delete clicked for course:', currentCourseId);
-    setCourses(prev => prev.filter(course => course.id !== currentCourseId));
+
+    const currentCourse = courses.find(c => c.id === currentCourseId);
+    const newStatus = currentCourse.status === 'Published' ? 'Draft' : 'Published';
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `http://127.0.0.1:8000/api/courses/toggle-publish/${currentCourseId}`,
+        { status: newStatus === 'Published' ? 1 : 0 },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCourses(prev =>
+        prev.map(course =>
+          course.id === currentCourseId ? { ...course, status: newStatus } : course
+        )
+      );
+    } catch (err) {
+      console.error('Failed to toggle publish status:', err);
+      alert('Failed to update status. Please try again.');
+    }
+
     handleActionMenuClose();
   };
 
-  const handleTogglePublish = () => {
-    if (!currentCourseId) return;
-    console.log('Toggle publish clicked for course:', currentCourseId);
-    setCourses(prev => prev.map(course => 
-        course.id === currentCourseId 
-        ? { ...course, status: course.status === 'Published' ? 'Draft' : 'Published' } 
-        : course
-    ));
-    handleActionMenuClose();
-  };
-
+  // Add new course
   const handleAddNewCourse = () => {
-    navigate('/admin/course/add');
+    navigate('/admin/course/create');
   };
 
-  const filteredCourses = useMemo(() => 
-    courses.filter(course => 
+  // Delete course
+  const handleDelete = async () => {
+    if (!currentCourseId) return;
+
+    if (!window.confirm('Are you sure you want to delete this course?')) {
+      return;
+    }
+
+    setDeleting(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `http://127.0.0.1:8000/api/courses/delete/${currentCourseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCourses(prev => prev.filter(course => course.id !== currentCourseId));
+    } catch (err) {
+      console.error('Failed to delete course:', err);
+      alert('Failed to delete course. Please try again.');
+    } finally {
+      setDeleting(false);
+      handleActionMenuClose();
+    }
+  };
+
+  // Filter courses
+  const filteredCourses = useMemo(() => {
+    return courses.filter(course =>
       (course.title.toLowerCase().includes(searchTerm) ||
        course.category.toLowerCase().includes(searchTerm) ||
-       course.instructor.toLowerCase().includes(searchTerm))
-      &&
-      (selectedCategory === 'All' || course.category === selectedCategory)
-      &&
+       course.instructor.toLowerCase().includes(searchTerm)) &&
+      (selectedCategory === 'All' || course.category === selectedCategory) &&
       (selectedStatus === 'All' || course.status === selectedStatus)
-    ),
-    [courses, searchTerm, selectedCategory, selectedStatus]
-  );
+    );
+  }, [courses, searchTerm, selectedCategory, selectedStatus]);
 
-  const visibleRows = useMemo(() =>
-    stableSort(filteredCourses, getComparator(order, orderBy)).slice(
-      page * rowsPerPage, page * rowsPerPage + rowsPerPage,
-    ),
-    [filteredCourses, order, orderBy, page, rowsPerPage]
-  );
+  // Sort and slice visible rows
+  const visibleRows = useMemo(() => {
+    return stableSort(filteredCourses, getComparator(order, orderBy)).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+  }, [filteredCourses, order, orderBy, page, rowsPerPage]);
 
+  // Empty rows for pagination
+  const emptyRows = page > 0
+    ? Math.max(0, (1 + page) * rowsPerPage - filteredCourses.length)
+    : 0;
+
+  // Current course for action menu
   const currentCourseForMenu = courses.find(c => c.id === currentCourseId);
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredCourses.length) : 0;
+  if (loading) {
+    return (
+     <Loading/>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3, textAlign: 'center' }}>
+        <Typography color="error">{error}</Typography>
+        <Button variant="contained" onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
+      {/* Page title and add button */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Courses
+          Courses
         </Typography>
         <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddNewCourse}
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddNewCourse}
         >
-            Add Course
+          Add Course
         </Button>
-       </Box>
+      </Box>
 
+      {/* Search and filters */}
       <Paper sx={{ width: '100%', mb: 2, borderRadius: 2, overflow: 'hidden' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, flexWrap: 'wrap', gap: 1 }}>
           <TextField
             variant="outlined"
             size="small"
-            placeholder="Search Courses..."
+            placeholder="Search courses..."
             value={searchTerm}
             onChange={handleSearchChange}
             InputProps={{
@@ -287,7 +392,7 @@ export default function AdminCourses() {
                   <SearchIcon color="action" />
                 </InputAdornment>
               ),
-              sx: { borderRadius: '8px', bgcolor: 'background.paper' }
+              sx: { borderRadius: '8px', bgcolor: 'background.paper' },
             }}
             sx={{ maxWidth: '400px', flexGrow: 1 }}
           />
@@ -305,7 +410,6 @@ export default function AdminCourses() {
               anchorEl={filterMenuAnchorEl}
               open={Boolean(filterMenuAnchorEl)}
               onClose={handleFilterMenuClose}
-              MenuListProps={{ 'aria-labelledby': 'basic-button' }}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
@@ -334,8 +438,13 @@ export default function AdminCourses() {
           </Box>
         </Box>
 
+        {/* Courses table */}
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
+          <Table
+            sx={{ minWidth: 750 }}
+            aria-labelledby="tableTitle"
+            size="medium"
+          >
             <EnhancedTableHead
               order={order}
               orderBy={orderBy}
@@ -344,7 +453,6 @@ export default function AdminCourses() {
             <TableBody>
               {visibleRows.map((row, index) => {
                 const labelId = `enhanced-table-checkbox-${index}`;
-
                 return (
                   <TableRow
                     hover
@@ -385,23 +493,25 @@ export default function AdminCourses() {
                   <TableCell colSpan={headCells.length} />
                 </TableRow>
               )}
-              {visibleRows.length === 0 && !courses.length && (
-                 <TableRow>
-                    <TableCell colSpan={headCells.length} align="center" sx={{ py: 3 }}>
-                        No courses found. Start by adding a new course.
-                    </TableCell>
-                 </TableRow>
+              {visibleRows.length === 0 && courses.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={headCells.length} align="center" sx={{ py: 3 }}>
+                    No courses found. You can add a new course.
+                  </TableCell>
+                </TableRow>
               )}
-               {visibleRows.length === 0 && courses.length > 0 && (
-                 <TableRow>
-                    <TableCell colSpan={headCells.length} align="center" sx={{ py: 3 }}>
-                        No courses match your current filters.
-                    </TableCell>
-                 </TableRow>
+              {visibleRows.length === 0 && courses.length > 0 && (
+                <TableRow>
+                  <TableCell colSpan={headCells.length} align="center" sx={{ py: 3 }}>
+                    No courses match the current filters.
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
         </TableContainer>
+
+        {/* Pagination */}
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
@@ -410,34 +520,37 @@ export default function AdminCourses() {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Rows per page"
           sx={{ borderTop: '1px solid rgba(224, 224, 224, 1)' }}
         />
       </Paper>
 
-       <Menu
+      {/* Action menu (Edit, Publish, Delete) */}
+      <Menu
         id="course-action-menu"
         anchorEl={actionMenuAnchorEl}
         open={Boolean(actionMenuAnchorEl)}
         onClose={handleActionMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-       >
-         <MenuItem onClick={handleEdit} disabled={!currentCourseId}>
-           <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
-         </MenuItem>
-         <MenuItem onClick={handleTogglePublish} disabled={!currentCourseId}>
-            {currentCourseForMenu?.status === 'Published' ? (
-                <VisibilityOffIcon fontSize="small" sx={{ mr: 1 }} />
-            ) : (
-                <VisibilityIcon fontSize="small" sx={{ mr: 1 }} />
-            )}
-            {currentCourseForMenu?.status === 'Published' ? 'Unpublish' : 'Publish'}
-         </MenuItem>
-         <Divider sx={{ my: 0.5 }} />
-         <MenuItem onClick={handleDelete} disabled={!currentCourseId} sx={{ color: 'error.main' }}>
-           <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
-         </MenuItem>
-       </Menu>
+      >
+        <MenuItem onClick={handleEdit} disabled={!currentCourseId}>
+          <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
+        </MenuItem>
+        <MenuItem onClick={handleTogglePublish} disabled={!currentCourseId}>
+          {currentCourseForMenu?.status === 'Published' ? (
+            <VisibilityOffIcon fontSize="small" sx={{ mr: 1 }} />
+          ) : (
+            <VisibilityIcon fontSize="small" sx={{ mr: 1 }} />
+          )}
+          {currentCourseForMenu?.status === 'Published' ? 'Unpublish' : 'Publish'}
+        </MenuItem>
+        <Divider sx={{ my: 0.5 }} />
+        <MenuItem onClick={handleDelete} disabled={!currentCourseId || deleting} sx={{ color: 'error.main' }}>
+          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+          {deleting ? 'Deleting...' : 'Delete'}
+        </MenuItem>
+      </Menu>
     </Box>
   );
-} 
+}

@@ -24,11 +24,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext'; // إضافة ThemeContext
 import { useLocation } from 'react-router-dom';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -48,6 +48,7 @@ function TabPanel(props) {
 
 export default function Settings() {
   const { guard } = useAuth();
+  const { darkMode, toggleDarkMode } = useTheme(); // استخدام ThemeContext
   const location = useLocation();
   const isAdmin = guard === 'admin' || location.pathname.includes('/admin');
   
@@ -69,10 +70,10 @@ export default function Settings() {
     confirmPassword: ''
   });
   
+  // إزالة darkMode من generalSettings لأنه سيتم إدارته من ThemeContext
   const [generalSettings, setGeneralSettings] = useState({
     language: 'English',
     timezone: 'GMT+2 Cairo',
-    darkMode: false,
     autoSave: true
   });
 
@@ -107,11 +108,18 @@ export default function Settings() {
     });
   };
 
+  // تعديل handleGeneralChange للتعامل مع darkMode
   const handleGeneralChange = (event) => {
-    setGeneralSettings({
-      ...generalSettings,
-      [event.target.name]: event.target.checked
-    });
+    const { name, checked } = event.target;
+    
+    if (name === 'darkMode') {
+      toggleDarkMode(); // استخدام function من ThemeContext
+    } else {
+      setGeneralSettings({
+        ...generalSettings,
+        [name]: checked
+      });
+    }
   };
 
   const handleInputChange = (field) => (event) => {
@@ -123,7 +131,7 @@ export default function Settings() {
 
   const handleSaveSettings = () => {
     // Here you would save the settings to your backend
-    console.log('Saving settings:', { notification, securitySettings, generalSettings });
+    console.log('Saving settings:', { notification, securitySettings, generalSettings, darkMode });
     
     // Show success message
     setSnackbar({
@@ -193,7 +201,7 @@ export default function Settings() {
       <Typography variant="h5" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 2, fontWeight: 'bold' }}>
         <SettingsIcon sx={{ mr: 1 }} /> Settings
       </Typography>
-
+      
       <Paper sx={{ width: '100%', mb: 2, borderRadius: '12px', overflow: 'hidden' }}>
         <Tabs 
           value={tabValue} 
@@ -269,7 +277,7 @@ export default function Settings() {
                       <FormControlLabel
                         control={
                           <Switch
-                            checked={generalSettings.darkMode}
+                            checked={darkMode} // استخدام القيمة من ThemeContext
                             onChange={handleGeneralChange}
                             name="darkMode"
                             color="primary"

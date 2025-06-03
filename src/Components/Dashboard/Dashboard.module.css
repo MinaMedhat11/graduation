@@ -617,3 +617,175 @@
   text-align: center;
   padding-bottom: 15px;
 }
+
+/* Ranking Card Styles */
+.rankingContainer {
+  padding: 15px;
+}
+
+.rankingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rankingType {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.rankingIndicator {
+  font-size: 18px;
+}
+
+.courseSelector {
+  position: relative;
+}
+
+.courseSelect {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  min-width: 200px;
+}
+
+.courseSelect:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.currentRankDisplay {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.userRankBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.rankNumber {
+  font-size: 32px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.rankLabel {
+  font-size: 14px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rankingList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rankingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.rankingItem:hover {
+  background-color: #e9ecef;
+  transform: translateX(3px);
+}
+
+.rankingItem.currentUser {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+  border-left-color: #e17055;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(225, 112, 85, 0.3);
+}
+
+.rankInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rankPosition {
+  font-weight: bold;
+  color: #2c3e50;
+  min-width: 50px;
+  font-size: 16px;
+}
+
+.studentName {
+  color: #34495e;
+  font-size: 15px;
+}
+
+.currentUser .studentName {
+  color: #d63031;
+  font-weight: 600;
+}
+
+.studentPoints {
+  font-weight: 600;
+  color: #27ae60;
+  font-size: 14px;
+  background-color: rgba(39, 174, 96, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.currentUser .studentPoints {
+  background-color: rgba(214, 48, 49, 0.1);
+  color: #d63031;
+}
+
+.rankingGap {
+  text-align: center;
+  padding: 8px;
+  color: #95a5a6;
+}
+
+.gapIndicator {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .rankingHeader {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .courseSelect {
+    width: 100%;
+  }
+  
+  .rankingItem {
+    padding: 10px 12px;
+  }
+  
+  .rankNumber {
+    font-size: 28px;
+  }
+}
